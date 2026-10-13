@@ -1,0 +1,448 @@
+﻿<Window x:Class="CMW.IslandWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Island"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        WindowStartupLocation="Manual"
+        MinWidth="0" MinHeight="0"
+        Width="400" Height="260"
+        SizeToContent="Manual">
+
+    <Window.Resources>
+
+        <Style x:Key="CardTab" TargetType="RadioButton">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="#88FFFFFF"/>
+            <Setter Property="FontFamily" Value="{StaticResource AppleFont}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Bg"
+                                Background="Transparent"
+                                CornerRadius="10"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#22FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#33FFFFFF"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="IslandMenuButton" TargetType="Button">
+            <Setter Property="Background" Value="#1AFFFFFF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontFamily" Value="{StaticResource AppleFont}"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Padding" Value="14,12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bg"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="10"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#33FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#44FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid x:Name="RootGrid">
+
+        <Border x:Name="MainBorder"
+                Width="60"
+                Height="18"
+                CornerRadius="9"
+                Background="#F21A1A1A"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                ClipToBounds="True"
+                MouseLeftButtonUp="MainBorder_MouseLeftButtonUp"
+                MouseRightButtonUp="MainBorder_MouseRightButtonUp"
+                MouseEnter="MainBorder_MouseEnter"
+                MouseLeave="MainBorder_MouseLeave"
+                MouseLeftButtonDown="MainBorder_MouseLeftButtonDown"
+                TouchDown="MainBorder_TouchDown"
+                TouchMove="MainBorder_TouchMove"
+                TouchUp="MainBorder_TouchUp">
+            <Grid>
+                <TextBlock x:Name="CapsuleLabel"
+                           Text="CMW"
+                           Foreground="White"
+                           FontFamily="{StaticResource AppleFont}"
+                           FontSize="9"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+
+                <Grid x:Name="CardContent"
+                      Opacity="0"
+                      IsHitTestVisible="False"
+                      Margin="20,16,20,16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock x:Name="CardTitle" Text="🏠 CMW 菜单"
+                               Grid.Row="0"
+                               FontFamily="{StaticResource AppleFont}"
+                               FontSize="18" FontWeight="Bold"
+                               Foreground="White"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Stretch"/>
+
+                    <StackPanel x:Name="CardTabs"
+                                Grid.Row="1"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                Margin="0,10,0,12">
+                        <RadioButton x:Name="CardTabInfo"
+                                     Style="{StaticResource CardTab}"
+                                     Content="菜单"
+                                     GroupName="CardTab"
+                                     IsChecked="True"
+                                     Checked="CardTab_Checked"/>
+                        <RadioButton x:Name="CardTabHomework"
+                                     Style="{StaticResource CardTab}"
+                                     Content="作业"
+                                     GroupName="CardTab"
+                                     Margin="4,0,0,0"
+                                     Checked="CardTab_Checked"/>
+                        <RadioButton x:Name="CardTabTodo"
+                                     Style="{StaticResource CardTab}"
+                                     Content="待办"
+                                     GroupName="CardTab"
+                                     Margin="4,0,0,0"
+                                     Checked="CardTab_Checked"/>
+                        <RadioButton x:Name="CardTabSchedule"
+                                     Style="{StaticResource CardTab}"
+                                     Content="课表"
+                                     GroupName="CardTab"
+                                     Margin="4,0,0,0"
+                                     Checked="CardTab_Checked"/>
+                        <RadioButton x:Name="CardTabNotes"
+                                     Style="{StaticResource CardTab}"
+                                     Content="笔记"
+                                     GroupName="CardTab"
+                                     Margin="4,0,0,0"
+                                     Checked="CardTab_Checked"/>
+                        <RadioButton x:Name="CardTabTimer"
+                                     Style="{StaticResource CardTab}"
+                                     Content="计时"
+                                     GroupName="CardTab"
+                                     Margin="4,0,0,0"
+                                     Checked="CardTab_Checked"/>
+                    </StackPanel>
+
+                    <Grid Grid.Row="2">
+
+                        <!-- ═══════ 菜单 ═══════ -->
+                        <StackPanel x:Name="PanelInfo"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Stretch"
+                                    Margin="10,0,10,0">
+                            <Button x:Name="MenuOpenMainBtn"
+                                    Style="{StaticResource IslandMenuButton}"
+                                    Content="🏠  打开主窗口"
+                                    Click="MenuOpenMainBtn_Click"/>
+                            <Button x:Name="MenuShowRightPanelBtn"
+                                    Style="{StaticResource IslandMenuButton}"
+                                    Content="📌  显示右侧窗口"
+                                    Click="MenuShowRightPanel_Click"/>
+                            <Button x:Name="MenuShowLeftScheduleBtn"
+                                    Style="{StaticResource IslandMenuButton}"
+                                    Content="📋  显示左侧课表"
+                                    Click="MenuShowLeftSchedule_Click"/>
+                            <Button x:Name="MenuExitBtn"
+                                    Style="{StaticResource IslandMenuButton}"
+                                    Content="❌  退出程序"
+                                    Foreground="#FF8080"
+                                    Click="MenuExitBtn_Click"/>
+                        </StackPanel>
+
+                        <!-- ═══════ 通知内容（可点击跳转） ═══════ -->
+                        <StackPanel x:Name="PanelNotify"
+                                    Visibility="Collapsed"
+                                    Cursor="Hand"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Stretch"
+                                    Margin="10,0,10,0"
+                                    MouseLeftButtonUp="PanelNotify_MouseLeftButtonUp">
+                            <TextBlock x:Name="NotifyContentText"
+                                       Text=""
+                                       FontFamily="{StaticResource AppleFont}"
+                                       FontSize="16"
+                                       Foreground="#EEEEEE"
+                                       TextWrapping="Wrap"
+                                       TextAlignment="Center"
+                                       HorizontalAlignment="Stretch"/>
+                            <TextBlock x:Name="NotifyTapHint"
+                                       Text=""
+                                       FontFamily="{StaticResource AppleFont}"
+                                       FontSize="11"
+                                       Foreground="#66FFFFFF"
+                                       TextAlignment="Center"
+                                       HorizontalAlignment="Stretch"
+                                       Margin="0,10,0,0"
+                                       Visibility="Collapsed"/>
+                        </StackPanel>
+
+                        <!-- ═══════ 作业 tab ═══════ -->
+                        <ScrollViewer x:Name="PanelHomework"
+                                      Visibility="Collapsed"
+                                      VerticalScrollBarVisibility="Hidden"
+                                      HorizontalScrollBarVisibility="Disabled">
+                            <Grid>
+                                <ItemsControl x:Name="icCardHomework">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <CheckBox Grid.Column="0"
+                                                          IsChecked="{Binding IsCompleted, Mode=OneWay}"
+                                                          VerticalAlignment="Center"
+                                                          Margin="0,0,8,0"
+                                                          Checked="CardHomework_Checked"
+                                                          Unchecked="CardHomework_Unchecked"
+                                                          Tag="{Binding}"/>
+
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding DisplayText}"
+                                                           FontFamily="{StaticResource AppleFont}"
+                                                           FontSize="13"
+                                                           Foreground="{Binding TextBrush}"
+                                                           TextWrapping="Wrap"
+                                                           VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock x:Name="tbCardHomeworkEmpty"
+                                           Text="今日无未完成作业"
+                                           FontFamily="{StaticResource AppleFont}"
+                                           FontSize="13"
+                                           Foreground="#88EEEEEE"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Visibility="Collapsed"/>
+                            </Grid>
+                        </ScrollViewer>
+
+                        <!-- ═══════ 待办 tab ═══════ -->
+                        <ScrollViewer x:Name="PanelTodo"
+                                      Visibility="Collapsed"
+                                      VerticalScrollBarVisibility="Hidden"
+                                      HorizontalScrollBarVisibility="Disabled">
+                            <Grid>
+                                <ItemsControl x:Name="icCardTodo">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <CheckBox Grid.Column="0"
+                                                          IsChecked="{Binding IsCompleted, Mode=OneWay}"
+                                                          VerticalAlignment="Center"
+                                                          Margin="0,0,8,0"
+                                                          Checked="CardTodo_Checked"
+                                                          Unchecked="CardTodo_Unchecked"
+                                                          Tag="{Binding}"/>
+
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding DisplayText}"
+                                                           FontFamily="{StaticResource AppleFont}"
+                                                           FontSize="13"
+                                                           Foreground="#EEEEEE"
+                                                           TextWrapping="Wrap"
+                                                           VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock x:Name="tbCardTodoEmpty"
+                                           Text="今日无未完成待办"
+                                           FontFamily="{StaticResource AppleFont}"
+                                           FontSize="13"
+                                           Foreground="#88EEEEEE"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Visibility="Collapsed"/>
+                            </Grid>
+                        </ScrollViewer>
+
+                        <!-- ═══════ 课表 tab ═══════ -->
+                        <ScrollViewer x:Name="PanelSchedule"
+                                      Visibility="Collapsed"
+                                      VerticalScrollBarVisibility="Hidden"
+                                      HorizontalScrollBarVisibility="Disabled">
+                            <Grid>
+                                <ItemsControl x:Name="icCardSchedule">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}"
+                                                       FontFamily="{StaticResource AppleFont}"
+                                                       FontSize="13"
+                                                       Foreground="#EEEEEE"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0,3"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock x:Name="tbCardScheduleEmpty"
+                                           Text="今日无课程"
+                                           FontFamily="{StaticResource AppleFont}"
+                                           FontSize="13"
+                                           Foreground="#88EEEEEE"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Visibility="Collapsed"/>
+                            </Grid>
+                        </ScrollViewer>
+
+                        <!-- ═══════ 笔记 tab ═══════ -->
+                        <Grid x:Name="PanelNotes" Visibility="Collapsed">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Button x:Name="BtnAddNote"
+                                    Grid.Row="0"
+                                    Content="📷  新增笔记（截图）"
+                                    Click="BtnAddNote_Click"
+                                    Background="#33FFFFFF"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Padding="10,6"
+                                    FontFamily="{StaticResource AppleFont}"
+                                    FontSize="12"
+                                    Cursor="Hand"
+                                    HorizontalAlignment="Stretch"
+                                    Margin="0,0,0,8"/>
+
+                            <ScrollViewer Grid.Row="1"
+                                          VerticalScrollBarVisibility="Hidden"
+                                          HorizontalScrollBarVisibility="Disabled">
+                                <Grid>
+                                    <ItemsControl x:Name="icCardNotes">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="#1FFFFFFF"
+                                                        CornerRadius="6"
+                                                        Padding="10,6"
+                                                        Margin="0,0,0,6">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <StackPanel Grid.Column="0">
+                                                            <TextBlock Text="{Binding DisplayText}"
+                                                                       FontFamily="{StaticResource AppleFont}"
+                                                                       FontSize="13"
+                                                                       Foreground="#EEEEEE"
+                                                                       TextWrapping="Wrap"/>
+                                                            <TextBlock Text="{Binding CreatedText}"
+                                                                       FontFamily="{StaticResource AppleFont}"
+                                                                       FontSize="10"
+                                                                       Foreground="#88EEEEEE"
+                                                                       Margin="0,2,0,0"/>
+                                                        </StackPanel>
+
+                                                        <Button Grid.Column="1"
+                                                                Content="✕"
+                                                                Click="DeleteNote_Click"
+                                                                Tag="{Binding}"
+                                                                Background="Transparent"
+                                                                Foreground="#FF8080"
+                                                                BorderThickness="0"
+                                                                FontSize="12"
+                                                                Padding="6,2"
+                                                                Cursor="Hand"
+                                                                VerticalAlignment="Center"/>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                    <TextBlock x:Name="tbCardNotesEmpty"
+                                               Text="暂无笔记&#x0a;点上方按钮截图记录"
+                                               FontFamily="{StaticResource AppleFont}"
+                                               FontSize="12"
+                                               Foreground="#88EEEEEE"
+                                               TextAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Visibility="Collapsed"/>
+                                </Grid>
+                            </ScrollViewer>
+                        </Grid>
+
+                        <!-- ═══════ 催收面板 ═══════ -->
+                        <ScrollViewer x:Name="PanelRollCall"
+                                      Visibility="Collapsed"
+                                      VerticalScrollBarVisibility="Hidden"
+                                      HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel x:Name="RollCallItemsPanel"/>
+                        </ScrollViewer>
+
+                    </Grid>
+                </Grid>
+
+                <TextBlock x:Name="CardHintText"
+                           Text=""
+                           FontFamily="{StaticResource AppleFont}"
+                           FontSize="11"
+                           Foreground="#80CCEEEE"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Bottom"
+                           Margin="0,0,0,6"
+                           Visibility="Collapsed"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

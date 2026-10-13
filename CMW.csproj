@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <LangVersion>10.0</LangVersion>
+
+    <AssemblyName>CMW</AssemblyName>
+    <RootNamespace>CMW</RootNamespace>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+    <TieredCompilation>true</TieredCompilation>
+    <TieredPGO>true</TieredPGO>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>30.0.0</Version>
+    <AssemblyVersion>30.0.0.0</AssemblyVersion>
+    <FileVersion>30.0.0.0</FileVersion>
+    <InformationalVersion>30.0.0</InformationalVersion>
+    <Product>CMW 班级管理工具</Product>
+    <AssemblyTitle>CMW</AssemblyTitle>
+    <Authors>alpaca</Authors>
+    <Company>alpaca</Company>
+    <Copyright>Copyright © 2026 alpaca</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\app.ico" />
+    <None Remove="Assets\Background.jpg" />
+    <None Remove="Assets\logo.png" />
+
+    <Resource Include="Assets\app.ico" />
+    <Resource Include="Assets\Background.jpg" />
+    <Resource Include="Assets\logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="students.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

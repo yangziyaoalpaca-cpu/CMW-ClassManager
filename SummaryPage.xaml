@@ -1,0 +1,325 @@
+﻿<UserControl x:Class="CMW.SummaryPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:CMW"
+             Background="Transparent">
+
+    <UserControl.Resources>
+        <local:BoolToStrikeConverter x:Key="BoolToStrikeConverter"/>
+
+        <Style x:Key="SectionCard" TargetType="Border">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#E1E1E1"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+
+        <Style x:Key="TitleText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#202020"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <Style x:Key="NormalText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#404040"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        </Style>
+
+        <Style x:Key="SmallText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="#808080"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        </Style>
+
+        <Style x:Key="PriorityTag" TargetType="Border">
+            <Setter Property="Background" Value="#F0F0F0"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="8,2"/>
+        </Style>
+
+        <Style x:Key="StatusTagBorder" TargetType="Border">
+            <Setter Property="Background" Value="#FAFAFA"/>
+            <Setter Property="BorderBrush" Value="#D0D4DA"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="14,10"/>
+            <Setter Property="Margin" Value="0,0,12,0"/>
+        </Style>
+
+        <Style x:Key="CardBar" TargetType="Border">
+            <Setter Property="Width" Value="3"/>
+            <Setter Property="Background" Value="#1E5FD0"/>
+            <Setter Property="CornerRadius" Value="1.5"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Margin" Value="0,14,0,14"/>
+        </Style>
+
+        <Style x:Key="CardContent" TargetType="StackPanel">
+            <Setter Property="Margin" Value="14,18,20,18"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 标题栏 -->
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" Text="今日概览" FontSize="24" FontWeight="Bold"
+                       Foreground="#202020" FontFamily="Microsoft YaHei UI"
+                       VerticalAlignment="Center"/>
+
+            <!-- ★ 27.3.0：电子班牌开关 -->
+            <Button Grid.Column="1"
+                    x:Name="BtnClassBoard"
+                    Content="📺 开启电子班牌"
+                    Style="{StaticResource PclButtonPrimary}"
+                    Click="BtnClassBoard_Click"
+                    VerticalAlignment="Center"
+                    Margin="0,0,16,0"/>
+
+            <TextBlock Grid.Column="2" x:Name="tbDate" Text=""
+                       Style="{StaticResource NormalText}"
+                       VerticalAlignment="Center"/>
+        </Grid>
+
+        <!-- 主体区 -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1.4*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 左：今日课表 -->
+            <Border Grid.Column="0" Style="{StaticResource SectionCard}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column="0" Style="{StaticResource CardBar}"/>
+                    <StackPanel Grid.Column="1" Style="{StaticResource CardContent}">
+                        <TextBlock Text="今日课表" Style="{StaticResource TitleText}"/>
+                        <ItemsControl x:Name="icTodaySchedule">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}"
+                                               Style="{StaticResource NormalText}"
+                                               Margin="0,4" TextWrapping="Wrap"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 右：值日 / 作业 / 待办 -->
+            <Grid Grid.Column="1" Margin="16,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1.5*"/>
+                </Grid.RowDefinitions>
+
+                <!-- 今日值日 -->
+                <Border Grid.Row="0" Style="{StaticResource SectionCard}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Style="{StaticResource CardBar}"/>
+                        <StackPanel Grid.Column="1" Style="{StaticResource CardContent}">
+                            <TextBlock Text="今日值日" Style="{StaticResource TitleText}"/>
+                            <TextBlock x:Name="tbDutyGroupName" Text=""
+                                       Style="{StaticResource NormalText}"
+                                       FontWeight="SemiBold" Margin="0,0,0,8"/>
+                            <TextBlock x:Name="tbDutyMembers" Text=""
+                                       Style="{StaticResource NormalText}"
+                                       TextWrapping="Wrap" Margin="0,0,0,8"/>
+                            <TextBlock x:Name="tbDutyStatus" Text=""
+                                       Style="{StaticResource SmallText}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- 今日作业 -->
+                <Border Grid.Row="1" Style="{StaticResource SectionCard}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Style="{StaticResource CardBar}"/>
+                        <StackPanel Grid.Column="1" Style="{StaticResource CardContent}">
+                            <TextBlock Text="今日作业" Style="{StaticResource TitleText}"/>
+                            <ItemsControl x:Name="icTodayHomework" AlternationCount="2">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Padding="12,10"
+                                                BorderBrush="#F0F0F0"
+                                                BorderThickness="0,0,0,1">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="#FFFFFF"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter}, Path=(ItemsControl.AlternationIndex)}" Value="1">
+                                                            <Setter Property="Background" Value="#FAFAFA"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Text="{Binding HomeworkName}"
+                                                           Style="{StaticResource NormalText}"
+                                                           VerticalAlignment="Center"
+                                                           TextWrapping="Wrap"/>
+
+                                                <Border Grid.Column="1" Margin="12,0,0,0"
+                                                        VerticalAlignment="Center">
+                                                    <Border.Style>
+                                                        <Style TargetType="Border" BasedOn="{StaticResource PriorityTag}">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Priority}" Value="Urgent">
+                                                                    <Setter Property="Background" Value="#D0E2FC"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Priority}" Value="VeryUrgent">
+                                                                    <Setter Property="Background" Value="#1E5FD0"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Border.Style>
+                                                    <TextBlock Text="{Binding PriorityText}"
+                                                               FontSize="12" FontFamily="Microsoft YaHei UI">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Setter Property="Foreground" Value="#606060"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Priority}" Value="Urgent">
+                                                                        <Setter Property="Foreground" Value="#1E5FD0"/>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding Priority}" Value="VeryUrgent">
+                                                                        <Setter Property="Foreground" Value="White"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </Border>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- 今日待办 -->
+                <Border Grid.Row="2" Style="{StaticResource SectionCard}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Style="{StaticResource CardBar}"/>
+                        <StackPanel Grid.Column="1" Style="{StaticResource CardContent}">
+                            <TextBlock Text="今日待办" Style="{StaticResource TitleText}"/>
+                            <ItemsControl x:Name="icTodayTodo" AlternationCount="2">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Padding="12,10"
+                                                BorderBrush="#F0F0F0"
+                                                BorderThickness="0,0,0,1">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="#FFFFFF"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter}, Path=(ItemsControl.AlternationIndex)}" Value="1">
+                                                            <Setter Property="Background" Value="#FAFAFA"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <CheckBox IsChecked="{Binding IsCompleted}"
+                                                          IsEnabled="False"
+                                                          Margin="0,0,10,0"
+                                                          VerticalAlignment="Top"/>
+
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Text="{Binding TodoContent}"
+                                                               Style="{StaticResource NormalText}"
+                                                               TextWrapping="Wrap"
+                                                               TextDecorations="{Binding IsCompleted,
+                                                                   Converter={StaticResource BoolToStrikeConverter}}"/>
+                                                    <TextBlock Text="{Binding Remark}"
+                                                               Style="{StaticResource SmallText}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- 状态总览 -->
+        <Border Grid.Row="2" Style="{StaticResource SectionCard}" Margin="0,16,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" Style="{StaticResource CardBar}"/>
+                <StackPanel Grid.Column="1" Style="{StaticResource CardContent}">
+                    <TextBlock Text="状态总览" Style="{StaticResource TitleText}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Border Style="{StaticResource StatusTagBorder}">
+                            <TextBlock x:Name="tbScheduleCount" Style="{StaticResource NormalText}"/>
+                        </Border>
+                        <Border Style="{StaticResource StatusTagBorder}">
+                            <TextBlock x:Name="tbDutyCount" Style="{StaticResource NormalText}"/>
+                        </Border>
+                        <Border Style="{StaticResource StatusTagBorder}">
+                            <TextBlock x:Name="tbHomeworkCount" Style="{StaticResource NormalText}"/>
+                        </Border>
+                        <Border Style="{StaticResource StatusTagBorder}">
+                            <TextBlock x:Name="tbTodoCount" Style="{StaticResource NormalText}"/>
+                        </Border>
+                        <Border Style="{StaticResource StatusTagBorder}" Margin="0">
+                            <TextBlock x:Name="tbCompletedCount" Style="{StaticResource NormalText}"/>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,258 @@
+﻿<Window x:Class="CMW.RecycleBinWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="回收站"
+        Width="640" Height="520"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize"
+        Background="#E8EBF0">
+
+    <Window.Resources>
+
+        <Style x:Key="HeaderRow" TargetType="Border">
+            <Setter Property="Background" Value="#F5F5F5"/>
+            <Setter Property="BorderBrush" Value="#D8DCE0"/>
+            <Setter Property="BorderThickness" Value="1,1,1,1"/>
+            <Setter Property="CornerRadius" Value="4,4,0,0"/>
+            <Setter Property="Height" Value="36"/>
+        </Style>
+
+        <Style x:Key="HeaderText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#202020"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="BodyText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#404040"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="TypeTag" TargetType="Border">
+            <Setter Property="Background" Value="#E8F0FE"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="8,2"/>
+        </Style>
+
+        <Style x:Key="TypeTagText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="#1E5FD0"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        </Style>
+
+        <Style x:Key="SmallBtn" TargetType="Button" BasedOn="{StaticResource PclButton}">
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="MinWidth" Value="56"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+        </Style>
+
+        <Style x:Key="DangerSmallBtn" TargetType="Button" BasedOn="{StaticResource PclButtonDanger}">
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="MinWidth" Value="56"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <Style x:Key="TouchScrollBar" TargetType="ScrollBar">
+            <Setter Property="Width" Value="10"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="{TemplateBinding Background}">
+                            <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border Background="#C0C0C0"
+                                                        CornerRadius="5"
+                                                        Margin="2,0"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageDownCommand"
+                                                  Opacity="0" Focusable="False"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageUpCommand"
+                                                  Opacity="0" Focusable="False"/>
+                                </Track.DecreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 标题 -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,12">
+            <TextBlock Text="回收站"
+                       FontSize="22" FontWeight="Bold"
+                       Foreground="#202020"
+                       FontFamily="Microsoft YaHei UI"/>
+            <TextBlock x:Name="tbSubtitle"
+                       Text="删除的作业 / 待办 / 值日组会进入这里，最多保留 50 条"
+                       FontSize="12" Foreground="#808080"
+                       FontFamily="Microsoft YaHei UI"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- 表头 -->
+        <Border Grid.Row="1" Style="{StaticResource HeaderRow}" Margin="0,0,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="150"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="类型"
+                           Style="{StaticResource HeaderText}"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="内容"
+                           Style="{StaticResource HeaderText}"
+                           Margin="12,0,0,0"/>
+                <TextBlock Grid.Column="2" Text="删除时间"
+                           Style="{StaticResource HeaderText}"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Grid.Column="3" Text="操作"
+                           Style="{StaticResource HeaderText}"
+                           HorizontalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- 列表 -->
+        <Border Grid.Row="2"
+                BorderBrush="#D8DCE0"
+                BorderThickness="1,0,1,1"
+                CornerRadius="0,0,4,4"
+                Background="White">
+            <Grid>
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <ScrollViewer.Resources>
+                        <Style TargetType="ScrollBar" BasedOn="{StaticResource TouchScrollBar}"/>
+                    </ScrollViewer.Resources>
+
+                    <ItemsControl x:Name="icRecycleList" AlternationCount="2">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Height="48"
+                                        BorderBrush="#F0F0F0"
+                                        BorderThickness="0,0,0,1">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="#FFFFFF"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter}, Path=(ItemsControl.AlternationIndex)}" Value="1">
+                                                    <Setter Property="Background" Value="#FAFAFA"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="80"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="150"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Grid.Column="0"
+                                                Style="{StaticResource TypeTag}"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding TypeDisplay}"
+                                                       Style="{StaticResource TypeTagText}"/>
+                                        </Border>
+
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding DisplayText}"
+                                                   Style="{StaticResource BodyText}"
+                                                   Margin="12,0,8,0"
+                                                   TextTrimming="CharacterEllipsis"/>
+
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding DeletedAt, StringFormat={}{0:MM-dd HH:mm}}"
+                                                   Style="{StaticResource BodyText}"
+                                                   HorizontalAlignment="Center"/>
+
+                                        <StackPanel Grid.Column="3"
+                                                    Orientation="Horizontal"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center">
+                                            <Button Content="恢复"
+                                                    Style="{StaticResource SmallBtn}"
+                                                    Click="BtnRestore_Click"
+                                                    Tag="{Binding Id}"/>
+                                            <Button Content="彻底删除"
+                                                    Style="{StaticResource DangerSmallBtn}"
+                                                    Click="BtnDeletePermanently_Click"
+                                                    Tag="{Binding Id}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <TextBlock x:Name="tbEmpty"
+                           Text="回收站是空的"
+                           FontSize="13"
+                           Foreground="#A0A0A0"
+                           FontFamily="Microsoft YaHei UI"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Visibility="Collapsed"/>
+            </Grid>
+        </Border>
+
+        <!-- 底部 -->
+        <Grid Grid.Row="3" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Content="清空回收站"
+                    Style="{StaticResource PclButtonDanger}"
+                    Click="BtnClearAll_Click"/>
+
+            <TextBlock x:Name="tbTip"
+                       Grid.Column="1"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Right"
+                       Margin="0,0,12,0"
+                       FontSize="12"
+                       Foreground="#1E5FD0"
+                       FontFamily="Microsoft YaHei UI"/>
+
+            <Button Grid.Column="2"
+                    Content="关闭"
+                    Style="{StaticResource PclButton}"
+                    Click="BtnClose_Click"/>
+        </Grid>
+    </Grid>
+</Window>

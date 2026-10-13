@@ -1,0 +1,162 @@
+﻿<Window x:Class="CMW.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:CMW"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Title="CMW班级管理"
+        Icon="{StaticResource AppIcon}"
+        WindowStyle="None"
+        Background="{StaticResource PclBackgroundBrush}"
+        ResizeMode="CanResize"
+        Width="1100" Height="720"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType">
+
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="0"
+                            ResizeBorderThickness="6"
+                            GlassFrameThickness="0"
+                            CornerRadius="0"
+                            UseAeroCaptionButtons="False"/>
+    </shell:WindowChrome.WindowChrome>
+
+    <Grid x:Name="RootGrid"
+          Background="{StaticResource PclBackgroundBrush}"
+          RenderTransformOrigin="0.5,0.5">
+        <Grid.RenderTransform>
+            <ScaleTransform x:Name="RootScale" ScaleX="1" ScaleY="1"/>
+        </Grid.RenderTransform>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="44"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"
+                Background="{StaticResource PclPrimaryBrush}"
+                MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="CMW"
+                           FontSize="17"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           FontFamily="Microsoft YaHei UI"
+                           VerticalAlignment="Center"
+                           Margin="20,0,20,0"/>
+
+                <TextBlock Grid.Column="1"
+                           Text="班级管理工具"
+                           FontSize="12"
+                           Foreground="#B3FFFFFF"
+                           FontFamily="Microsoft YaHei UI"
+                           VerticalAlignment="Center"
+                           Margin="0,1,0,0"/>
+
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <Button x:Name="BtnMinimize"
+                            Style="{StaticResource WindowControlButton}"
+                            Click="BtnMinimize_Click"
+                            ToolTip="最小化到灵动岛">
+                        <Path Data="M 0,0 L 10,0"
+                              Stroke="White" StrokeThickness="1"
+                              VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Button>
+                    <Button x:Name="BtnMaximize"
+                            Style="{StaticResource WindowControlButton}"
+                            Click="BtnMaximize_Click"
+                            ToolTip="最大化 / 还原">
+                        <Path Data="M 0,0 L 10,0 L 10,10 L 0,10 Z"
+                              Stroke="White" StrokeThickness="1"
+                              Fill="Transparent"
+                              VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Button>
+                    <Button x:Name="BtnClose"
+                            Style="{StaticResource WindowCloseButton}"
+                            Click="BtnClose_Click"
+                            ToolTip="关闭到灵动岛">
+                        <Path Data="M 0,0 L 10,10 M 10,0 L 0,10"
+                              Stroke="White" StrokeThickness="1"
+                              VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    Background="#FFFFFF"
+                    BorderBrush="#E1E1E1"
+                    BorderThickness="0,0,1,0"
+                    Padding="0,10,0,0">
+                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center">
+                    <Button Style="{StaticResource CircleNavButton}" Click="NavHome" Margin="0,0,0,3">
+                        <Image Source="{StaticResource IconHome}" Width="22" Height="22"/>
+                    </Button>
+                    <Button Style="{StaticResource CircleNavButton}" Click="NavSchedule" Margin="0,0,0,3">
+                        <Image Source="{StaticResource IconSchedule}" Width="22" Height="22"/>
+                    </Button>
+                    <Button Style="{StaticResource CircleNavButton}" Click="NavTodo" Margin="0,0,0,3">
+                        <Image Source="{StaticResource IconTodo}" Width="22" Height="22"/>
+                    </Button>
+                    <Button Style="{StaticResource CircleNavButton}" Click="NavDuty" Margin="0,0,0,3">
+                        <Image Source="{StaticResource IconDuty}" Width="22" Height="22"/>
+                    </Button>
+                    <Button Style="{StaticResource CircleNavButton}" Click="NavHomework" Margin="0,0,0,3">
+                        <Image Source="{StaticResource IconHomework}" Width="22" Height="22"/>
+                    </Button>
+                    <Button Style="{StaticResource CircleNavButton}" Click="NavSummary" Margin="0,0,0,3">
+                        <Image Source="{StaticResource IconSummary}" Width="22" Height="22"/>
+                    </Button>
+                    <Button Style="{StaticResource CircleNavButton}" Click="NavStudents" Margin="0,0,0,3">
+                        <Image Source="{StaticResource IconStudents}" Width="22" Height="22"/>
+                    </Button>
+                    <Button Style="{StaticResource CircleNavButton}" Click="NavExam" Margin="0,0,0,3">
+                        <Image Source="{StaticResource IconExam}" Width="22" Height="22"/>
+                    </Button>
+                    <Button Style="{StaticResource CircleNavButton}" Click="NavLogs" Margin="0,0,0,3">
+                        <Image Source="{StaticResource IconLogs}" Width="22" Height="22"/>
+                    </Button>
+                    <Button Style="{StaticResource CircleNavButton}" Click="NavStatistics" Margin="0,0,0,3">
+                        <Image Source="{StaticResource IconStatistics}" Width="22" Height="22"/>
+                    </Button>
+                    <Button Style="{StaticResource CircleNavButton}" Click="NavSeat" Margin="0,0,0,3">
+                        <Image Source="{StaticResource IconSeat}" Width="22" Height="22"/>
+                    </Button>
+                    <Button Style="{StaticResource CircleNavButton}" Click="NavCalendar" Margin="0,0,0,3">
+                        <Image Source="{StaticResource IconCalendar}" Width="22" Height="22"/>
+                    </Button>
+                    <Button Style="{StaticResource CircleNavButton}" Click="NavSettings">
+                        <Image Source="{StaticResource IconSettings}" Width="22" Height="22"/>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <Grid x:Name="FrameHost"
+                  Grid.Column="1"
+                  Background="{StaticResource PclBackgroundBrush}"
+                  ClipToBounds="True"
+                  RenderTransformOrigin="0.5,0.5">
+                <Grid.RenderTransform>
+                    <TranslateTransform x:Name="FrameTranslate" X="0"/>
+                </Grid.RenderTransform>
+                <Frame x:Name="MainFrame"
+                       NavigationUIVisibility="Hidden"
+                       Background="Transparent"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,228 @@
+﻿<UserControl x:Class="CMW.SchedulePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:CMW"
+             Background="Transparent">
+
+    <UserControl.Resources>
+
+        <Style x:Key="SubTabButton" TargetType="RadioButton">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#404040"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Bg"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="12,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Path x:Name="Icon"
+                                      Data="{TemplateBinding Tag}"
+                                      Stroke="{TemplateBinding Foreground}"
+                                      StrokeThickness="1.5"
+                                      Fill="Transparent"
+                                      Width="18" Height="18"
+                                      Stretch="Uniform"
+                                      VerticalAlignment="Center"/>
+                                <TextBlock x:Name="Label"
+                                           Text="{TemplateBinding Content}"
+                                           Foreground="{TemplateBinding Foreground}"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#F0F0F0"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#E8F0FE"/>
+                                <Setter Property="Foreground" Value="#1E5FD0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SectionCard" TargetType="Border">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#E1E1E1"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+
+        <Style x:Key="TitleText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#202020"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <Style x:Key="NormalText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#404040"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        </Style>
+
+        <Style x:Key="HintText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="#808080"/>
+            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+        </Style>
+
+        <Style x:Key="TouchScrollBar" TargetType="ScrollBar">
+            <Setter Property="Width" Value="10"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="{TemplateBinding Background}">
+                            <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border Background="#C0C0C0"
+                                                        CornerRadius="5"
+                                                        Margin="2,0"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageDownCommand"
+                                                  Opacity="0" Focusable="False"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageUpCommand"
+                                                  Opacity="0" Focusable="False"/>
+                                </Track.DecreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="课表管理"
+                   FontSize="24" FontWeight="Bold"
+                   Foreground="#202020" FontFamily="Microsoft YaHei UI"
+                   Margin="0,0,0,16"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="180"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                <RadioButton x:Name="TabSchedule" Style="{StaticResource SubTabButton}"
+                             Content="本周课表" GroupName="ScheduleTab"
+                             Tag="M3 5 L21 5 L21 19 L3 19 Z M3 9 L21 9 M9 5 L9 19 M15 5 L15 19"
+                             IsChecked="True" Checked="Tab_Checked"/>
+                <RadioButton x:Name="TabTimeSlots" Style="{StaticResource SubTabButton}"
+                             Content="编辑时间段" GroupName="ScheduleTab"
+                             Tag="M12 3 A9 9 0 1 0 12 21 A9 9 0 1 0 12 3 Z M12 7 L12 12 L15 15"
+                             Checked="Tab_Checked" Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <Border Grid.Column="1" Background="Transparent">
+                <ScrollViewer x:Name="ContentScroll"
+                              VerticalScrollBarVisibility="Visible"
+                              HorizontalScrollBarVisibility="Disabled"
+                              PanningMode="VerticalOnly"
+                              Focusable="False">
+                    <ScrollViewer.Resources>
+                        <Style TargetType="ScrollBar" BasedOn="{StaticResource TouchScrollBar}"/>
+                    </ScrollViewer.Resources>
+
+                    <Grid>
+                        <!-- 本周课表 -->
+                        <StackPanel x:Name="PanelSchedule">
+                            <Border Style="{StaticResource SectionCard}">
+                                <StackPanel>
+                                    <TextBlock Text="每周固定基准课表" Style="{StaticResource TitleText}"/>
+                                    <TextBlock Text="提示：点击任意单元格即可编辑；行名跟随时间段，可在「编辑时间段」中修改"
+                                               Style="{StaticResource HintText}"
+                                               Margin="0,0,0,12"/>
+
+                                    <Grid x:Name="gridScheduleTable">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="80"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource SectionCard}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Button x:Name="btnCustomChange"
+                                            Content="自定义（临时换课）"
+                                            Style="{StaticResource PclButton}"
+                                            Margin="0,0,12,0"
+                                            Click="BtnCustomChange_Click"/>
+                                    <Button x:Name="btnImportCsv"
+                                            Content="导入课表（CSV）"
+                                            Style="{StaticResource PclButton}"
+                                            Margin="0,0,12,0"
+                                            Click="BtnImportCsv_Click"/>
+                                    <Button x:Name="btnDownloadTemplate"
+                                            Content="下载模板"
+                                            Style="{StaticResource PclButton}"
+                                            Margin="0,0,12,0"
+                                            Click="BtnDownloadTemplate_Click"/>
+                                    <Button x:Name="btnSaveSchedule"
+                                            Content="保存课表"
+                                            Style="{StaticResource PclButtonPrimary}"
+                                            Click="BtnSaveSchedule_Click"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- 编辑时间段 -->
+                        <StackPanel x:Name="PanelTimeSlots" Visibility="Collapsed">
+                            <Border Style="{StaticResource SectionCard}">
+                                <StackPanel>
+                                    <TextBlock Text="时间段设置" Style="{StaticResource TitleText}"/>
+                                    <TextBlock Text="点击下方按钮打开时间段编辑器，可调整每节课的名称、开始/结束时间、提醒开关"
+                                               Style="{StaticResource HintText}"
+                                               Margin="0,0,0,16"
+                                               TextWrapping="Wrap"/>
+
+                                    <Button x:Name="btnEditTimeSlots"
+                                            Content="编辑时间段"
+                                            Style="{StaticResource PclButtonPrimary}"
+                                            HorizontalAlignment="Left"
+                                            Click="BtnEditTimeSlots_Click"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

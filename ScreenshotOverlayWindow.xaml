@@ -1,0 +1,90 @@
+﻿<Window x:Class="CMW.ScreenshotOverlayWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="截图"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Black"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize"
+        WindowStartupLocation="Manual">
+
+    <Grid x:Name="RootGrid">
+
+        <!-- 全屏截图 -->
+        <Image x:Name="ScreenImage"
+               Stretch="Fill"
+               IsHitTestVisible="False"/>
+
+        <!-- 灰色遮罩（挖洞） -->
+        <Path x:Name="MaskPath"
+              Fill="#80000000"
+              IsHitTestVisible="False"/>
+
+        <!-- 选区蓝框 -->
+        <Border x:Name="SelectionBorder"
+                BorderBrush="#1E5FD0"
+                BorderThickness="1.5"
+                Background="Transparent"
+                IsHitTestVisible="False"
+                Visibility="Collapsed"/>
+
+        <!-- 尺寸提示（在选区右下角内侧） -->
+        <Border x:Name="SizeHintBorder"
+                Background="#CC1E5FD0"
+                CornerRadius="3"
+                Padding="6,3"
+                IsHitTestVisible="False"
+                Visibility="Collapsed">
+            <TextBlock x:Name="SizeHintText"
+                       Text="0 × 0"
+                       Foreground="White"
+                       FontFamily="Microsoft YaHei UI"
+                       FontSize="11"/>
+        </Border>
+
+        <!-- 工具栏（在选区右上角外侧） -->
+        <StackPanel x:Name="Toolbar"
+                    Orientation="Horizontal"
+                    Visibility="Collapsed">
+            <Button x:Name="BtnOk"
+                    Content="✓ 完成"
+                    Click="BtnOk_Click"
+                    Background="#1E5FD0"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Padding="12,6"
+                    FontFamily="Microsoft YaHei UI"
+                    FontSize="12"
+                    Cursor="Hand"
+                    Margin="0,0,6,0"/>
+            <Button x:Name="BtnCancel"
+                    Content="✕ 取消"
+                    Click="BtnCancel_Click"
+                    Background="#333333"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Padding="12,6"
+                    FontFamily="Microsoft YaHei UI"
+                    FontSize="12"
+                    Cursor="Hand"/>
+        </StackPanel>
+
+        <!-- 初始提示 -->
+        <Border x:Name="HintBorder"
+                Background="#CC000000"
+                CornerRadius="6"
+                Padding="16,10"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Margin="0,80,0,0"
+                IsHitTestVisible="False">
+            <TextBlock Text="拖拽选择截图区域，Esc 取消"
+                       Foreground="White"
+                       FontFamily="Microsoft YaHei UI"
+                       FontSize="13"/>
+        </Border>
+
+    </Grid>
+</Window>

@@ -1,0 +1,26 @@
+# 运行时生成的数据文件
+config.json
+schedule.json
+duty.json
+homework.json
+todo.json
+homework_reminders.json
+recyclebin.json
+students.json
+exams.json
+seats.json
+events.json
+homework_templates.json
+polls.json
+
+# 生成的文件夹
+Notes/
+Reports/
+Logs/
+Backups/
+CustomAssets/
+Scripts/
+
+# 编译输出
+bin/
+obj/
