@@ -10,7 +10,7 @@ using System.Windows.Media.Imaging;
 
 namespace CMW
 {
-    public partial class NotesViewerWindow : Window
+    public partial class NotesViewerWindow : ReleasableWindow
     {
         private List<NoteRowVm> _rows = new List<NoteRowVm>();
         private NoteRowVm? _selected;
@@ -51,7 +51,6 @@ namespace CMW
                 tbEmpty.Visibility = _rows.Count == 0
                     ? Visibility.Visible : Visibility.Collapsed;
 
-                // 默认选第一条
                 if (_rows.Count > 0)
                     SelectRow(_rows[0]);
                 else
@@ -122,7 +121,6 @@ namespace CMW
 
             _selected = vm;
 
-            // 刷新选中高亮
             icNotes.ItemsSource = null;
             icNotes.ItemsSource = _rows;
 
@@ -133,7 +131,6 @@ namespace CMW
         {
             tbPreviewTitle.Text = $"笔记 · {vm.CreatedText}";
 
-            // 大图
             var img = LoadImageSafe(vm.Note);
             if (img != null)
             {
@@ -146,7 +143,6 @@ namespace CMW
                 ImageCard.Visibility = Visibility.Collapsed;
             }
 
-            // 文字
             string text = vm.Note.Content ?? "";
             if (!string.IsNullOrWhiteSpace(text))
             {

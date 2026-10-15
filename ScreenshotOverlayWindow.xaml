@@ -12,17 +12,14 @@
 
     <Grid x:Name="RootGrid">
 
-        <!-- 全屏截图 -->
         <Image x:Name="ScreenImage"
                Stretch="Fill"
                IsHitTestVisible="False"/>
 
-        <!-- 灰色遮罩（挖洞） -->
         <Path x:Name="MaskPath"
               Fill="#80000000"
               IsHitTestVisible="False"/>
 
-        <!-- 选区蓝框 -->
         <Border x:Name="SelectionBorder"
                 BorderBrush="#1E5FD0"
                 BorderThickness="1.5"
@@ -30,21 +27,19 @@
                 IsHitTestVisible="False"
                 Visibility="Collapsed"/>
 
-        <!-- 尺寸提示（在选区右下角内侧） -->
         <Border x:Name="SizeHintBorder"
                 Background="#CC1E5FD0"
-                CornerRadius="3"
+                CornerRadius="{DynamicResource RadiusSmall}"
                 Padding="6,3"
                 IsHitTestVisible="False"
                 Visibility="Collapsed">
             <TextBlock x:Name="SizeHintText"
                        Text="0 × 0"
                        Foreground="White"
-                       FontFamily="Microsoft YaHei UI"
+                       FontFamily="{DynamicResource GlobalFontFamily}"
                        FontSize="11"/>
         </Border>
 
-        <!-- 工具栏（在选区右上角外侧） -->
         <StackPanel x:Name="Toolbar"
                     Orientation="Horizontal"
                     Visibility="Collapsed">
@@ -55,7 +50,7 @@
                     Foreground="White"
                     BorderThickness="0"
                     Padding="12,6"
-                    FontFamily="Microsoft YaHei UI"
+                    FontFamily="{DynamicResource GlobalFontFamily}"
                     FontSize="12"
                     Cursor="Hand"
                     Margin="0,0,6,0"/>
@@ -66,15 +61,14 @@
                     Foreground="White"
                     BorderThickness="0"
                     Padding="12,6"
-                    FontFamily="Microsoft YaHei UI"
+                    FontFamily="{DynamicResource GlobalFontFamily}"
                     FontSize="12"
                     Cursor="Hand"/>
         </StackPanel>
 
-        <!-- 初始提示 -->
         <Border x:Name="HintBorder"
                 Background="#CC000000"
-                CornerRadius="6"
+                CornerRadius="{DynamicResource RadiusSmall}"
                 Padding="16,10"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
@@ -82,7 +76,7 @@
                 IsHitTestVisible="False">
             <TextBlock Text="拖拽选择截图区域，Esc 取消"
                        Foreground="White"
-                       FontFamily="Microsoft YaHei UI"
+                       FontFamily="{DynamicResource GlobalFontFamily}"
                        FontSize="13"/>
         </Border>
 

@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace CMW
 {
-    public partial class RollCallWindow : Window
+    public partial class RollCallWindow : ReleasableWindow
     {
         private HomeworkItem _homework;
         private List<StudentToggleVm> _students = new List<StudentToggleVm>();
@@ -135,7 +135,6 @@ namespace CMW
                 return;
             }
 
-            // 组装文本：标题 + 名单 + 逗号分隔
             string title = _homework.HomeworkName;
             if (!string.IsNullOrWhiteSpace(_homework.Subject))
                 title += $"（{_homework.Subject}）";
@@ -163,7 +162,6 @@ namespace CMW
 
             try
             {
-                // UTF-8 BOM：记事本 / 微信 / QQ 正常显示
                 File.WriteAllText(dlg.FileName, sb.ToString(), new UTF8Encoding(true));
                 tbTip.Text = $"✅ 已导出 {unsigned.Count} 人未交名单";
 

@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -6,7 +6,7 @@ using System.Windows.Controls;
 
 namespace CMW
 {
-    public partial class RecycleBinWindow : Window
+    public partial class RecycleBinWindow : ReleasableWindow
     {
         public RecycleBinWindow()
         {
@@ -60,7 +60,6 @@ namespace CMW
             if (ok)
             {
                 tbTip.Text = "✅ 已恢复";
-                // 通知主窗口刷新（若主窗口当前在设置页，会自动跳过重建）
                 App.NotifySettingsChanged();
             }
             else

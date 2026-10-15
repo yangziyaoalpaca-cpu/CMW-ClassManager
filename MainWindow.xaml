@@ -6,9 +6,10 @@
         Title="CMW班级管理"
         Icon="{StaticResource AppIcon}"
         WindowStyle="None"
-        Background="{StaticResource PclBackgroundBrush}"
+        Background="{DynamicResource ThemeBackgroundBrush}"
         ResizeMode="CanResize"
         Width="1100" Height="720"
+        FontFamily="{DynamicResource GlobalFontFamily}"
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType">
 
@@ -21,7 +22,7 @@
     </shell:WindowChrome.WindowChrome>
 
     <Grid x:Name="RootGrid"
-          Background="{StaticResource PclBackgroundBrush}"
+          Background="{DynamicResource ThemeBackgroundBrush}"
           RenderTransformOrigin="0.5,0.5">
         <Grid.RenderTransform>
             <ScaleTransform x:Name="RootScale" ScaleX="1" ScaleY="1"/>
@@ -33,7 +34,7 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0"
-                Background="{StaticResource PclPrimaryBrush}"
+                Background="{DynamicResource ThemeTitleBarBrush}"
                 MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -46,16 +47,17 @@
                            Text="CMW"
                            FontSize="17"
                            FontWeight="Bold"
-                           Foreground="White"
-                           FontFamily="Microsoft YaHei UI"
+                           Foreground="{DynamicResource ThemeTitleBarTextBrush}"
+                           FontFamily="{DynamicResource GlobalFontFamily}"
                            VerticalAlignment="Center"
                            Margin="20,0,20,0"/>
 
                 <TextBlock Grid.Column="1"
                            Text="班级管理工具"
                            FontSize="12"
-                           Foreground="#B3FFFFFF"
-                           FontFamily="Microsoft YaHei UI"
+                           Foreground="{DynamicResource ThemeTitleBarTextBrush}"
+                           Opacity="0.7"
+                           FontFamily="{DynamicResource GlobalFontFamily}"
                            VerticalAlignment="Center"
                            Margin="0,1,0,0"/>
 
@@ -67,7 +69,8 @@
                             Click="BtnMinimize_Click"
                             ToolTip="最小化到灵动岛">
                         <Path Data="M 0,0 L 10,0"
-                              Stroke="White" StrokeThickness="1"
+                              Stroke="{DynamicResource ThemeTitleBarTextBrush}"
+                              StrokeThickness="1"
                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Button>
                     <Button x:Name="BtnMaximize"
@@ -75,7 +78,8 @@
                             Click="BtnMaximize_Click"
                             ToolTip="最大化 / 还原">
                         <Path Data="M 0,0 L 10,0 L 10,10 L 0,10 Z"
-                              Stroke="White" StrokeThickness="1"
+                              Stroke="{DynamicResource ThemeTitleBarTextBrush}"
+                              StrokeThickness="1"
                               Fill="Transparent"
                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Button>
@@ -84,7 +88,8 @@
                             Click="BtnClose_Click"
                             ToolTip="关闭到灵动岛">
                         <Path Data="M 0,0 L 10,10 M 10,0 L 0,10"
-                              Stroke="White" StrokeThickness="1"
+                              Stroke="{DynamicResource ThemeTitleBarTextBrush}"
+                              StrokeThickness="1"
                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Button>
                 </StackPanel>
@@ -98,8 +103,8 @@
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0"
-                    Background="#FFFFFF"
-                    BorderBrush="#E1E1E1"
+                    Background="{DynamicResource ThemeCardBrush}"
+                    BorderBrush="{DynamicResource ThemeBorderLightBrush}"
                     BorderThickness="0,0,1,0"
                     Padding="0,10,0,0">
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center">
@@ -147,7 +152,7 @@
 
             <Grid x:Name="FrameHost"
                   Grid.Column="1"
-                  Background="{StaticResource PclBackgroundBrush}"
+                  Background="{DynamicResource ThemeBackgroundBrush}"
                   ClipToBounds="True"
                   RenderTransformOrigin="0.5,0.5">
                 <Grid.RenderTransform>

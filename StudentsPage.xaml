@@ -2,23 +2,24 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:CMW"
-             Background="Transparent">
+             Background="Transparent"
+             FontFamily="{DynamicResource GlobalFontFamily}">
 
     <UserControl.Resources>
 
         <Style x:Key="SubTabButton" TargetType="RadioButton">
             <Setter Property="Height" Value="40"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#404040"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">
                         <Border x:Name="Bg"
                                 Background="{TemplateBinding Background}"
-                                CornerRadius="6"
+                                CornerRadius="{DynamicResource RadiusSmall}"
                                 Padding="12,0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <Path x:Name="Icon"
@@ -38,11 +39,11 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="#F0F0F0"/>
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemePrimaryBgBrush}"/>
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="#E8F0FE"/>
-                                <Setter Property="Foreground" Value="#1E5FD0"/>
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemePrimaryBgBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ThemePrimaryBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -51,10 +52,10 @@
         </Style>
 
         <Style x:Key="SectionCard" TargetType="Border">
-            <Setter Property="Background" Value="#FFFFFF"/>
-            <Setter Property="BorderBrush" Value="#E1E1E1"/>
+            <Setter Property="Background" Value="{DynamicResource ThemeCardBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderLightBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="CornerRadius" Value="{DynamicResource RadiusMedium}"/>
             <Setter Property="Padding" Value="20"/>
             <Setter Property="Margin" Value="0,0,0,16"/>
         </Style>
@@ -62,21 +63,21 @@
         <Style x:Key="TitleText" TargetType="TextBlock">
             <Setter Property="FontSize" Value="18"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#202020"/>
-            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
             <Setter Property="Margin" Value="0,0,0,12"/>
         </Style>
 
         <Style x:Key="NormalText" TargetType="TextBlock">
             <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Foreground" Value="#404040"/>
-            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
         </Style>
 
         <Style x:Key="HintText" TargetType="TextBlock">
             <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Foreground" Value="#808080"/>
-            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextHintBrush}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
         </Style>
 
         <Style x:Key="SmallBtn" TargetType="Button" BasedOn="{StaticResource PclButton}">
@@ -96,8 +97,8 @@
         <Style x:Key="TableHeaderText" TargetType="TextBlock">
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#202020"/>
-            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
 
@@ -118,7 +119,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Track" Property="Background" Value="#1E5FD0"/>
+                                <Setter TargetName="Track" Property="Background" Value="{DynamicResource ThemePrimaryBrush}"/>
                                 <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right"/>
                                 <Setter TargetName="Thumb" Property="Margin" Value="0,0,3,0"/>
                             </Trigger>
@@ -140,20 +141,16 @@
                                     <Thumb>
                                         <Thumb.Template>
                                             <ControlTemplate TargetType="Thumb">
-                                                <Border Background="#C0C0C0"
-                                                        CornerRadius="5"
-                                                        Margin="2,0"/>
+                                                <Border Background="#C0C0C0" CornerRadius="5" Margin="2,0"/>
                                             </ControlTemplate>
                                         </Thumb.Template>
                                     </Thumb>
                                 </Track.Thumb>
                                 <Track.IncreaseRepeatButton>
-                                    <RepeatButton Command="ScrollBar.PageDownCommand"
-                                                  Opacity="0" Focusable="False"/>
+                                    <RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="False"/>
                                 </Track.IncreaseRepeatButton>
                                 <Track.DecreaseRepeatButton>
-                                    <RepeatButton Command="ScrollBar.PageUpCommand"
-                                                  Opacity="0" Focusable="False"/>
+                                    <RepeatButton Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="False"/>
                                 </Track.DecreaseRepeatButton>
                             </Track>
                         </Grid>
@@ -172,7 +169,8 @@
 
         <TextBlock Grid.Row="0" Text="班级名单"
                    FontSize="24" FontWeight="Bold"
-                   Foreground="#202020" FontFamily="Microsoft YaHei UI"
+                   Foreground="{DynamicResource ThemeTextPrimaryBrush}"
+                   FontFamily="{DynamicResource GlobalFontFamily}"
                    Margin="0,0,0,16"/>
 
         <Grid Grid.Row="1">
@@ -207,10 +205,8 @@
                     </ScrollViewer.Resources>
 
                     <Grid>
-
-                        <!-- ═══════ 名单管理 ═══════ -->
+                        <!-- 名单管理 -->
                         <StackPanel x:Name="PanelRoster">
-
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
                                     <TextBlock Text="名单管理" Style="{StaticResource TitleText}"/>
@@ -251,8 +247,8 @@
                                     </Grid.RowDefinitions>
 
                                     <Border Grid.Row="0"
-                                            Background="#F5F5F5"
-                                            BorderBrush="#D8DCE0"
+                                            Background="{DynamicResource ThemeRowAltBrush}"
+                                            BorderBrush="{DynamicResource ThemeBorderBrush}"
                                             BorderThickness="1,1,1,1"
                                             CornerRadius="8,8,0,0"
                                             Height="36">
@@ -275,7 +271,7 @@
                                     </Border>
 
                                     <Border Grid.Row="1"
-                                            BorderBrush="#D8DCE0"
+                                            BorderBrush="{DynamicResource ThemeBorderBrush}"
                                             BorderThickness="1,0,1,1"
                                             CornerRadius="0,0,8,8"
                                             ClipToBounds="True"
@@ -293,14 +289,14 @@
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate>
                                                             <Border Height="42"
-                                                                    BorderBrush="#F0F0F0"
+                                                                    BorderBrush="{DynamicResource ThemeBorderLightBrush}"
                                                                     BorderThickness="0,0,0,1">
                                                                 <Border.Style>
                                                                     <Style TargetType="Border">
-                                                                        <Setter Property="Background" Value="#FFFFFF"/>
+                                                                        <Setter Property="Background" Value="{DynamicResource ThemeCardBrush}"/>
                                                                         <Style.Triggers>
                                                                             <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter}, Path=(ItemsControl.AlternationIndex)}" Value="1">
-                                                                                <Setter Property="Background" Value="#FAFAFA"/>
+                                                                                <Setter Property="Background" Value="{DynamicResource ThemeRowAltBrush}"/>
                                                                             </DataTrigger>
                                                                         </Style.Triggers>
                                                                     </Style>
@@ -342,8 +338,8 @@
 
                                             <TextBlock x:Name="tbEmpty" Text="暂无学生，点上方「添加学生」或「CSV 导入」"
                                                        FontSize="13"
-                                                       Foreground="#A0A0A0"
-                                                       FontFamily="Microsoft YaHei UI"
+                                                       Foreground="{DynamicResource ThemeTextHintBrush}"
+                                                       FontFamily="{DynamicResource GlobalFontFamily}"
                                                        HorizontalAlignment="Center"
                                                        VerticalAlignment="Center"
                                                        Visibility="Collapsed"/>
@@ -353,9 +349,8 @@
                             </Border>
                         </StackPanel>
 
-                        <!-- ═══════ 随机点名 ═══════ -->
+                        <!-- 随机点名 -->
                         <StackPanel x:Name="PanelPicker" Visibility="Collapsed">
-
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
                                     <TextBlock Text="随机点名" Style="{StaticResource TitleText}"/>
@@ -389,24 +384,24 @@
                                 <StackPanel HorizontalAlignment="Center" Margin="0,20,0,20">
                                     <TextBlock x:Name="tbPickerStatus"
                                                Text="点击下方「开始」按钮"
-                                               FontFamily="Microsoft YaHei UI"
+                                               FontFamily="{DynamicResource GlobalFontFamily}"
                                                FontSize="16"
-                                               Foreground="#808080"
+                                               Foreground="{DynamicResource ThemeTextHintBrush}"
                                                HorizontalAlignment="Center"
                                                Margin="0,0,0,16"/>
                                     <TextBlock x:Name="tbPickerName"
                                                Text="—"
-                                               FontFamily="Microsoft YaHei UI"
+                                               FontFamily="{DynamicResource GlobalFontFamily}"
                                                FontSize="96"
                                                FontWeight="Bold"
-                                               Foreground="#1E5FD0"
+                                               Foreground="{DynamicResource ThemePrimaryBrush}"
                                                HorizontalAlignment="Center"
                                                TextAlignment="Center"/>
                                     <TextBlock x:Name="tbPickerSubtitle"
                                                Text=""
-                                               FontFamily="Microsoft YaHei UI"
+                                               FontFamily="{DynamicResource GlobalFontFamily}"
                                                FontSize="16"
-                                               Foreground="#606060"
+                                               Foreground="{DynamicResource ThemeTextSecondaryBrush}"
                                                HorizontalAlignment="Center"
                                                Margin="0,12,0,0"/>
                                 </StackPanel>
@@ -416,10 +411,10 @@
                                 <Button x:Name="BtnPickerStart"
                                         Content="开始"
                                         Click="BtnPickerStart_Click"
-                                        Background="#1E5FD0"
+                                        Background="{DynamicResource ThemePrimaryBrush}"
                                         Foreground="White"
                                         BorderThickness="0"
-                                        FontFamily="Microsoft YaHei UI"
+                                        FontFamily="{DynamicResource GlobalFontFamily}"
                                         FontSize="18"
                                         FontWeight="SemiBold"
                                         Height="56"
@@ -429,17 +424,17 @@
                                         <ControlTemplate TargetType="Button">
                                             <Border x:Name="Bg"
                                                     Background="{TemplateBinding Background}"
-                                                    CornerRadius="8"
+                                                    CornerRadius="{DynamicResource RadiusMedium}"
                                                     Padding="20,0">
                                                 <ContentPresenter HorizontalAlignment="Center"
                                                                   VerticalAlignment="Center"/>
                                             </Border>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="Bg" Property="Background" Value="#2E6FDD"/>
+                                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemePrimaryHoverBrush}"/>
                                                 </Trigger>
                                                 <Trigger Property="IsPressed" Value="True">
-                                                    <Setter TargetName="Bg" Property="Background" Value="#174CA8"/>
+                                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemePrimaryPressedBrush}"/>
                                                 </Trigger>
                                                 <Trigger Property="IsEnabled" Value="False">
                                                     <Setter TargetName="Bg" Property="Background" Value="#C0C0C0"/>
@@ -462,9 +457,8 @@
                             </Border>
                         </StackPanel>
 
-                        <!-- ═══════ 班级投票 ═══════ -->
+                        <!-- 班级投票 -->
                         <StackPanel x:Name="PanelPoll" Visibility="Collapsed">
-
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
                                     <TextBlock Text="班级投票" Style="{StaticResource TitleText}"/>
@@ -517,8 +511,8 @@
                                                Text="（未选择投票）"
                                                FontSize="16"
                                                FontWeight="SemiBold"
-                                               Foreground="#202020"
-                                               FontFamily="Microsoft YaHei UI"
+                                               Foreground="{DynamicResource ThemeTextPrimaryBrush}"
+                                               FontFamily="{DynamicResource GlobalFontFamily}"
                                                VerticalAlignment="Center"
                                                TextWrapping="Wrap"/>
                                     <TextBlock x:Name="tbPollTotal"
@@ -547,7 +541,6 @@
                                 </StackPanel>
                             </Border>
                         </StackPanel>
-
                     </Grid>
                 </ScrollViewer>
             </Border>

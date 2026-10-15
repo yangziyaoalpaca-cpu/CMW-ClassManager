@@ -1,23 +1,24 @@
 ﻿<UserControl x:Class="CMW.SettingsPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="Transparent">
+             Background="Transparent"
+             FontFamily="{DynamicResource GlobalFontFamily}">
 
     <UserControl.Resources>
 
         <Style x:Key="SubTabButton" TargetType="RadioButton">
             <Setter Property="Height" Value="40"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#404040"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">
                         <Border x:Name="Bg"
                                 Background="{TemplateBinding Background}"
-                                CornerRadius="6"
+                                CornerRadius="{DynamicResource RadiusSmall}"
                                 Padding="12,0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <Path x:Name="Icon"
@@ -37,11 +38,11 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="#F0F0F0"/>
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemePrimaryBgBrush}"/>
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="#E8F0FE"/>
-                                <Setter Property="Foreground" Value="#1E5FD0"/>
+                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemePrimaryBgBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ThemePrimaryBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -50,10 +51,10 @@
         </Style>
 
         <Style x:Key="SectionCard" TargetType="Border">
-            <Setter Property="Background" Value="#FFFFFF"/>
-            <Setter Property="BorderBrush" Value="#E1E1E1"/>
+            <Setter Property="Background" Value="{DynamicResource ThemeCardBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="CornerRadius" Value="{DynamicResource RadiusLarge}"/>
             <Setter Property="Padding" Value="20"/>
             <Setter Property="Margin" Value="0,0,0,16"/>
         </Style>
@@ -61,21 +62,21 @@
         <Style x:Key="TitleText" TargetType="TextBlock">
             <Setter Property="FontSize" Value="18"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#202020"/>
-            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
             <Setter Property="Margin" Value="0,0,0,12"/>
         </Style>
 
         <Style x:Key="NormalText" TargetType="TextBlock">
             <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Foreground" Value="#404040"/>
-            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
         </Style>
 
         <Style x:Key="HintText" TargetType="TextBlock">
             <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Foreground" Value="#808080"/>
-            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextHintBrush}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
         </Style>
 
         <Style x:Key="IosToggle" TargetType="CheckBox">
@@ -95,7 +96,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Track" Property="Background" Value="#1E5FD0"/>
+                                <Setter TargetName="Track" Property="Background" Value="{DynamicResource ThemePrimaryBrush}"/>
                                 <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right"/>
                                 <Setter TargetName="Thumb" Property="Margin" Value="0,0,3,0"/>
                             </Trigger>
@@ -150,7 +151,8 @@
 
         <TextBlock Grid.Row="0" Text="软件设置"
                    FontSize="24" FontWeight="Bold"
-                   Foreground="#202020" FontFamily="Microsoft YaHei UI"
+                   Foreground="{DynamicResource ThemeTextPrimaryBrush}"
+                   FontFamily="{DynamicResource GlobalFontFamily}"
                    Margin="0,0,0,16"/>
 
         <Grid Grid.Row="1">
@@ -205,13 +207,17 @@
                     </ScrollViewer.Resources>
 
                     <Grid>
-                        <!-- ═══════ 基础设置 ═══════ -->
+                        <!-- 基础设置 -->
                         <StackPanel x:Name="PanelBasic">
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
                                     <TextBlock Text="基础设置" Style="{StaticResource TitleText}"/>
                                     <TextBlock Text="班级名称" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
                                     <TextBox x:Name="txtClassName" Margin="0,0,0,12"/>
+
+                                    <TextBlock Text="主题" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="cbTheme" Margin="0,0,0,4"/>
+                                    <TextBlock Text="切换后立即生效" Style="{StaticResource HintText}" Margin="0,0,0,16"/>
 
                                     <TextBlock Text="背景高斯模糊强度" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
                                     <Slider x:Name="sliderBlur" Minimum="0" Maximum="80" Value="40" Margin="0,0,0,6"/>
@@ -221,28 +227,97 @@
 
                                     <TextBlock Text="字体" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
                                     <ComboBox x:Name="cbFontFamily" Margin="0,0,0,4"/>
-                                    <TextBlock Text="重启软件后字体生效" Style="{StaticResource HintText}" Margin="0,0,0,20"/>
+                                    <TextBlock Text="切换后立即生效" Style="{StaticResource HintText}" Margin="0,0,0,10"/>
 
-                                    <TextBlock Text="考试倒计时" Style="{StaticResource NormalText}" Margin="0,0,0,8"/>
-                                    <Grid>
+                                    <Grid Margin="0,0,0,20">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBox x:Name="txtExamName" Grid.Column="0"
-                                                 ToolTip="例：高考" Margin="0,0,8,0"/>
+                                        <StackPanel>
+                                            <TextBlock Text="字体自动缩放" Style="{StaticResource NormalText}"/>
+                                            <TextBlock Text="文字超出容器时自动缩小字号，避免显示不全"
+                                                       Style="{StaticResource HintText}" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <CheckBox x:Name="toggleFontAutoFit" Grid.Column="1"
+                                                  Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <!-- 多条考试倒计时 -->
+                                    <TextBlock Text="考试倒计时（可添加多条）" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
+                                    <TextBlock Text="首页与电子班牌显示最近的前 3 条；留空则不显示"
+                                               Style="{StaticResource HintText}" Margin="0,0,0,8"/>
+
+                                    <ItemsControl x:Name="icExamCountdowns" Margin="0,0,0,8">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{DynamicResource ThemeRowAltBrush}"
+                                                        BorderBrush="{DynamicResource ThemeBorderBrush}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="{DynamicResource RadiusSmall}"
+                                                        Padding="12,8"
+                                                        Margin="0,0,0,4">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding Name}"
+                                                                       Style="{StaticResource NormalText}"
+                                                                       FontWeight="SemiBold"/>
+                                                            <TextBlock Text="{Binding Date}"
+                                                                       Style="{StaticResource HintText}"
+                                                                       Margin="0,2,0,0"/>
+                                                        </StackPanel>
+                                                        <TextBlock Grid.Column="1"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="12,0,12,0"
+                                                                   FontFamily="{DynamicResource GlobalFontFamily}"
+                                                                   FontSize="13"
+                                                                   FontWeight="SemiBold"
+                                                                   Foreground="{DynamicResource ThemePrimaryBrush}"
+                                                                   Text="{Binding DaysLeft, StringFormat=还有 {0} 天}"/>
+                                                        <Button Grid.Column="2"
+                                                                Content="删除"
+                                                                Style="{StaticResource PclButtonDanger}"
+                                                                Padding="10,2"
+                                                                FontSize="12"
+                                                                VerticalAlignment="Center"
+                                                                Click="BtnDeleteExamCountdown_Click"
+                                                                Tag="{Binding}"/>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox x:Name="txtNewExamName" Grid.Column="0"
+                                                 ToolTip="考试名称，如：高考" Margin="0,0,8,0"/>
                                         <TextBlock Grid.Column="1" Text=" 日期 "
                                                    VerticalAlignment="Center"
                                                    Style="{StaticResource NormalText}"/>
-                                        <DatePicker x:Name="dpExamDate" Grid.Column="2"
-                                                    Margin="8,0,0,0"/>
+                                        <DatePicker x:Name="dpNewExamDate" Grid.Column="2"
+                                                    Margin="8,0,8,0"/>
+                                        <Button x:Name="btnAddExamCountdown" Grid.Column="3"
+                                                Content="添加"
+                                                Style="{StaticResource PclButtonPrimary}"
+                                                Click="BtnAddExamCountdown_Click"/>
                                     </Grid>
-                                    <TextBlock Text="留空则不显示倒计时"
-                                               Style="{StaticResource HintText}"
-                                               Margin="0,6,0,16"/>
 
-                                    <Grid Margin="0,0,0,0">
+                                    <TextBlock Text="（修改已有条目可直接在列表中删除后重加）"
+                                               Style="{StaticResource HintText}"
+                                               Margin="0,0,0,16"/>
+
+                                    <Grid Margin="0,0,0,16">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
@@ -258,15 +333,38 @@
                                                   Style="{StaticResource IosToggle}"
                                                   VerticalAlignment="Center"/>
                                     </Grid>
+
+                                    <!-- 上下课表现方式 -->
+                                    <TextBlock Text="上下课表现方式" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="cbClassChangeStyle" Margin="0,0,0,4">
+                                        <ComboBoxItem Content="变色 → 通知（推荐）" Tag="ColorThenNotify" IsSelected="True"/>
+                                        <ComboBoxItem Content="仅通知" Tag="NotifyOnly"/>
+                                        <ComboBoxItem Content="仅变色 + 横条" Tag="ColorAndBar"/>
+                                        <ComboBoxItem Content="都不做" Tag="None"/>
+                                    </ComboBox>
+                                    <TextBlock Text="变色时长请到「灵动岛」页调整；「仅变色 + 横条」不含通知"
+                                               Style="{StaticResource HintText}"
+                                               Margin="0,0,0,0"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
 
-                        <!-- ═══════ 主页背景 ═══════ -->
+                        <!-- 主页背景 -->
                         <StackPanel x:Name="PanelBackground" Visibility="Collapsed">
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
                                     <TextBlock Text="主页背景" Style="{StaticResource TitleText}"/>
+
+                                    <TextBlock Text="背景样式" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="cbBackgroundPreset" Margin="0,0,0,4">
+                                        <ComboBoxItem Content="图片（默认）" Tag="None" IsSelected="True"/>
+                                        <ComboBoxItem Content="深蓝斜向" Tag="DeepBlue"/>
+                                        <ComboBoxItem Content="晨雾浅蓝" Tag="MorningMist"/>
+                                        <ComboBoxItem Content="暗夜紫灰" Tag="NightPurple"/>
+                                        <ComboBoxItem Content="墨绿山水" Tag="InkGreen"/>
+                                    </ComboBox>
+                                    <TextBlock Text="选渐变时不再使用图片；选图片时使用下方配置的图片"
+                                               Style="{StaticResource HintText}" Margin="0,0,0,16"/>
 
                                     <Grid Margin="0,0,0,14">
                                         <Grid.ColumnDefinitions>
@@ -274,7 +372,7 @@
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel>
-                                            <TextBlock Text="启用背景模糊" Style="{StaticResource NormalText}"/>
+                                            <TextBlock Text="启用背景模糊（仅图片模式生效）" Style="{StaticResource NormalText}"/>
                                             <TextBlock Text="关闭后显示原图（无模糊）"
                                                        Style="{StaticResource HintText}"
                                                        Margin="0,2,0,0"/>
@@ -301,11 +399,13 @@
                             </Border>
                         </StackPanel>
 
-                        <!-- ═══════ 灵动岛 ═══════ -->
+                        <!-- 灵动岛 -->
                         <StackPanel x:Name="PanelIsland" Visibility="Collapsed">
+
+                            <!-- 胶囊基础 -->
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
-                                    <TextBlock Text="灵动岛设置" Style="{StaticResource TitleText}"/>
+                                    <TextBlock Text="胶囊设置" Style="{StaticResource TitleText}"/>
 
                                     <Grid Margin="0,0,0,10">
                                         <Grid.ColumnDefinitions>
@@ -319,7 +419,6 @@
                                         <CheckBox x:Name="toggleIslandDraggable" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
                                     </Grid>
 
-                                    <!-- ★ 28.0.0：通知条宽度 / 高度 -->
                                     <TextBlock Text="通知条宽度（屏幕百分比）" Style="{StaticResource NormalText}" Margin="0,10,0,4"/>
                                     <Slider x:Name="sliderNotifyWidth"
                                             Minimum="50" Maximum="100"
@@ -398,11 +497,185 @@
                                     </Grid>
                                     <TextBlock Text="此时段内不弹上下课提醒；待办 / 作业催收不受影响"
                                                Style="{StaticResource HintText}"
-                                               Margin="0,6,0,16"/>
+                                               Margin="0,6,0,0"/>
                                 </StackPanel>
                             </Border>
 
-                            <!-- ★ 28.0.0：上下课提醒 -->
+                            <!-- 横条设置 -->
+                            <Border Style="{StaticResource SectionCard}">
+                                <StackPanel>
+                                    <TextBlock Text="横条设置" Style="{StaticResource TitleText}"/>
+                                    <TextBlock Text="横条从圆形胶囊后方延伸出来，展示日期 / 课表 / 状态 / 作业 / 值日 / 待办信息"
+                                               Style="{StaticResource HintText}" Margin="0,0,0,12"/>
+
+                                    <Grid Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="启用横条" Style="{StaticResource NormalText}"/>
+                                            <TextBlock Text="关闭后，只剩胶囊" Style="{StaticResource HintText}" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <CheckBox x:Name="toggleBarEnabled" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <Grid Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="上下课自动延伸 / 缩回" Style="{StaticResource NormalText}"/>
+                                            <TextBlock Text="下课时横条自动延伸，上课时自动缩回；仅在「上下课表现方式」= 仅变色 + 横条时生效"
+                                                       Style="{StaticResource HintText}" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <CheckBox x:Name="toggleBarAutoExtend" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <Grid Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="允许右键手动切换" Style="{StaticResource NormalText}"/>
+                                            <TextBlock Text="右键胶囊 / 横条可手动切换伸缩" Style="{StaticResource HintText}" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <CheckBox x:Name="toggleBarManualExtend" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <TextBlock Text="上下课时变蓝时长（秒）" Style="{StaticResource NormalText}" Margin="0,10,0,4"/>
+                                    <Slider x:Name="sliderBlueFlash"
+                                            Minimum="0" Maximum="10"
+                                            Value="2"
+                                            TickFrequency="1"
+                                            IsSnapToTickEnabled="True"
+                                            Margin="0,0,0,4"/>
+                                    <TextBlock x:Name="tbBlueFlash" Style="{StaticResource HintText}" Margin="0,0,0,16"/>
+
+                                    <TextBlock Text="横条宽度（像素，50 = 最窄）" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
+                                    <Slider x:Name="sliderBarWidth"
+                                            Minimum="50" Maximum="1920"
+                                            Value="50"
+                                            TickFrequency="10"
+                                            IsSnapToTickEnabled="True"
+                                            Margin="0,0,0,4"/>
+                                    <TextBlock x:Name="tbBarWidth" Style="{StaticResource HintText}" Margin="0,0,0,2"/>
+                                    <TextBlock x:Name="tbBarWidthActual" Style="{StaticResource HintText}" Margin="0,0,0,16"/>
+
+                                    <TextBlock Text="圆形直径（像素）" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
+                                    <Slider x:Name="sliderCircleDiameter"
+                                            Minimum="30" Maximum="150"
+                                            Value="40"
+                                            TickFrequency="2"
+                                            IsSnapToTickEnabled="True"
+                                            Margin="0,0,0,4"/>
+                                    <TextBlock x:Name="tbCircleDiameter" Style="{StaticResource HintText}" Margin="0,0,0,16"/>
+
+                                    <Grid Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="自动轮播" Style="{StaticResource NormalText}"/>
+                                            <TextBlock Text="横条内容在多个分组间自动切换" Style="{StaticResource HintText}" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <CheckBox x:Name="toggleBarAutoRotate" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <TextBlock Text="轮播间隔（秒）" Style="{StaticResource NormalText}" Margin="0,10,0,4"/>
+                                    <Slider x:Name="sliderRotateSeconds"
+                                            Minimum="3" Maximum="60"
+                                            Value="8"
+                                            TickFrequency="1"
+                                            IsSnapToTickEnabled="True"
+                                            Margin="0,0,0,4"/>
+                                    <TextBlock x:Name="tbRotateSeconds" Style="{StaticResource HintText}" Margin="0,0,0,16"/>
+
+                                    <TextBlock Text="显示分组" Style="{StaticResource NormalText}" Margin="0,0,0,8"/>
+
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="日期时间组" Style="{StaticResource NormalText}" VerticalAlignment="Center"/>
+                                        <CheckBox x:Name="toggleGroupDate" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="课表组" Style="{StaticResource NormalText}" VerticalAlignment="Center"/>
+                                        <CheckBox x:Name="toggleGroupSchedule" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="状态组" Style="{StaticResource NormalText}" VerticalAlignment="Center"/>
+                                        <CheckBox x:Name="toggleGroupStatus" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="作业组" Style="{StaticResource NormalText}" VerticalAlignment="Center"/>
+                                        <CheckBox x:Name="toggleGroupHomework" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="值日组" Style="{StaticResource NormalText}" VerticalAlignment="Center"/>
+                                        <CheckBox x:Name="toggleGroupDuty" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <Grid Margin="0,0,0,16">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="待办组" Style="{StaticResource NormalText}" VerticalAlignment="Center"/>
+                                        <CheckBox x:Name="toggleGroupTodo" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <TextBlock Text="显示顺序（按住 ≡ 拖动调整）"
+                                               Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
+                                    <TextBlock Text="顺序只影响已启用分组的排列；被关闭的分组不会显示"
+                                               Style="{StaticResource HintText}" Margin="0,0,0,8"/>
+
+                                    <Border Background="{DynamicResource ThemeRowAltBrush}"
+                                            BorderBrush="{DynamicResource ThemeBorderBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="{DynamicResource RadiusSmall}"
+                                            Padding="4"
+                                            Margin="0,0,0,16">
+                                        <StackPanel x:Name="panelBarGroupOrder"/>
+                                    </Border>
+
+                                    <Button x:Name="btnEditSubjectMap"
+                                            Content="编辑课程简称"
+                                            Style="{StaticResource PclButton}"
+                                            HorizontalAlignment="Left"
+                                            Click="BtnEditSubjectMap_Click"/>
+                                    <TextBlock Text="给课程名指定短名（如：数学 → 数），横条课程组使用"
+                                               Style="{StaticResource HintText}"
+                                               Margin="0,8,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 上下课提醒 -->
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
                                     <TextBlock Text="上下课提醒" Style="{StaticResource TitleText}"/>
@@ -452,7 +725,7 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- ★ 28.0.0：值日 / 待办 提醒 -->
+                            <!-- 值日 / 待办 提醒 -->
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
                                     <TextBlock Text="值日 / 待办 提醒" Style="{StaticResource TitleText}"/>
@@ -464,19 +737,46 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel>
                                             <TextBlock Text="启用值日提醒" Style="{StaticResource NormalText}"/>
-                                            <TextBlock Text="到点弹出今日值日组信息" Style="{StaticResource HintText}" Margin="0,2,0,0"/>
+                                            <TextBlock Text="到点弹出今日值日组信息，支持多个时间点" Style="{StaticResource HintText}" Margin="0,2,0,0"/>
                                         </StackPanel>
                                         <CheckBox x:Name="toggleDutyRemind" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
                                     </Grid>
 
-                                    <Grid Margin="0,0,0,14">
+                                    <Grid Margin="0,0,0,6">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="120"/>
                                             <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="提醒时间 " VerticalAlignment="Center" Style="{StaticResource NormalText}"/>
-                                        <TextBox x:Name="txtDutyRemindTime" Grid.Column="1" Margin="8,0,0,0" ToolTip="HH:mm"/>
+                                        <TextBox x:Name="txtNewDutyTime" Grid.Column="0" ToolTip="HH:mm" KeyDown="TxtNewDutyTime_KeyDown"/>
+                                        <Button x:Name="btnAddDutyTime" Grid.Column="2" Content="添加"
+                                                Style="{StaticResource PclButton}" Click="BtnAddDutyTime_Click"/>
                                     </Grid>
+
+                                    <ItemsControl x:Name="icDutyTimes" Margin="0,0,0,16">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{DynamicResource ThemeRowAltBrush}"
+                                                        CornerRadius="{DynamicResource RadiusSmall}"
+                                                        Padding="12,6" Margin="0,0,0,4">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0" Text="{Binding}"
+                                                                   Style="{StaticResource NormalText}"
+                                                                   VerticalAlignment="Center"/>
+                                                        <Button Grid.Column="1" Content="删除"
+                                                                Style="{StaticResource PclButtonDanger}"
+                                                                Padding="10,2" FontSize="12"
+                                                                Click="BtnDeleteDutyTime_Click"
+                                                                Tag="{Binding}"/>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
 
                                     <Grid Margin="0,0,0,10">
                                         <Grid.ColumnDefinitions>
@@ -485,24 +785,51 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel>
                                             <TextBlock Text="启用待办每日提醒（独立）" Style="{StaticResource NormalText}"/>
-                                            <TextBlock Text="与上方两个待办提醒时间独立，两个都生效" Style="{StaticResource HintText}" Margin="0,2,0,0"/>
+                                            <TextBlock Text="支持多个时间点，两个都生效" Style="{StaticResource HintText}" Margin="0,2,0,0"/>
                                         </StackPanel>
                                         <CheckBox x:Name="toggleTodoCustomRemind" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
                                     </Grid>
 
-                                    <Grid>
+                                    <Grid Margin="0,0,0,6">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="120"/>
                                             <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="提醒时间 " VerticalAlignment="Center" Style="{StaticResource NormalText}"/>
-                                        <TextBox x:Name="txtTodoCustomRemindTime" Grid.Column="1" Margin="8,0,0,0" ToolTip="HH:mm"/>
+                                        <TextBox x:Name="txtNewTodoTime" Grid.Column="0" ToolTip="HH:mm" KeyDown="TxtNewTodoTime_KeyDown"/>
+                                        <Button x:Name="btnAddTodoTime" Grid.Column="2" Content="添加"
+                                                Style="{StaticResource PclButton}" Click="BtnAddTodoTime_Click"/>
                                     </Grid>
+
+                                    <ItemsControl x:Name="icTodoTimes" Margin="0,0,0,4">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{DynamicResource ThemeRowAltBrush}"
+                                                        CornerRadius="{DynamicResource RadiusSmall}"
+                                                        Padding="12,6" Margin="0,0,0,4">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0" Text="{Binding}"
+                                                                   Style="{StaticResource NormalText}"
+                                                                   VerticalAlignment="Center"/>
+                                                        <Button Grid.Column="1" Content="删除"
+                                                                Style="{StaticResource PclButtonDanger}"
+                                                                Padding="10,2" FontSize="12"
+                                                                Click="BtnDeleteTodoTime_Click"
+                                                                Tag="{Binding}"/>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
 
-                        <!-- ═══════ 右侧窗口 ═══════ -->
+                        <!-- 右侧窗口 -->
                         <StackPanel x:Name="PanelFloat" Visibility="Collapsed">
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
@@ -560,7 +887,6 @@
                                                   VerticalAlignment="Center"/>
                                     </Grid>
 
-                                    <!-- ★ 28.0.0：独立时段表 -->
                                     <Grid Margin="0,0,0,10">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
@@ -613,11 +939,10 @@
                                     <TextBlock Text="内容模式"
                                                Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
                                     <ComboBox x:Name="cbRightContentMode" Margin="0,0,0,14">
-                                        <ComboBoxItem Content="只显示课表" Tag="Schedule"/>
                                         <ComboBoxItem Content="只显示作业" Tag="Homework"/>
                                         <ComboBoxItem Content="只显示值日" Tag="Duty"/>
                                         <ComboBoxItem Content="只显示待办" Tag="Todo"/>
-                                        <ComboBoxItem Content="自动切换（4 项轮流）" Tag="Auto"/>
+                                        <ComboBoxItem Content="自动切换（3 项轮流）" Tag="Auto"/>
                                     </ComboBox>
 
                                     <TextBlock Text="自动切换间隔（秒）"
@@ -651,7 +976,7 @@
                             </Border>
                         </StackPanel>
 
-                        <!-- ═══════ 教学辅助（★ 28.0.0 新增） ═══════ -->
+                        <!-- 教学辅助 -->
                         <StackPanel x:Name="PanelTeaching" Visibility="Collapsed">
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
@@ -689,54 +1014,9 @@
                                                Margin="0,8,0,0"/>
                                 </StackPanel>
                             </Border>
-
-                            <Border Style="{StaticResource SectionCard}">
-                                <StackPanel>
-                                    <TextBlock Text="左侧课表常驻窗口" Style="{StaticResource TitleText}"/>
-
-                                    <Grid Margin="0,0,0,14">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel>
-                                            <TextBlock Text="启用左侧课表" Style="{StaticResource NormalText}"/>
-                                            <TextBlock Text="屏幕左侧显示竖向课表（显示上午 4 节 + 下午 4 节 + 晚自习）"
-                                                       Style="{StaticResource HintText}"
-                                                       Margin="0,2,0,0"
-                                                       TextWrapping="Wrap"/>
-                                        </StackPanel>
-                                        <CheckBox x:Name="toggleLeftSchedule"
-                                                  Grid.Column="1"
-                                                  Style="{StaticResource IosToggle}"
-                                                  VerticalAlignment="Center"/>
-                                    </Grid>
-
-                                    <TextBlock Text="窗口宽度（像素）"
-                                               Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
-                                    <Slider x:Name="sliderLeftScheduleWidth"
-                                            Minimum="60" Maximum="200"
-                                            Value="90"
-                                            TickFrequency="10"
-                                            IsSnapToTickEnabled="True"
-                                            Margin="0,0,0,4"/>
-                                    <TextBlock x:Name="tbLeftScheduleWidth"
-                                               Style="{StaticResource HintText}"
-                                               Margin="0,0,0,14"/>
-
-                                    <Button x:Name="btnEditSubjectMap"
-                                            Content="编辑课程简称"
-                                            Style="{StaticResource PclButton}"
-                                            HorizontalAlignment="Left"
-                                            Click="BtnEditSubjectMap_Click"/>
-                                    <TextBlock Text="可在弹窗中给每个课程名指定短名（如：数学 → 数）"
-                                               Style="{StaticResource HintText}"
-                                               Margin="0,8,0,0"/>
-                                </StackPanel>
-                            </Border>
                         </StackPanel>
 
-                        <!-- ═══════ 启动设置 ═══════ -->
+                        <!-- 启动设置 -->
                         <StackPanel x:Name="PanelStartup" Visibility="Collapsed">
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
@@ -755,7 +1035,6 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- ★ 28.0.0：电脑开关机脚本 -->
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
                                     <TextBlock Text="电脑开关机定时脚本" Style="{StaticResource TitleText}"/>
@@ -809,9 +1088,39 @@
                                                TextWrapping="Wrap"/>
                                 </StackPanel>
                             </Border>
+
+                            <!-- ★ 32.0.0 新增：自动开机 BIOS 引导 -->
+                            <Border Style="{StaticResource SectionCard}">
+                                <StackPanel>
+                                    <TextBlock Text="自动开机（BIOS 定时唤醒）" Style="{StaticResource TitleText}"/>
+
+                                    <TextBlock Text="Windows 关机后，操作系统已停止运行，任何软件都无法再唤醒电脑。"
+                                               Style="{StaticResource NormalText}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,4"/>
+                                    <TextBlock Text="要让电脑定时自动开机，必须靠主板 BIOS 的 RTC（实时时钟）定时唤醒功能。"
+                                               Style="{StaticResource NormalText}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,4"/>
+
+                                    <TextBlock Text="· 2015 年以后的主板通常支持；老主板可能不支持。"
+                                               Style="{StaticResource HintText}"
+                                               Margin="0,8,0,0"/>
+                                    <TextBlock Text="· 进 BIOS 后，找 RTC Alarm / Wake Up Event / Power On By RTC 等选项。"
+                                               Style="{StaticResource HintText}"
+                                               Margin="0,2,0,0"/>
+
+                                    <Button x:Name="btnOpenBiosGuide"
+                                            Content="查看设置引导"
+                                            Style="{StaticResource PclButtonPrimary}"
+                                            HorizontalAlignment="Left"
+                                            Margin="0,14,0,0"
+                                            Click="BtnOpenBiosGuide_Click"/>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
 
-                        <!-- ═══════ 数据管理 ═══════ -->
+                        <!-- 数据管理 -->
                         <StackPanel x:Name="PanelData" Visibility="Collapsed">
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
@@ -837,7 +1146,7 @@
                                     <Border Background="#FFF8E1"
                                             BorderBrush="#FFD54F"
                                             BorderThickness="1"
-                                            CornerRadius="6"
+                                            CornerRadius="{DynamicResource RadiusSmall}"
                                             Padding="14"
                                             Margin="0,0,0,10">
                                         <StackPanel>
@@ -845,7 +1154,7 @@
                                                        FontSize="13"
                                                        FontWeight="SemiBold"
                                                        Foreground="#E65100"
-                                                       FontFamily="Microsoft YaHei UI"
+                                                       FontFamily="{DynamicResource GlobalFontFamily}"
                                                        Margin="0,0,0,4"/>
                                             <TextBlock Text="清空所有数据需要密码验证。默认密码：12345678"
                                                        Style="{StaticResource HintText}"
@@ -861,18 +1170,18 @@
                                                Margin="0,0,0,16"
                                                TextWrapping="Wrap"/>
 
-                                    <Border Background="#FFFFFF"
-                                            BorderBrush="#E1E1E1"
+                                    <Border Background="{DynamicResource ThemeCardBrush}"
+                                            BorderBrush="{DynamicResource ThemeBorderBrush}"
                                             BorderThickness="1"
-                                            CornerRadius="6"
+                                            CornerRadius="{DynamicResource RadiusSmall}"
                                             Padding="14"
                                             Margin="0,0,0,16">
                                         <StackPanel>
                                             <TextBlock Text="修改清空密码"
                                                        FontSize="14"
                                                        FontWeight="SemiBold"
-                                                       Foreground="#202020"
-                                                       FontFamily="Microsoft YaHei UI"
+                                                       Foreground="{DynamicResource ThemeTextPrimaryBrush}"
+                                                       FontFamily="{DynamicResource GlobalFontFamily}"
                                                        Margin="0,0,0,4"/>
 
                                             <TextBlock Text="密码不会显示在界面上，修改后立即生效。"
@@ -882,26 +1191,26 @@
                                             <TextBlock Text="当前密码" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
                                             <PasswordBox x:Name="pwdCurrent"
                                                          Height="32" Margin="0,0,0,10" MaxLength="32"
-                                                         FontFamily="Microsoft YaHei UI" FontSize="14"
+                                                         FontFamily="{DynamicResource GlobalFontFamily}" FontSize="14"
                                                          Padding="8,0,8,0" VerticalContentAlignment="Center"
-                                                         BorderBrush="#B8C8D8" BorderThickness="1"
-                                                         Background="White"/>
+                                                         BorderBrush="{DynamicResource ThemeInputBorderBrush}" BorderThickness="1"
+                                                         Background="{DynamicResource ThemeInputBgBrush}"/>
 
                                             <TextBlock Text="新密码（至少 4 位）" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
                                             <PasswordBox x:Name="pwdNew"
                                                          Height="32" Margin="0,0,0,10" MaxLength="32"
-                                                         FontFamily="Microsoft YaHei UI" FontSize="14"
+                                                         FontFamily="{DynamicResource GlobalFontFamily}" FontSize="14"
                                                          Padding="8,0,8,0" VerticalContentAlignment="Center"
-                                                         BorderBrush="#B8C8D8" BorderThickness="1"
-                                                         Background="White"/>
+                                                         BorderBrush="{DynamicResource ThemeInputBorderBrush}" BorderThickness="1"
+                                                         Background="{DynamicResource ThemeInputBgBrush}"/>
 
                                             <TextBlock Text="确认新密码" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
                                             <PasswordBox x:Name="pwdConfirm"
                                                          Height="32" Margin="0,0,0,10" MaxLength="32"
-                                                         FontFamily="Microsoft YaHei UI" FontSize="14"
+                                                         FontFamily="{DynamicResource GlobalFontFamily}" FontSize="14"
                                                          Padding="8,0,8,0" VerticalContentAlignment="Center"
-                                                         BorderBrush="#B8C8D8" BorderThickness="1"
-                                                         Background="White"/>
+                                                         BorderBrush="{DynamicResource ThemeInputBorderBrush}" BorderThickness="1"
+                                                         Background="{DynamicResource ThemeInputBgBrush}"/>
 
                                             <Button x:Name="btnSaveClearPwd"
                                                     Content="更新密码"
@@ -929,13 +1238,13 @@
                             </Border>
                         </StackPanel>
 
-                        <!-- ═══════ 关于 ═══════ -->
+                        <!-- 关于 -->
                         <StackPanel x:Name="PanelAbout" Visibility="Collapsed">
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
                                     <TextBlock Text="关于 CMW 班级管理工具" Style="{StaticResource TitleText}"/>
                                     <TextBlock Style="{StaticResource NormalText}" TextWrapping="Wrap">
-                                        版本：30.0.0
+                                        版本：32.0.0
                                         <LineBreak/>
                                         设计：alpaca
                                         <LineBreak/>

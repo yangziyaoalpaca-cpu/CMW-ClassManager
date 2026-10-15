@@ -8,7 +8,8 @@
         Background="#1A1A1A"
         Topmost="False"
         ShowInTaskbar="True"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        FontFamily="{DynamicResource GlobalFontFamily}">
 
     <Window.Resources>
 
@@ -17,7 +18,7 @@
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="14,10"/>
-            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
@@ -25,7 +26,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Bg"
                                 Background="{TemplateBinding Background}"
-                                CornerRadius="6"
+                                CornerRadius="{DynamicResource RadiusSmall}"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center"/>
@@ -55,7 +56,7 @@
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Bg"
                                 Background="{TemplateBinding Background}"
-                                CornerRadius="6"
+                                CornerRadius="{DynamicResource RadiusSmall}"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center"/>
@@ -82,13 +83,12 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- 标题栏：可拖动 -->
         <Border Grid.Row="0"
                 Background="#141414"
                 MouseLeftButtonDown="TitleBar_MouseDown">
             <Grid>
                 <TextBlock Text="⏱ 课堂倒计时"
-                           FontFamily="Microsoft YaHei UI"
+                           FontFamily="{DynamicResource GlobalFontFamily}"
                            FontSize="13"
                            Foreground="#A0FFFFFF"
                            VerticalAlignment="Center"
@@ -127,7 +127,6 @@
             </Grid>
         </Border>
 
-        <!-- 时间大字 -->
         <StackPanel Grid.Row="1"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Center">
@@ -140,14 +139,13 @@
                        HorizontalAlignment="Center"/>
             <TextBlock x:Name="tbStatus"
                        Text="就绪"
-                       FontFamily="Microsoft YaHei UI"
+                       FontFamily="{DynamicResource GlobalFontFamily}"
                        FontSize="12"
                        Foreground="#80FFFFFF"
                        HorizontalAlignment="Center"
                        Margin="0,2,0,0"/>
         </StackPanel>
 
-        <!-- 底部按钮 -->
         <StackPanel Grid.Row="2"
                     Orientation="Horizontal"
                     HorizontalAlignment="Center"

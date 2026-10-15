@@ -33,7 +33,6 @@ namespace CMW
 
         private void ClassBoardWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            // 记录灵动岛 / 右侧窗口的原可见状态，然后隐藏它们
             try
             {
                 _islandWasVisible = App.Island != null && App.Island.IsVisible;
@@ -58,7 +57,6 @@ namespace CMW
             _clockTimer.Stop();
             _refreshTimer.Stop();
 
-            // 恢复灵动岛 / 右侧窗口
             try
             {
                 if (_islandWasVisible && App.Island != null) App.Island.Show();
@@ -144,37 +142,45 @@ namespace CMW
                 tbTodoEmpty.Visibility = todayTodo.Count == 0
                     ? Visibility.Visible : Visibility.Collapsed;
 
-                // 考试倒计时
-                UpdateExamCountdown(config);
+                // ★ C3：多条考试倒计时（前 3 条）
+                UpdateExamCountdowns(config);
             }
             catch { }
         }
 
-        private void UpdateExamCountdown(AppConfig config)
+        private void UpdateExamCountdowns(AppConfig config)
         {
             try
             {
-                string name = (config.ExamName ?? "").Trim();
-                string dateStr = (config.ExamDate ?? "").Trim();
+                var list = config.ExamCountdownList ?? new List<ExamCountdownItem>();
 
-                if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(dateStr))
+                // 旧字段迁移
+                if (list.Count == 0
+                    && !string.IsNullOrWhiteSpace(config.ExamName)
+                    && !string.IsNullOrWhiteSpace(config.ExamDate))
                 {
-                    ExamCountdownBar.Visibility = Visibility.Collapsed;
-                    return;
+                    list = new List<ExamCountdownItem>
+                    {
+                        new ExamCountdownItem
+                        {
+                            Name = config.ExamName,
+                            Date = config.ExamDate
+                        }
+                    };
                 }
 
-                if (!DateTime.TryParse(dateStr, out var examDate))
-                {
-                    ExamCountdownBar.Visibility = Visibility.Collapsed;
-                    return;
-                }
+                var display = list
+                    .Where(x => !string.IsNullOrWhiteSpace(x.Name)
+                             && !string.IsNullOrWhiteSpace(x.Date)
+                             && DateTime.TryParse(x.Date, out _))
+                    .OrderBy(x => x.DaysLeft)
+                    .Take(3)
+                    .ToList();
 
-                int days = (examDate.Date - DateTime.Today).Days;
-                if (days < 0) days = 0;
-
-                tbExamName.Text = name;
-                tbExamDays.Text = days.ToString();
-                ExamCountdownBar.Visibility = Visibility.Visible;
+                icExamCountdowns.ItemsSource = display;
+                ExamCountdownBar.Visibility = display.Count > 0
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
             }
             catch
             {

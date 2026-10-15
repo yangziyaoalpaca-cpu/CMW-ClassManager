@@ -18,15 +18,13 @@ namespace CMW
         private bool _isShown;
         private bool _isAnimating;
         private bool _isLoading;
-        private string _currentTab = "Schedule";
+        private string _currentTab = "Homework";
 
         private const int AutoSwitchDefaultSeconds = 15;
         private const int AnimDurationMs = 300;
 
-        // 基数字号
         private const double BaseTitle = 15;
         private const double BaseTab = 13;
-        private const double BaseScheduleItem = 14;
         private const double BaseHomeworkName = 14;
         private const double BaseHomeworkDetail = 12;
         private const double BaseTodoContent = 14;
@@ -66,10 +64,6 @@ namespace CMW
             }
         }
 
-        // ═══════════════════════════════════════
-        // 字体缩放（值日页不受影响）
-        // ═══════════════════════════════════════
-
         private double GetScale()
         {
             double s = _config.RightPanelFontScale;
@@ -78,10 +72,6 @@ namespace CMW
             return s;
         }
 
-        /// <summary>
-        /// ★ 28.0.0：根据窗口宽度计算 tab 字号缩放系数
-        /// 窄窗口时缩小，防止 4 个 tab 挤不下
-        /// </summary>
         private double GetTabScale(double windowWidth)
         {
             if (windowWidth < 260) return 0.72;
@@ -98,7 +88,6 @@ namespace CMW
                 double tabScale = GetTabScale(windowWidth);
                 double tabFs = BaseTab * s * tabScale;
 
-                TabSchedule.FontSize = tabFs;
                 TabHomework.FontSize = tabFs;
                 TabDuty.FontSize = tabFs;
                 TabTodo.FontSize = tabFs;
@@ -115,21 +104,13 @@ namespace CMW
                 TitleText.FontSize = BaseTitle * s;
                 BtnClose.FontSize = 13 * s;
 
-                tbScheduleEmpty.FontSize = BaseEmpty * s;
                 tbHomeworkEmpty.FontSize = BaseEmpty * s;
                 tbTodoEmptyRight.FontSize = BaseEmpty * s;
 
-                // ★ tab 字号根据当前窗口宽度动态计算
                 ApplyTabFontSize(_config.FloatWindowWidth);
-
-                // 值日页字体固定 36 号，不随字体倍率变（故意不在这里设置）
             }
             catch { }
         }
-
-        // ═══════════════════════════════════════
-        // 尺寸与位置
-        // ═══════════════════════════════════════
 
         private void ApplySizeAndPosition()
         {
@@ -152,13 +133,8 @@ namespace CMW
             SetCurrentValue(LeftProperty, wa.Right - w);
             SetCurrentValue(TopProperty, wa.Top + (wa.Height - h) / 2);
 
-            // ★ 窄窗口时重算 tab 字号
             ApplyTabFontSize(w);
         }
-
-        // ═══════════════════════════════════════
-        // 显示 / 隐藏
-        // ═══════════════════════════════════════
 
         private void SetInitialHiddenState()
         {
@@ -215,7 +191,6 @@ namespace CMW
 
                     RefreshCurrentContent();
 
-                    // ★ 修复：挪到动画完成后再启动自动切换
                     ApplyAutoSwitchSetting();
                 };
 
@@ -264,18 +239,10 @@ namespace CMW
 
         public bool IsShown => _isShown;
 
-        // ═══════════════════════════════════════
-        // 内容模式（5 种 + Auto）
-        // ═══════════════════════════════════════
-
         private void ApplyContentMode()
         {
             switch (_config.FloatWindowContentMode)
             {
-                case "Schedule":
-                    TabSchedule.IsChecked = true;
-                    _currentTab = "Schedule";
-                    break;
                 case "Homework":
                     TabHomework.IsChecked = true;
                     _currentTab = "Homework";
@@ -290,8 +257,8 @@ namespace CMW
                     break;
                 case "Auto":
                 default:
-                    TabSchedule.IsChecked = true;
-                    _currentTab = "Schedule";
+                    TabHomework.IsChecked = true;
+                    _currentTab = "Homework";
                     break;
             }
 
@@ -301,8 +268,6 @@ namespace CMW
 
         private void UpdatePanelVisibility()
         {
-            PanelSchedule.Visibility = _currentTab == "Schedule"
-                ? Visibility.Visible : Visibility.Collapsed;
             PanelHomework.Visibility = _currentTab == "Homework"
                 ? Visibility.Visible : Visibility.Collapsed;
             PanelDuty.Visibility = _currentTab == "Duty"
@@ -318,10 +283,9 @@ namespace CMW
 
             _currentTab = rb.Name switch
             {
-                "TabHomework" => "Homework",
                 "TabDuty" => "Duty",
                 "TabTodo" => "Todo",
-                _ => "Schedule"
+                _ => "Homework"
             };
 
             UpdatePanelVisibility();
@@ -332,77 +296,11 @@ namespace CMW
         {
             switch (_currentTab)
             {
-                case "Homework": RefreshHomework(); break;
                 case "Duty": RefreshDuty(); break;
                 case "Todo": RefreshTodo(); break;
-                default: RefreshSchedule(); break;
+                default: RefreshHomework(); break;
             }
         }
-
-        // ═══════════════════════════════════════
-        // 课表面板
-        // ═══════════════════════════════════════
-
-        private void RefreshSchedule()
-        {
-            try
-            {
-                var schedule = JsonHelper.Load<ScheduleData>(AppPaths.Schedule)
-                    ?? new ScheduleData();
-                var config = JsonHelper.Load<AppConfig>(AppPaths.Config) ?? new AppConfig();
-                var slots = config.TimeSlots;
-                if (slots == null || slots.Count == 0)
-                    slots = DefaultTimeSlots.Create();
-
-                double fontSize = BaseScheduleItem * GetScale();
-
-                var now = DateTime.Now;
-                int weekDay = (int)now.DayOfWeek;
-
-                if (weekDay < 1 || weekDay > 6)
-                {
-                    icSchedule.ItemsSource = null;
-                    tbScheduleEmpty.Visibility = Visibility.Visible;
-                    return;
-                }
-
-                string today = now.ToString("yyyy-MM-dd");
-                var result = new List<RightScheduleVm>();
-
-                for (int i = 0; i < slots.Count; i++)
-                {
-                    int period = i + 1;
-
-                    var ov = schedule.Overrides.FirstOrDefault(x =>
-                        x.Date == today && x.Period == period && x.WeekDay == weekDay);
-                    string lesson = ov?.LessonName ?? "";
-                    if (string.IsNullOrWhiteSpace(lesson))
-                    {
-                        var item = schedule.WeekBase.FirstOrDefault(x =>
-                            x.WeekDay == weekDay && x.Period == period);
-                        lesson = item?.LessonName ?? "";
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(lesson))
-                    {
-                        result.Add(new RightScheduleVm
-                        {
-                            Text = $"{slots[i].Name}  {lesson}",
-                            FontSize = fontSize
-                        });
-                    }
-                }
-
-                icSchedule.ItemsSource = result;
-                tbScheduleEmpty.Visibility = result.Count == 0
-                    ? Visibility.Visible : Visibility.Collapsed;
-            }
-            catch { }
-        }
-
-        // ═══════════════════════════════════════
-        // 作业面板
-        // ═══════════════════════════════════════
 
         private void RefreshHomework()
         {
@@ -459,10 +357,6 @@ namespace CMW
             };
         }
 
-        // ═══════════════════════════════════════
-        // 值日面板（只显示一句话，居中大号白字，竖排）
-        // ═══════════════════════════════════════
-
         private void RefreshDuty()
         {
             try
@@ -473,7 +367,6 @@ namespace CMW
                     ? "今日无值日"
                     : $"今日{groupName}组值日";
 
-                // ★ 28.0.0：竖排（逐字换行）
                 var sb = new System.Text.StringBuilder();
                 for (int i = 0; i < raw.Length; i++)
                 {
@@ -487,10 +380,6 @@ namespace CMW
                 tbDutyBig.Text = "今\n日\n无\n值\n日";
             }
         }
-
-        // ═══════════════════════════════════════
-        // 待办面板
-        // ═══════════════════════════════════════
 
         private void RefreshTodo()
         {
@@ -534,10 +423,6 @@ namespace CMW
             return d;
         }
 
-        // ═══════════════════════════════════════
-        // 自动切换（4 个 tab 轮流）
-        // ═══════════════════════════════════════
-
         private void ApplyAutoSwitchSetting()
         {
             bool shouldRun = _config.FloatWindowContentMode == "Auto"
@@ -567,24 +452,18 @@ namespace CMW
 
             string next = _currentTab switch
             {
-                "Schedule" => "Homework",
                 "Homework" => "Duty",
                 "Duty" => "Todo",
-                _ => "Schedule"
+                _ => "Homework"
             };
 
             switch (next)
             {
-                case "Homework": TabHomework.IsChecked = true; break;
                 case "Duty": TabDuty.IsChecked = true; break;
                 case "Todo": TabTodo.IsChecked = true; break;
-                default: TabSchedule.IsChecked = true; break;
+                default: TabHomework.IsChecked = true; break;
             }
         }
-
-        // ═══════════════════════════════════════
-        // 事件
-        // ═══════════════════════════════════════
 
         private void RootBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -631,14 +510,6 @@ namespace CMW
             App.TimeSlotsChanged -= OnSettingsChanged;
             base.OnClosed(e);
         }
-    }
-
-    // ═══════ ViewModel ═══════
-
-    internal class RightScheduleVm
-    {
-        public string Text { get; set; } = "";
-        public double FontSize { get; set; } = 14;
     }
 
     internal class RightHomeworkVm

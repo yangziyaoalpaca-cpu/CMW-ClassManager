@@ -1,6 +1,7 @@
-﻿﻿using System;
+﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -10,19 +11,20 @@ namespace CMW
 {
     /// <summary>
     /// ★ 26.5.0：崩溃日志
+    /// ★ 32.0.0：日志目录分类到 Logs/crash/，兼容旧路径自动迁移
     /// 捕获三类未处理异常：
     ///   1. UI 线程（DispatcherUnhandledException）
     ///   2. 后台线程（AppDomain.UnhandledException）
     ///   3. Task（TaskScheduler.UnobservedTaskException）
-    /// 日志写入 Logs/crash-yyyyMMdd-HHmmss.txt
+    /// 日志写入 Logs/crash/crash-yyyyMMdd-HHmmss.txt
     /// 保留最近 10 个日志文件
     /// </summary>
     public static class CrashLogger
     {
         private const int MaxLogs = 10;
         private const string LogFolderName = "Logs";
+        private const string CrashSubFolderName = "crash";
         private const string LogFilePrefix = "crash-";
-        private const string Version = "26.5.0";
 
         private static bool _attached;
 
@@ -34,6 +36,8 @@ namespace CMW
             if (_attached) return;
             _attached = true;
 
+            TryMigrateLegacyLogs();
+
             if (Application.Current != null)
             {
                 Application.Current.DispatcherUnhandledException += OnDispatcherException;
@@ -43,12 +47,71 @@ namespace CMW
             TaskScheduler.UnobservedTaskException += OnTaskException;
         }
 
+        private static string GetCrashDir()
+        {
+            return Path.Combine(AppPaths.BaseDir, LogFolderName, CrashSubFolderName);
+        }
+
+        private static string GetLegacyDir()
+        {
+            return Path.Combine(AppPaths.BaseDir, LogFolderName);
+        }
+
+        /// <summary>
+        /// ★ 32.0.0：把旧 Logs/*.txt 迁移到 Logs/crash/
+        /// </summary>
+        private static void TryMigrateLegacyLogs()
+        {
+            try
+            {
+                string legacyDir = GetLegacyDir();
+                string crashDir = GetCrashDir();
+
+                if (!Directory.Exists(legacyDir)) return;
+
+                var legacyFiles = Directory.GetFiles(legacyDir, $"{LogFilePrefix}*.txt");
+                if (legacyFiles.Length == 0) return;
+
+                if (!Directory.Exists(crashDir))
+                    Directory.CreateDirectory(crashDir);
+
+                foreach (var src in legacyFiles)
+                {
+                    try
+                    {
+                        string name = Path.GetFileName(src);
+                        string dst = Path.Combine(crashDir, name);
+                        if (File.Exists(dst)) continue;
+                        File.Move(src, dst);
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+        }
+
+        private static string GetVersionText()
+        {
+            try
+            {
+                var asm = Assembly.GetExecutingAssembly();
+                var info = asm.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+                if (info != null && !string.IsNullOrWhiteSpace(info.InformationalVersion))
+                    return info.InformationalVersion;
+
+                var ver = asm.GetName().Version;
+                if (ver != null) return ver.ToString();
+
+                return "unknown";
+            }
+            catch { return "unknown"; }
+        }
+
         // ═══════ UI 线程异常 ═══════
 
         private static void OnDispatcherException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             WriteLog("UI", e.Exception);
-            // 标记已处理，避免程序直接崩退
             e.Handled = true;
         }
 
@@ -68,7 +131,6 @@ namespace CMW
         private static void OnTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
         {
             WriteLog("Task", e.Exception);
-            // 标记已观测，避免进程被 .NET 强制终止
             e.SetObserved();
         }
 
@@ -78,7 +140,7 @@ namespace CMW
         {
             try
             {
-                string dir = Path.Combine(AppPaths.BaseDir, LogFolderName);
+                string dir = GetCrashDir();
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
 
@@ -89,7 +151,7 @@ namespace CMW
                 sb.AppendLine("===== CMW 崩溃日志 =====");
                 sb.AppendLine($"时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
                 sb.AppendLine($"来源：{source}");
-                sb.AppendLine($"版本：{Version}");
+                sb.AppendLine($"版本：{GetVersionText()}");
                 sb.AppendLine($"系统：{Environment.OSVersion}");
                 sb.AppendLine($"框架：{Environment.Version}");
                 sb.AppendLine($"进程：{Environment.ProcessPath}");

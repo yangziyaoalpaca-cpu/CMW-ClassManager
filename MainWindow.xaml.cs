@@ -110,10 +110,6 @@ namespace CMW
             try { Opacity = 1; } catch { }
         }
 
-        // ═══════════════════════════════════════
-        // 触摸手势切页
-        // ═══════════════════════════════════════
-
         private void MainWindow_PreviewTouchDown(object? sender, TouchEventArgs e)
         {
             _isHorizontalSwipe = false;
@@ -217,10 +213,6 @@ namespace CMW
             }
         }
 
-        // ═══════════════════════════════════════
-        // 顶栏窗口控制
-        // ═══════════════════════════════════════
-
         private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ClickCount == 2)
@@ -283,10 +275,6 @@ namespace CMW
                 _isMaximized = false;
             }
         }
-
-        // ═══════════════════════════════════════
-        // 主窗口 ↔ 灵动岛过渡（27.4.0 老版本）
-        // ═══════════════════════════════════════
 
         private async Task TransitionToIslandAsync(bool fromMinimize = false)
         {
@@ -381,10 +369,6 @@ namespace CMW
             RootScale.ScaleY = 1;
             Opacity = 1;
         }
-
-        // ═══════════════════════════════════════
-        // 导航
-        // ═══════════════════════════════════════
 
         private void NavHome(object sender, RoutedEventArgs e) => SafeNavigate(0);
         private void NavSchedule(object sender, RoutedEventArgs e) => SafeNavigate(1);
@@ -561,10 +545,6 @@ namespace CMW
                 FrameHost.Opacity = 1;
             }
         }
-
-        // ═══════════════════════════════════════
-        // 统一数据接口
-        // ═══════════════════════════════════════
 
         public TodayInfo GetTodayDisplayData()
         {

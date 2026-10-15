@@ -16,9 +16,6 @@ namespace CMW
         public static FloatWindow? Float { get; set; }
         public static ClassBoardWindow? Board { get; set; }
 
-        // ★ 28.0.0：左侧课表常驻窗口
-        public static LeftScheduleWindow? LeftSchedule { get; set; }
-
         public static event Action? SettingsChanged;
         public static void NotifySettingsChanged() => SettingsChanged?.Invoke();
 
@@ -34,13 +31,28 @@ namespace CMW
         public static event Action? BoardStateChanged;
         public static void NotifyBoardStateChanged() => BoardStateChanged?.Invoke();
 
+        public static event Action? ThemeChanged;
+        public static void NotifyThemeChanged() => ThemeChanged?.Invoke();
+
         public static bool IsBoardActive => Board != null && Board.IsLoaded;
+
+        public static string CurrentFontFamily { get; private set; } = "Microsoft YaHei UI";
+        public static string CurrentThemeName { get; private set; } = "PCL2";
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
             CrashLogger.Attach();
+
+            AppConfig? bootConfig = null;
+            try
+            {
+                bootConfig = JsonHelper.Load<AppConfig>(AppPaths.Config) ?? new AppConfig();
+                ApplyTheme(bootConfig.ThemeName);
+                ApplyFontToApp(bootConfig.FontFamily);
+            }
+            catch { }
 
             Dispatcher.BeginInvoke(new Action(() =>
             {
@@ -62,10 +74,11 @@ namespace CMW
             try { DutyRotateService.TryRotateIfNeeded(); }
             catch { }
 
-            AppConfig? config = null;
+            AppConfig? config = bootConfig;
             try
             {
-                config = JsonHelper.Load<AppConfig>(AppPaths.Config) ?? new AppConfig();
+                if (config == null)
+                    config = JsonHelper.Load<AppConfig>(AppPaths.Config) ?? new AppConfig();
                 AutoStartHelper.SyncWithConfig(config.AutoStart);
             }
             catch { }
@@ -74,7 +87,6 @@ namespace CMW
             MainWindow = main;
             main.Show();
 
-            // 右侧窗口
             if (config != null && config.FloatWindowEnabled)
             {
                 try
@@ -84,51 +96,71 @@ namespace CMW
                 }
                 catch { }
             }
-
-            // ★ 28.0.0：左侧课表常驻窗口
-            if (config != null && config.LeftScheduleEnabled)
-            {
-                try
-                {
-                    LeftSchedule = new LeftScheduleWindow();
-                    LeftSchedule.Show();
-                }
-                catch { }
-            }
         }
 
         /// <summary>
-        /// ★ 28.0.0：确保左侧课表存在并显示
+        /// 应用主题：加载对应的主题资源字典
         /// </summary>
-        public static void EnsureLeftSchedule()
+        public static void ApplyTheme(string? themeName)
         {
             try
             {
-                if (LeftSchedule == null || !LeftSchedule.IsLoaded)
+                if (string.IsNullOrWhiteSpace(themeName))
+                    themeName = "PCL2";
+
+                if (themeName != "PCL2" && themeName != "ClassIsland")
+                    themeName = "PCL2";
+
+                CurrentThemeName = themeName;
+
+                string file = themeName == "ClassIsland"
+                    ? "Theme.ClassIsland.xaml"
+                    : "Theme.PCL2.xaml";
+
+                var uri = new Uri($"pack://application:,,,/{file}", UriKind.Absolute);
+                var newDict = new ResourceDictionary { Source = uri };
+
+                var merged = Current.Resources.MergedDictionaries;
+
+                ResourceDictionary? oldTheme = null;
+                foreach (var d in merged)
                 {
-                    LeftSchedule = new LeftScheduleWindow();
-                    LeftSchedule.Show();
+                    if (d.Source != null &&
+                        d.Source.OriginalString.Contains("Theme."))
+                    {
+                        oldTheme = d;
+                        break;
+                    }
                 }
-                else if (!LeftSchedule.IsVisible)
-                {
-                    LeftSchedule.Show();
-                }
-                else
-                {
-                    LeftSchedule.Activate();
-                }
+
+                if (oldTheme != null)
+                    merged.Remove(oldTheme);
+
+                merged.Add(newDict);
+
+                NotifyThemeChanged();
             }
             catch { }
         }
 
         /// <summary>
-        /// ★ 28.0.0：关闭左侧课表
+        /// 应用字体到全局资源
         /// </summary>
-        public static void CloseLeftSchedule()
+        public static void ApplyFontToApp(string? fontName)
         {
-            try { LeftSchedule?.Close(); }
+            try
+            {
+                if (string.IsNullOrWhiteSpace(fontName))
+                    fontName = "Microsoft YaHei UI";
+
+                CurrentFontFamily = fontName;
+
+                var newFont = new FontFamily(fontName);
+
+                Current.Resources["GlobalFontFamily"] = newFont;
+                Current.Resources["AppleFont"] = newFont;
+            }
             catch { }
-            LeftSchedule = null;
         }
 
         public static void ExitApp() => Current.Shutdown();

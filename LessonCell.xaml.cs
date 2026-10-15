@@ -27,17 +27,6 @@ namespace CMW
                 nameof(TeacherName), typeof(string), typeof(LessonCell),
                 new PropertyMetadata(string.Empty, OnTeacherNameChanged));
 
-        public string PeriodText
-        {
-            get => (string)GetValue(PeriodTextProperty);
-            set => SetValue(PeriodTextProperty, value);
-        }
-
-        public static readonly DependencyProperty PeriodTextProperty =
-            DependencyProperty.Register(
-                nameof(PeriodText), typeof(string), typeof(LessonCell),
-                new PropertyMetadata(string.Empty));
-
         public LessonCell()
         {
             InitializeComponent();

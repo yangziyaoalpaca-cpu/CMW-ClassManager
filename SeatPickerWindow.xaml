@@ -5,15 +5,15 @@
         Width="520" Height="600"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize"
-        Background="#E8EBF0">
+        Background="{DynamicResource ThemeBackgroundBrush}"
+        FontFamily="{DynamicResource GlobalFontFamily}">
 
     <Window.Resources>
 
-        <!-- ★ 27.1.0：补上 HintText -->
         <Style x:Key="HintText" TargetType="TextBlock">
             <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Foreground" Value="#808080"/>
-            <Setter Property="FontFamily" Value="Microsoft YaHei UI"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextHintBrush}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
         </Style>
 
         <Style x:Key="TouchScrollBar" TargetType="ScrollBar">
@@ -53,10 +53,10 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
                         <Border x:Name="Bd"
-                                Background="#FFFFFF"
-                                BorderBrush="#D8DCE0"
+                                Background="{DynamicResource ThemeCardBrush}"
+                                BorderBrush="{DynamicResource ThemeBorderBrush}"
                                 BorderThickness="1"
-                                CornerRadius="6"
+                                CornerRadius="{DynamicResource RadiusSmall}"
                                 Padding="10,8">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <Border x:Name="Tick"
@@ -76,21 +76,21 @@
                                            Text="{TemplateBinding Content}"
                                            Margin="10,0,0,0"
                                            FontSize="13"
-                                           FontFamily="Microsoft YaHei UI"
-                                           Foreground="#404040"
+                                           FontFamily="{DynamicResource GlobalFontFamily}"
+                                           Foreground="{DynamicResource ThemeTextPrimaryBrush}"
                                            VerticalAlignment="Center"/>
                             </StackPanel>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="#7BAAF7"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource ThemePrimaryLightBrush}"/>
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#E8F0FE"/>
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="#1E5FD0"/>
-                                <Setter TargetName="Tick" Property="Background" Value="#1E5FD0"/>
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ThemePrimaryBgBrush}"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource ThemePrimaryBrush}"/>
+                                <Setter TargetName="Tick" Property="Background" Value="{DynamicResource ThemePrimaryBrush}"/>
                                 <Setter TargetName="TickText" Property="Text" Value="✓"/>
-                                <Setter TargetName="Lbl" Property="Foreground" Value="#1E5FD0"/>
+                                <Setter TargetName="Lbl" Property="Foreground" Value="{DynamicResource ThemePrimaryBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -110,20 +110,20 @@
         <StackPanel Grid.Row="0" Margin="0,0,0,12">
             <TextBlock x:Name="tbTitle" Text="选择学生"
                        FontSize="18" FontWeight="Bold"
-                       Foreground="#202020"
-                       FontFamily="Microsoft YaHei UI"/>
+                       Foreground="{DynamicResource ThemeTextPrimaryBrush}"
+                       FontFamily="{DynamicResource GlobalFontFamily}"/>
             <TextBlock x:Name="tbSubtitle"
                        Text="点击选择一个学生放入该座位"
-                       FontSize="12" Foreground="#808080"
-                       FontFamily="Microsoft YaHei UI"
+                       FontSize="12" Foreground="{DynamicResource ThemeTextHintBrush}"
+                       FontFamily="{DynamicResource GlobalFontFamily}"
                        Margin="0,4,0,0"/>
         </StackPanel>
 
         <Border Grid.Row="1"
-                Background="#FFFFFF"
-                BorderBrush="#E1E1E1"
+                Background="{DynamicResource ThemeCardBrush}"
+                BorderBrush="{DynamicResource ThemeBorderLightBrush}"
                 BorderThickness="1"
-                CornerRadius="8"
+                CornerRadius="{DynamicResource RadiusMedium}"
                 Padding="12"
                 Margin="0,0,0,12">
             <Grid>
@@ -144,10 +144,10 @@
         </Border>
 
         <Border Grid.Row="2"
-                Background="#FFFFFF"
-                BorderBrush="#E1E1E1"
+                Background="{DynamicResource ThemeCardBrush}"
+                BorderBrush="{DynamicResource ThemeBorderLightBrush}"
                 BorderThickness="1"
-                CornerRadius="8">
+                CornerRadius="{DynamicResource RadiusMedium}">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
                 <ScrollViewer.Resources>

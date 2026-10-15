@@ -6,7 +6,8 @@
         WindowStyle="None"
         ResizeMode="CanResize"
         WindowStartupLocation="CenterOwner"
-        Background="#E8EBF0">
+        Background="{DynamicResource ThemeBackgroundBrush}"
+        FontFamily="{DynamicResource GlobalFontFamily}">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -14,9 +15,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- 顶栏 -->
         <Border Grid.Row="0"
-                Background="#1E5FD0"
+                Background="{DynamicResource ThemeTitleBarBrush}"
                 MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -26,8 +26,8 @@
 
                 <TextBlock Grid.Column="0"
                            Text="新增笔记"
-                           Foreground="White"
-                           FontFamily="Microsoft YaHei UI"
+                           Foreground="{DynamicResource ThemeTitleBarTextBrush}"
+                           FontFamily="{DynamicResource GlobalFontFamily}"
                            FontSize="14"
                            FontWeight="SemiBold"
                            VerticalAlignment="Center"
@@ -36,7 +36,7 @@
                 <Button Grid.Column="1"
                         Content="✕"
                         Click="BtnClose_Click"
-                        Foreground="White"
+                        Foreground="{DynamicResource ThemeTitleBarTextBrush}"
                         Background="Transparent"
                         BorderThickness="0"
                         FontFamily="Segoe UI"
@@ -48,7 +48,6 @@
             </Grid>
         </Border>
 
-        <!-- 内容 -->
         <Grid Grid.Row="1" Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -56,12 +55,11 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- 预览图 -->
             <Border Grid.Row="0"
-                    Background="#FAFAFA"
-                    BorderBrush="#E1E1E1"
+                    Background="{DynamicResource ThemeRowAltBrush}"
+                    BorderBrush="{DynamicResource ThemeBorderLightBrush}"
                     BorderThickness="1"
-                    CornerRadius="8"
+                    CornerRadius="{DynamicResource RadiusMedium}"
                     Padding="8"
                     MinHeight="240"
                     MaxHeight="320">
@@ -74,16 +72,15 @@
 
                     <TextBlock x:Name="EmptyHint"
                                Text="（无截图）"
-                               FontFamily="Microsoft YaHei UI"
+                               FontFamily="{DynamicResource GlobalFontFamily}"
                                FontSize="13"
-                               Foreground="#A0A0A0"
+                               Foreground="{DynamicResource ThemeTextHintBrush}"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
                                Visibility="Collapsed"/>
                 </Grid>
             </Border>
 
-            <!-- 文字备注 -->
             <Grid Grid.Row="1" Margin="0,16,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -92,9 +89,9 @@
 
                 <TextBlock Grid.Row="0"
                            Text="文字备注（可空）"
-                           FontFamily="Microsoft YaHei UI"
+                           FontFamily="{DynamicResource GlobalFontFamily}"
                            FontSize="13"
-                           Foreground="#404040"
+                           Foreground="{DynamicResource ThemeTextPrimaryBrush}"
                            Margin="0,0,0,4"/>
 
                 <TextBox Grid.Row="1"
@@ -107,7 +104,6 @@
                          FontSize="13"/>
             </Grid>
 
-            <!-- 底部按钮 -->
             <Grid Grid.Row="2" Margin="0,16,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -118,9 +114,9 @@
 
                 <TextBlock x:Name="tbTip"
                            Grid.Column="0"
-                           FontFamily="Microsoft YaHei UI"
+                           FontFamily="{DynamicResource GlobalFontFamily}"
                            FontSize="12"
-                           Foreground="#1E5FD0"
+                           Foreground="{DynamicResource ThemePrimaryBrush}"
                            VerticalAlignment="Center"/>
 
                 <Button Grid.Column="1"

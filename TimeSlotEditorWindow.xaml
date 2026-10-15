@@ -5,7 +5,8 @@
         Width="660" Height="620"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize"
-        Background="#E8EBF0">
+        Background="{DynamicResource ThemeBackgroundBrush}"
+        FontFamily="{DynamicResource GlobalFontFamily}">
 
     <Window.Resources>
 
@@ -26,7 +27,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Track" Property="Background" Value="#1E5FD0"/>
+                                <Setter TargetName="Track" Property="Background" Value="{DynamicResource ThemePrimaryBrush}"/>
                                 <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right"/>
                                 <Setter TargetName="Thumb" Property="Margin" Value="0,0,3,0"/>
                             </Trigger>
@@ -37,10 +38,10 @@
         </Style>
 
         <Style x:Key="HeaderRow" TargetType="Border">
-            <Setter Property="Background" Value="#F5F5F5"/>
-            <Setter Property="BorderBrush" Value="#D8DCE0"/>
+            <Setter Property="Background" Value="{DynamicResource ThemeRowAltBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="CornerRadius" Value="{DynamicResource RadiusSmall}"/>
             <Setter Property="Padding" Value="10,6"/>
             <Setter Property="Margin" Value="0,0,0,6"/>
         </Style>
@@ -55,20 +56,18 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- 标题 -->
         <StackPanel Grid.Row="0" Margin="0,0,0,12">
             <TextBlock Text="时间段编辑"
                        FontSize="22" FontWeight="Bold"
-                       Foreground="#202020"
-                       FontFamily="Microsoft YaHei UI"/>
+                       Foreground="{DynamicResource ThemeTextPrimaryBrush}"
+                       FontFamily="{DynamicResource GlobalFontFamily}"/>
             <TextBlock Text="用于灵动岛上下课提醒与右侧窗口自动弹出；每行一个时间段，保存后自动按开始时间排序。勾选「长时段」表示该时段右侧窗口弹出后不自动收回（如早读 / 大课间 / 晚自习）。"
-                       FontSize="12" Foreground="#808080"
-                       FontFamily="Microsoft YaHei UI"
+                       FontSize="12" Foreground="{DynamicResource ThemeTextHintBrush}"
+                       FontFamily="{DynamicResource GlobalFontFamily}"
                        TextWrapping="Wrap"
                        Margin="0,4,0,0"/>
         </StackPanel>
 
-        <!-- 表头 -->
         <Border Grid.Row="1" Style="{StaticResource HeaderRow}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -81,40 +80,38 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="名称"
                            FontWeight="SemiBold" FontSize="12"
-                           Foreground="#202020"
-                           FontFamily="Microsoft YaHei UI"/>
+                           Foreground="{DynamicResource ThemeTextPrimaryBrush}"
+                           FontFamily="{DynamicResource GlobalFontFamily}"/>
                 <TextBlock Grid.Column="1" Text="开始时间"
                            FontWeight="SemiBold" FontSize="12"
-                           Foreground="#202020"
-                           FontFamily="Microsoft YaHei UI"/>
+                           Foreground="{DynamicResource ThemeTextPrimaryBrush}"
+                           FontFamily="{DynamicResource GlobalFontFamily}"/>
                 <TextBlock Grid.Column="2" Text="结束时间"
                            FontWeight="SemiBold" FontSize="12"
-                           Foreground="#202020"
-                           FontFamily="Microsoft YaHei UI"/>
+                           Foreground="{DynamicResource ThemeTextPrimaryBrush}"
+                           FontFamily="{DynamicResource GlobalFontFamily}"/>
                 <TextBlock Grid.Column="3" Text="提醒"
                            FontWeight="SemiBold" FontSize="12"
                            HorizontalAlignment="Center"
-                           Foreground="#202020"
-                           FontFamily="Microsoft YaHei UI"/>
+                           Foreground="{DynamicResource ThemeTextPrimaryBrush}"
+                           FontFamily="{DynamicResource GlobalFontFamily}"/>
                 <TextBlock Grid.Column="4" Text="长时段"
                            FontWeight="SemiBold" FontSize="12"
                            HorizontalAlignment="Center"
-                           Foreground="#202020"
-                           FontFamily="Microsoft YaHei UI"/>
+                           Foreground="{DynamicResource ThemeTextPrimaryBrush}"
+                           FontFamily="{DynamicResource GlobalFontFamily}"/>
                 <TextBlock Grid.Column="5" Text="操作"
                            FontWeight="SemiBold" FontSize="12"
                            HorizontalAlignment="Center"
-                           Foreground="#202020"
-                           FontFamily="Microsoft YaHei UI"/>
+                           Foreground="{DynamicResource ThemeTextPrimaryBrush}"
+                           FontFamily="{DynamicResource GlobalFontFamily}"/>
             </Grid>
         </Border>
 
-        <!-- 行列表 -->
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
             <StackPanel x:Name="slotListPanel"/>
         </ScrollViewer>
 
-        <!-- 底部按钮 -->
         <Grid Grid.Row="3" Margin="0,12,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -134,8 +131,8 @@
                        HorizontalAlignment="Right"
                        Margin="0,0,12,0"
                        FontSize="12"
-                       Foreground="#E81123"
-                       FontFamily="Microsoft YaHei UI"/>
+                       Foreground="{DynamicResource ThemeDangerBrush}"
+                       FontFamily="{DynamicResource GlobalFontFamily}"/>
 
             <Button Grid.Column="2"
                     Content="取消"

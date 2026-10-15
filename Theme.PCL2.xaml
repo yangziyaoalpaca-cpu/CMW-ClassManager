@@ -1,0 +1,38 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 主题色 · PCL2 -->
+    <SolidColorBrush x:Key="ThemePrimaryBrush" Color="#1E5FD0"/>
+    <SolidColorBrush x:Key="ThemePrimaryHoverBrush" Color="#2E6FDD"/>
+    <SolidColorBrush x:Key="ThemePrimaryPressedBrush" Color="#174CA8"/>
+    <SolidColorBrush x:Key="ThemePrimaryLightBrush" Color="#7BAAF7"/>
+    <SolidColorBrush x:Key="ThemePrimaryBgBrush" Color="#E8F0FE"/>
+    <SolidColorBrush x:Key="ThemePrimaryBgHoverBrush" Color="#D0E2FC"/>
+
+    <SolidColorBrush x:Key="ThemeBackgroundBrush" Color="#E8EBF0"/>
+    <SolidColorBrush x:Key="ThemeCardBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="ThemeBorderBrush" Color="#D0D4DA"/>
+    <SolidColorBrush x:Key="ThemeBorderLightBrush" Color="#E8E8E8"/>
+    <SolidColorBrush x:Key="ThemeRowAltBrush" Color="#FAFAFA"/>
+
+    <SolidColorBrush x:Key="ThemeTextPrimaryBrush" Color="#202020"/>
+    <SolidColorBrush x:Key="ThemeTextSecondaryBrush" Color="#6E6E6E"/>
+    <SolidColorBrush x:Key="ThemeTextHintBrush" Color="#A0A0A0"/>
+
+    <SolidColorBrush x:Key="ThemeTitleBarBrush" Color="#1E5FD0"/>
+    <SolidColorBrush x:Key="ThemeTitleBarTextBrush" Color="#FFFFFF"/>
+
+    <SolidColorBrush x:Key="ThemeDangerBrush" Color="#D32F2F"/>
+    <SolidColorBrush x:Key="ThemeDangerHoverBrush" Color="#E81123"/>
+
+    <SolidColorBrush x:Key="ThemeInputBgBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="ThemeInputBorderBrush" Color="#B8C8D8"/>
+
+    <!-- ★ 32.0.0：图标前景色（PCL2 保持深蓝） -->
+    <SolidColorBrush x:Key="ThemeIconForegroundBrush" Color="#1E5FD0"/>
+
+    <!-- 兼容旧 Key（老代码里引用过的名字） -->
+    <SolidColorBrush x:Key="PclPrimaryBrush" Color="#1E5FD0"/>
+    <SolidColorBrush x:Key="MainBackgroundBrush" Color="#E8EBF0"/>
+
+</ResourceDictionary>

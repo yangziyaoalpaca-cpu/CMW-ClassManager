@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -32,9 +32,9 @@ namespace CMW
                 _config = JsonHelper.Load<AppConfig>(AppPaths.Config) ?? new AppConfig();
                 ClassNameTextBox.Text = _config.ClassName;
 
-                LoadCustomBackground();
+                LoadBackground();
                 RefreshStatCards();
-                RefreshExamCountdown();
+                RefreshExamCountdowns();
 
                 App.SettingsChanged -= OnSettingsChanged;
                 App.SettingsChanged += OnSettingsChanged;
@@ -56,20 +56,34 @@ namespace CMW
             {
                 _config = JsonHelper.Load<AppConfig>(AppPaths.Config) ?? new AppConfig();
                 ClassNameTextBox.Text = _config.ClassName;
-                LoadCustomBackground();
+                LoadBackground();
                 RefreshStatCards();
-                RefreshExamCountdown();
+                RefreshExamCountdowns();
             }), DispatcherPriority.Background);
         }
 
-        // ═══════════════════════════════════════
-        // 背景加载
-        // ═══════════════════════════════════════
-
-        private void LoadCustomBackground()
+        // ═══════════════════════════════════════════════════════════
+        // ★ B3：背景加载（图片 / 渐变）
+        // ═══════════════════════════════════════════════════════════
+        private void LoadBackground()
         {
             try
             {
+                string preset = _config.BackgroundPreset ?? "None";
+
+                if (preset != "None")
+                {
+                    // 渐变模式
+                    BgImage.Visibility = Visibility.Collapsed;
+                    BgGradient.Visibility = Visibility.Visible;
+                    BgGradient.Background = CreatePresetBrush(preset);
+                    return;
+                }
+
+                // 图片模式
+                BgGradient.Visibility = Visibility.Collapsed;
+                BgImage.Visibility = Visibility.Visible;
+
                 string? customPath = _config.BackgroundImagePath;
                 if (string.IsNullOrEmpty(customPath) && File.Exists(AppPaths.CustomBackgroundFile))
                     customPath = AppPaths.CustomBackgroundFile;
@@ -102,6 +116,39 @@ namespace CMW
             catch { }
         }
 
+        private static Brush CreatePresetBrush(string preset)
+        {
+            switch (preset)
+            {
+                case "DeepBlue":
+                    return new LinearGradientBrush(
+                        Color.FromRgb(0x0F, 0x1F, 0x3F),
+                        Color.FromRgb(0x1E, 0x5F, 0xD0),
+                        new Point(0, 0), new Point(1, 1));
+
+                case "MorningMist":
+                    return new LinearGradientBrush(
+                        Color.FromRgb(0xE8, 0xF0, 0xFE),
+                        Color.FromRgb(0xC0, 0xD8, 0xF8),
+                        new Point(0, 0), new Point(0, 1));
+
+                case "NightPurple":
+                    return new LinearGradientBrush(
+                        Color.FromRgb(0x1A, 0x10, 0x2A),
+                        Color.FromRgb(0x3A, 0x20, 0x50),
+                        new Point(0, 0), new Point(1, 1));
+
+                case "InkGreen":
+                    return new LinearGradientBrush(
+                        Color.FromRgb(0x0A, 0x20, 0x18),
+                        Color.FromRgb(0x1A, 0x50, 0x3A),
+                        new Point(0, 0), new Point(1, 1));
+
+                default:
+                    return new SolidColorBrush(Colors.Transparent);
+            }
+        }
+
         private void GenerateAndReload()
         {
             GenerateBlurredBackground();
@@ -122,6 +169,9 @@ namespace CMW
             try
             {
                 var config = JsonHelper.Load<AppConfig>(AppPaths.Config) ?? new AppConfig();
+
+                // 渐变模式不生成模糊图
+                if ((config.BackgroundPreset ?? "None") != "None") return;
 
                 string? customPath = config.BackgroundImagePath;
                 if (string.IsNullOrEmpty(customPath) && File.Exists(AppPaths.CustomBackgroundFile))
@@ -190,9 +240,59 @@ namespace CMW
             return bmp;
         }
 
-        // ═══════════════════════════════════════
-        // ★ 27.0.0：数据统计卡片
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════
+        // ★ C3：多条考试倒计时（前 3 条，含旧字段迁移）
+        // ═══════════════════════════════════════════════════════════
+        private void RefreshExamCountdowns()
+        {
+            try
+            {
+                var list = _config.ExamCountdownList ?? new List<ExamCountdownItem>();
+
+                // 旧字段迁移
+                if (list.Count == 0
+                    && !string.IsNullOrWhiteSpace(_config.ExamName)
+                    && !string.IsNullOrWhiteSpace(_config.ExamDate))
+                {
+                    list = new List<ExamCountdownItem>
+                    {
+                        new ExamCountdownItem
+                        {
+                            Name = _config.ExamName,
+                            Date = _config.ExamDate
+                        }
+                    };
+                }
+
+                // 过滤有效项 + 按剩余天数升序 + 取前 3 条
+                var display = list
+                    .Where(x => !string.IsNullOrWhiteSpace(x.Name)
+                             && !string.IsNullOrWhiteSpace(x.Date)
+                             && DateTime.TryParse(x.Date, out _))
+                    .OrderBy(x => x.DaysLeft)
+                    .Take(3)
+                    .ToList();
+
+                icExamCountdowns.ItemsSource = display;
+                icExamCountdowns.Visibility = display.Count > 0
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            }
+            catch
+            {
+                icExamCountdowns.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // 统计卡片
+        // ═══════════════════════════════════════════════════════════
+        private static string ClampText(string text, int maxLen)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            if (text.Length <= maxLen) return text;
+            return text.Substring(0, maxLen) + "…";
+        }
 
         private void RefreshStatCards()
         {
@@ -212,9 +312,11 @@ namespace CMW
                 tbStatTodo.Text = tdCount.ToString();
 
                 string dutyName = DutyPage.GetTodayDutyGroupName();
-                tbStatDuty.Text = string.IsNullOrWhiteSpace(dutyName) ? "未安排" : dutyName;
+                tbStatDuty.Text = string.IsNullOrWhiteSpace(dutyName)
+                    ? "未安排"
+                    : ClampText(dutyName, 6);
 
-                tbStatNextClass.Text = GetNextClassText();
+                tbStatNextClass.Text = ClampText(GetNextClassText(), 6);
             }
             catch { }
         }
@@ -262,40 +364,6 @@ namespace CMW
             catch { return "--"; }
         }
 
-        // ★ 27.0.0：考试倒计时
-        private void RefreshExamCountdown()
-        {
-            try
-            {
-                string name = (_config.ExamName ?? "").Trim();
-                string dateStr = (_config.ExamDate ?? "").Trim();
-
-                if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(dateStr))
-                {
-                    ExamCountdownCard.Visibility = Visibility.Collapsed;
-                    return;
-                }
-
-                if (!DateTime.TryParse(dateStr, out var examDate))
-                {
-                    ExamCountdownCard.Visibility = Visibility.Collapsed;
-                    return;
-                }
-
-                int days = (examDate.Date - DateTime.Today).Days;
-
-                tbExamName.Text = name;
-                tbExamDays.Text = days > 0 ? days.ToString() : "0";
-
-                ExamCountdownCard.Visibility = Visibility.Visible;
-            }
-            catch
-            {
-                ExamCountdownCard.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        // ★ 27.0.0：点击卡片跳转
         private void StatCard_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (sender is not Border b || b.Tag is not string tag) return;

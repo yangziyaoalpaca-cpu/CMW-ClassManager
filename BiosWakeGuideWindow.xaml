@@ -1,0 +1,356 @@
+﻿<Window x:Class="CMW.BiosWakeGuideWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="自动开机设置引导"
+        Width="720" Height="720"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize"
+        Background="{DynamicResource ThemeBackgroundBrush}"
+        FontFamily="{DynamicResource GlobalFontFamily}">
+
+    <Window.Resources>
+
+        <Style x:Key="SectionCard" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource ThemeCardBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderLightBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="{DynamicResource RadiusMedium}"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="0,0,0,14"/>
+        </Style>
+
+        <Style x:Key="SectionTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemePrimaryBrush}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+
+        <Style x:Key="BodyText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="LineHeight" Value="22"/>
+        </Style>
+
+        <Style x:Key="HintText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemeTextHintBrush}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="LineHeight" Value="20"/>
+        </Style>
+
+        <Style x:Key="KeyText" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas, Microsoft YaHei UI"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{DynamicResource ThemePrimaryBrush}"/>
+        </Style>
+
+        <Style x:Key="BrandRow" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource ThemeRowAltBrush}"/>
+            <Setter Property="CornerRadius" Value="{DynamicResource RadiusSmall}"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+
+        <Style x:Key="TouchScrollBar" TargetType="ScrollBar">
+            <Setter Property="Width" Value="10"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="{TemplateBinding Background}">
+                            <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border Background="#C0C0C0" CornerRadius="5" Margin="2,0"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="False"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="False"/>
+                                </Track.DecreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,12">
+            <TextBlock Text="自动开机（BIOS 定时唤醒）设置引导"
+                       FontSize="22" FontWeight="Bold"
+                       Foreground="{DynamicResource ThemeTextPrimaryBrush}"
+                       FontFamily="{DynamicResource GlobalFontFamily}"/>
+            <TextBlock Text="Windows 关机后，操作系统已停止运行，任何软件（包括 CMW）都无法再唤醒电脑。"
+                       Style="{StaticResource HintText}"
+                       Margin="0,6,0,0"/>
+            <TextBlock Text="要让电脑定时自动开机，必须靠主板 BIOS 的 RTC（实时时钟）定时唤醒功能。"
+                       Style="{StaticResource HintText}"
+                       Margin="0,2,0,0"/>
+        </StackPanel>
+
+        <Border Grid.Row="1"
+                Background="{DynamicResource ThemeCardBrush}"
+                BorderBrush="{DynamicResource ThemeBorderLightBrush}"
+                BorderThickness="1"
+                CornerRadius="{DynamicResource RadiusMedium}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          Padding="16">
+                <ScrollViewer.Resources>
+                    <Style TargetType="ScrollBar" BasedOn="{StaticResource TouchScrollBar}"/>
+                </ScrollViewer.Resources>
+
+                <StackPanel>
+
+                    <!-- 第 1 步：进入 BIOS -->
+                    <Border Style="{StaticResource SectionCard}">
+                        <StackPanel>
+                            <TextBlock Text="第 1 步 · 进入 BIOS 设置界面" Style="{StaticResource SectionTitle}"/>
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="重启电脑，在开机画面出现的瞬间连续按下面品牌对应的按键。"/>
+
+                            <Grid Margin="0,12,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Row="0" Grid.ColumnSpan="2" Style="{StaticResource BrandRow}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="联想 / ThinkPad" Style="{StaticResource BodyText}"/>
+                                        <TextBlock Grid.Column="1" Text="F2 或 Fn+F2（部分机型 F12）" Style="{StaticResource KeyText}"/>
+                                    </Grid>
+                                </Border>
+
+                                <Border Grid.Row="1" Grid.ColumnSpan="2" Style="{StaticResource BrandRow}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="戴尔" Style="{StaticResource BodyText}"/>
+                                        <TextBlock Grid.Column="1" Text="F2" Style="{StaticResource KeyText}"/>
+                                    </Grid>
+                                </Border>
+
+                                <Border Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource BrandRow}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="惠普" Style="{StaticResource BodyText}"/>
+                                        <TextBlock Grid.Column="1" Text="F10（部分机型 Esc 后再选）" Style="{StaticResource KeyText}"/>
+                                    </Grid>
+                                </Border>
+
+                                <Border Grid.Row="3" Grid.ColumnSpan="2" Style="{StaticResource BrandRow}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="华硕" Style="{StaticResource BodyText}"/>
+                                        <TextBlock Grid.Column="1" Text="F2 或 Del" Style="{StaticResource KeyText}"/>
+                                    </Grid>
+                                </Border>
+
+                                <Border Grid.Row="4" Grid.ColumnSpan="2" Style="{StaticResource BrandRow}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="技嘉 / 微星" Style="{StaticResource BodyText}"/>
+                                        <TextBlock Grid.Column="1" Text="Del" Style="{StaticResource KeyText}"/>
+                                    </Grid>
+                                </Border>
+
+                                <Border Grid.Row="5" Grid.ColumnSpan="2" Style="{StaticResource BrandRow}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="宏碁" Style="{StaticResource BodyText}"/>
+                                        <TextBlock Grid.Column="1" Text="F2 或 Del" Style="{StaticResource KeyText}"/>
+                                    </Grid>
+                                </Border>
+
+                                <Border Grid.Row="6" Grid.ColumnSpan="2" Style="{StaticResource BrandRow}" Margin="0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="不清楚品牌" Style="{StaticResource BodyText}"/>
+                                        <TextBlock Grid.Column="1" Text="开机狂按 Del / F2 / F12 逐个试" Style="{StaticResource KeyText}"/>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 第 2 步：找到 RTC 唤醒选项 -->
+                    <Border Style="{StaticResource SectionCard}">
+                        <StackPanel>
+                            <TextBlock Text="第 2 步 · 在 BIOS 里找到定时唤醒选项" Style="{StaticResource SectionTitle}"/>
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="不同主板名字不同，但关键词都类似，去以下菜单里找："/>
+                            <TextBlock Style="{StaticResource HintText}"
+                                       Margin="0,8,0,8"
+                                       Text="常见菜单位置：Power Management / Advanced / APM Configuration / Boot"/>
+
+                            <TextBlock Text="可能出现的选项名称（任选其一，功能相同）："
+                                       Style="{StaticResource BodyText}"
+                                       Margin="0,8,0,6"/>
+
+                            <Border Style="{StaticResource BrandRow}">
+                                <TextBlock Text="RTC Alarm / Wake Up Event By RTC" Style="{StaticResource KeyText}"/>
+                            </Border>
+                            <Border Style="{StaticResource BrandRow}">
+                                <TextBlock Text="Power On By RTC" Style="{StaticResource KeyText}"/>
+                            </Border>
+                            <Border Style="{StaticResource BrandRow}">
+                                <TextBlock Text="Resume By Alarm" Style="{StaticResource KeyText}"/>
+                            </Border>
+                            <Border Style="{StaticResource BrandRow}">
+                                <TextBlock Text="Wake System from S5" Style="{StaticResource KeyText}"/>
+                            </Border>
+                            <Border Style="{StaticResource BrandRow}" Margin="0">
+                                <TextBlock Text="RTC Wake / Wake on RTC Timer" Style="{StaticResource KeyText}"/>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 第 3 步：设置 -->
+                    <Border Style="{StaticResource SectionCard}">
+                        <StackPanel>
+                            <TextBlock Text="第 3 步 · 设置开机时间" Style="{StaticResource SectionTitle}"/>
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="1. 把找到的选项从 Disabled 改为 Enabled。"/>
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="2. 设置日期（如有）和具体时间，例如 07:00。"/>
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="3. 多数主板支持「每天」或「指定日」重复；推荐选「每天」。"/>
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="4. 按 F10 保存并退出 BIOS。"/>
+
+                            <TextBlock Style="{StaticResource HintText}"
+                                       Margin="0,12,0,0"
+                                       Text="不同 BIOS 界面差异较大，有的用 Tab 键切换，有的用方向键，请按屏幕提示操作。"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 第 4 步：验证 -->
+                    <Border Style="{StaticResource SectionCard}">
+                        <StackPanel>
+                            <TextBlock Text="第 4 步 · 验证设置是否生效" Style="{StaticResource SectionTitle}"/>
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="1. 正常关闭电脑（完全关机，不是睡眠）。"/>
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="2. 保持电源线插着（BIOS 唤醒需要主板供电）。"/>
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="3. 等到设定时间，观察电脑是否自动开机。"/>
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="4. 若没有反应，检查 BIOS 里是否有其他「Wake Up Event」子选项需要一并开启。"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 找不到 / 不支持 -->
+                    <Border Style="{StaticResource SectionCard}">
+                        <StackPanel>
+                            <TextBlock Text="找不到该选项 / 不支持怎么办" Style="{StaticResource SectionTitle}"/>
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="· 2015 年以前的老主板通常不支持 RTC 唤醒。"/>
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="· 部分笔记本需在 BIOS 里先关闭「Fast Boot / 快速启动」，才能看到完整电源选项。"/>
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="· 惠普商用机常需在 BIOS 里先启用「Advanced Menu」或按 Ctrl+A 显示隐藏项。"/>
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="· 若主板确实不支持，只能靠人工开机，或改用 Wake-on-LAN（需网卡 + 局域网设备）。"/>
+
+                            <TextBlock Style="{StaticResource HintText}"
+                                       Margin="0,12,0,0"
+                                       Text="Windows 系统本身无法从关机状态唤醒电脑，请勿相信「软件定时开机」类工具，它们都需要电脑处于睡眠或休眠状态。"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 提醒 -->
+                    <Border Style="{StaticResource SectionCard}"
+                            Background="#FFF8E1"
+                            BorderBrush="#FFD54F"
+                            Margin="0">
+                        <StackPanel>
+                            <TextBlock Text="⚠️ 重要提醒"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="#E65100"
+                                       FontFamily="{DynamicResource GlobalFontFamily}"
+                                       Margin="0,0,0,6"/>
+                            <TextBlock Text="· 进入 BIOS 后请勿随意修改其它选项，只改 RTC 唤醒相关项即可。"
+                                       Style="{StaticResource HintText}"
+                                       Foreground="#8A5A00"/>
+                            <TextBlock Text="· 若不确定如何操作，请先拍照当前 BIOS 界面再动手。"
+                                       Style="{StaticResource HintText}"
+                                       Foreground="#8A5A00"/>
+                            <TextBlock Text="· 主板 CMOS 电池没电会导致设置丢失，表现为「昨天设了今天又不行」。"
+                                       Style="{StaticResource HintText}"
+                                       Foreground="#8A5A00"/>
+                        </StackPanel>
+                    </Border>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <Grid Grid.Row="2" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="tbTip"
+                       Grid.Column="0"
+                       Style="{StaticResource HintText}"
+                       VerticalAlignment="Center"/>
+            <Button Grid.Column="1"
+                    Content="关闭"
+                    Style="{StaticResource PclButton}"
+                    Click="BtnClose_Click"/>
+        </Grid>
+    </Grid>
+</Window>

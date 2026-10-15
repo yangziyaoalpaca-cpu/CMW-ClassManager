@@ -21,6 +21,32 @@ namespace CMW
 
         private bool _blurNeedsRegen = false;
 
+        private List<string> _dutyRemindTimes = new List<string>();
+        private List<string> _todoRemindTimes = new List<string>();
+
+        // C2：横条组显示顺序（工作副本）
+        private List<int> _barGroupOrder = new List<int>();
+        private const double BarGroupRowHeight = 44;
+        private const double BarGroupDragThreshold = 8;
+
+        private Border? _draggingBarRow = null;
+        private int _draggingOriginalIndex = -1;
+        private double _dragStartScreenY = 0;
+        private bool _isBarGroupDragging = false;
+
+        private static readonly Dictionary<int, string> BarGroupNames = new Dictionary<int, string>
+        {
+            { 0, "日期时间组" },
+            { 1, "课表组" },
+            { 2, "状态组" },
+            { 4, "作业组" },
+            { 5, "值日组" },
+            { 6, "待办组" }
+        };
+
+        // C3：多条考试倒计时（工作副本）
+        private List<ExamCountdownItem> _examCountdowns = new List<ExamCountdownItem>();
+
         public SettingsPage()
         {
             InitializeComponent();
@@ -49,8 +75,6 @@ namespace CMW
             {
                 tbMiniRemindDuration.Text = $"当前：{sliderMiniRemindDuration.Value:F0} 秒";
             };
-
-            // ★ 28.0.0：通知条宽度 / 高度
             sliderNotifyWidth.ValueChanged += (s, e) =>
             {
                 tbNotifyWidth.Text = $"当前：{sliderNotifyWidth.Value:F0} %";
@@ -59,7 +83,6 @@ namespace CMW
             {
                 tbNotifyHeight.Text = $"当前：{sliderNotifyHeight.Value:F0} %";
             };
-
             sliderRightWidth.ValueChanged += (s, e) =>
             {
                 tbRightWidth.Text = $"当前：{sliderRightWidth.Value:F0} px";
@@ -77,9 +100,25 @@ namespace CMW
                 tbRightFontScale.Text = $"当前：{sliderRightFontScale.Value:F1} 倍";
             };
 
-            sliderLeftScheduleWidth.ValueChanged += (s, e) =>
+            sliderBlueFlash.ValueChanged += (s, e) =>
             {
-                tbLeftScheduleWidth.Text = $"当前：{sliderLeftScheduleWidth.Value:F0} px";
+                tbBlueFlash.Text = $"当前：{sliderBlueFlash.Value:F0} 秒";
+            };
+
+            sliderBarWidth.ValueChanged += (s, e) =>
+            {
+                double v = sliderBarWidth.Value;
+                tbBarWidth.Text = $"当前：{v:F0} px";
+                UpdateBarWidthActual(v);
+            };
+
+            sliderCircleDiameter.ValueChanged += (s, e) =>
+            {
+                tbCircleDiameter.Text = $"当前：{sliderCircleDiameter.Value:F0} px";
+            };
+            sliderRotateSeconds.ValueChanged += (s, e) =>
+            {
+                tbRotateSeconds.Text = $"当前：{sliderRotateSeconds.Value:F0} 秒";
             };
         }
 
@@ -90,6 +129,7 @@ namespace CMW
             {
                 LoadConfig();
                 LoadFontList();
+                LoadThemeList();
                 BindUiFromConfig();
                 _currentPanel = PanelBasic;
             }
@@ -170,43 +210,102 @@ namespace CMW
             }
         }
 
+        private void LoadThemeList()
+        {
+            cbTheme.Items.Clear();
+            cbTheme.Items.Add(new ComboBoxItem { Content = "PCL2（浅色）", Tag = "PCL2" });
+            cbTheme.Items.Add(new ComboBoxItem { Content = "ClassIsland（深色）", Tag = "ClassIsland" });
+        }
+
         private void BindUiFromConfig()
         {
             txtClassName.Text = _currentConfig.ClassName;
             sliderBlur.Value = _currentConfig.BlurRadius;
             tbBlurValue.Text = $"当前值：{_currentConfig.BlurRadius:F0}";
 
+            string theme = _currentConfig.ThemeName ?? "PCL2";
+            if (theme == "ClassIsland")
+                cbTheme.SelectedIndex = 1;
+            else
+                cbTheme.SelectedIndex = 0;
+
             toggleBlurEnabled.IsChecked = _currentConfig.BackgroundBlurEnabled;
 
+            // B3：背景样式
+            string preset = _currentConfig.BackgroundPreset ?? "None";
+            int presetIdx = 0;
+            switch (preset)
+            {
+                case "DeepBlue": presetIdx = 1; break;
+                case "MorningMist": presetIdx = 2; break;
+                case "NightPurple": presetIdx = 3; break;
+                case "InkGreen": presetIdx = 4; break;
+                case "None":
+                default: presetIdx = 0; break;
+            }
+            if (presetIdx >= 0 && presetIdx < cbBackgroundPreset.Items.Count)
+                cbBackgroundPreset.SelectedIndex = presetIdx;
+
+            bool found = false;
             foreach (ComboBoxItem item in cbFontFamily.Items)
             {
-                if (item.Content?.ToString() == _currentConfig.FontFamily)
+                string name = item.Content?.ToString() ?? "";
+                if (string.Equals(name, _currentConfig.FontFamily, StringComparison.OrdinalIgnoreCase))
                 {
                     cbFontFamily.SelectedItem = item;
+                    found = true;
                     break;
                 }
             }
-            if (cbFontFamily.SelectedItem == null && cbFontFamily.Items.Count > 0)
+            if (!found && cbFontFamily.Items.Count > 0)
                 cbFontFamily.SelectedIndex = 0;
+
+            toggleFontAutoFit.IsChecked = _currentConfig.FontAutoFitEnabled;
 
             UpdateBackgroundPathDisplay();
 
-            txtExamName.Text = _currentConfig.ExamName ?? "";
-            if (!string.IsNullOrEmpty(_currentConfig.ExamDate)
-                && DateTime.TryParse(_currentConfig.ExamDate, out var dt))
+            // C3：多条考试倒计时（含旧字段迁移）
+            _examCountdowns = new List<ExamCountdownItem>(
+                _currentConfig.ExamCountdownList ?? new List<ExamCountdownItem>());
+
+            if (_examCountdowns.Count == 0
+                && !string.IsNullOrWhiteSpace(_currentConfig.ExamName)
+                && !string.IsNullOrWhiteSpace(_currentConfig.ExamDate))
             {
-                dpExamDate.SelectedDate = dt;
+                _examCountdowns.Add(new ExamCountdownItem
+                {
+                    Name = _currentConfig.ExamName,
+                    Date = _currentConfig.ExamDate
+                });
             }
-            else
-            {
-                dpExamDate.SelectedDate = null;
-            }
+
+            RefreshExamCountdownList();
+
+            txtNewExamName.Text = "";
+            dpNewExamDate.SelectedDate = null;
 
             toggleDutyAutoRotate.IsChecked = _currentConfig.DutyAutoRotateEnabled;
 
+            // A9：上下课表现方式
+            switch (_currentConfig.ClassChangeStyle)
+            {
+                case "NotifyOnly":
+                    cbClassChangeStyle.SelectedIndex = 1;
+                    break;
+                case "ColorAndBar":
+                    cbClassChangeStyle.SelectedIndex = 2;
+                    break;
+                case "None":
+                    cbClassChangeStyle.SelectedIndex = 3;
+                    break;
+                case "ColorThenNotify":
+                default:
+                    cbClassChangeStyle.SelectedIndex = 0;
+                    break;
+            }
+
             toggleIslandDraggable.IsChecked = _currentConfig.IslandDraggable;
 
-            // ★ 28.0.0：通知条宽度 / 高度
             double nw = _currentConfig.NotifyBarWidthPercent;
             if (nw < 50) nw = 96;
             if (nw > 100) nw = 100;
@@ -255,7 +354,58 @@ namespace CMW
             txtSilentStart.Text = _currentConfig.SilentStart ?? "";
             txtSilentEnd.Text = _currentConfig.SilentEnd ?? "";
 
-            // ★ 28.0.0：上下课提醒
+            // 横条
+            toggleBarEnabled.IsChecked = _currentConfig.IslandBarEnabled;
+            toggleBarAutoExtend.IsChecked = _currentConfig.IslandBarAutoExtendOnClassChange;
+            toggleBarManualExtend.IsChecked = _currentConfig.IslandBarManualExtendEnabled;
+
+            int blueSec = _currentConfig.IslandBlueFlashSeconds;
+            if (blueSec < 0) blueSec = 2;
+            if (blueSec > 10) blueSec = 10;
+            sliderBlueFlash.Value = blueSec;
+            tbBlueFlash.Text = $"当前：{blueSec} 秒";
+
+            double bw = _currentConfig.IslandBarWidth;
+            if (bw < 50) bw = 50;
+            if (bw > 1920) bw = 1920;
+            sliderBarWidth.Value = bw;
+            tbBarWidth.Text = $"当前：{bw:F0} px";
+            UpdateBarWidthActual(bw);
+
+            double cd = _currentConfig.IslandCircleDiameter;
+            if (cd < 30) cd = 40;
+            if (cd > 150) cd = 150;
+            sliderCircleDiameter.Value = cd;
+            tbCircleDiameter.Text = $"当前：{cd:F0} px";
+
+            toggleBarAutoRotate.IsChecked = _currentConfig.IslandBarAutoRotateEnabled;
+
+            int rot = _currentConfig.IslandBarRotateSeconds;
+            if (rot < 3) rot = 8;
+            if (rot > 60) rot = 60;
+            sliderRotateSeconds.Value = rot;
+            tbRotateSeconds.Text = $"当前：{rot} 秒";
+
+            toggleGroupDate.IsChecked = _currentConfig.IslandBarShowDateGroup;
+            toggleGroupSchedule.IsChecked = _currentConfig.IslandBarShowScheduleGroup;
+            toggleGroupStatus.IsChecked = _currentConfig.IslandBarShowStatusGroup;
+            toggleGroupHomework.IsChecked = _currentConfig.IslandBarShowHomeworkGroup;
+            toggleGroupDuty.IsChecked = _currentConfig.IslandBarShowDutyGroup;
+            toggleGroupTodo.IsChecked = _currentConfig.IslandBarShowTodoGroup;
+
+            // C2：加载并重建组顺序面板
+            _barGroupOrder = new List<int>(
+                _currentConfig.IslandBarGroupOrder ?? new List<int> { 0, 1, 2, 4, 5, 6 });
+
+            var allIds = new[] { 0, 1, 2, 4, 5, 6 };
+            foreach (var id in allIds)
+            {
+                if (!_barGroupOrder.Contains(id)) _barGroupOrder.Add(id);
+            }
+            _barGroupOrder = _barGroupOrder.Where(id => allIds.Contains(id)).ToList();
+
+            RebuildBarGroupOrderPanel();
+
             toggleClassStartRemind.IsChecked = _currentConfig.ClassStartRemindEnabled;
             toggleClassEndRemind.IsChecked = _currentConfig.ClassEndRemindEnabled;
 
@@ -274,13 +424,29 @@ namespace CMW
             sliderMiniRemindDuration.Value = mini;
             tbMiniRemindDuration.Text = $"当前：{mini} 秒";
 
-            // ★ 28.0.0：值日 / 待办提醒
-            toggleDutyRemind.IsChecked = _currentConfig.DutyRemindEnabled;
-            txtDutyRemindTime.Text = _currentConfig.DutyRemindTime ?? "07:00";
-            toggleTodoCustomRemind.IsChecked = _currentConfig.TodoCustomRemindEnabled;
-            txtTodoCustomRemindTime.Text = _currentConfig.TodoCustomRemindTime ?? "08:00";
+            _dutyRemindTimes = new List<string>(_currentConfig.DutyRemindTimeList ?? new List<string>());
+            if (_dutyRemindTimes.Count == 0 && !string.IsNullOrWhiteSpace(_currentConfig.DutyRemindTime))
+                _dutyRemindTimes.Add(_currentConfig.DutyRemindTime);
+            _dutyRemindTimes = _dutyRemindTimes
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .Distinct()
+                .OrderBy(t => TimeSpan.TryParse(t, out var ts) ? ts : TimeSpan.Zero)
+                .ToList();
 
-            // 右侧窗口
+            _todoRemindTimes = new List<string>(_currentConfig.TodoRemindTimeList ?? new List<string>());
+            if (_todoRemindTimes.Count == 0 && !string.IsNullOrWhiteSpace(_currentConfig.TodoCustomRemindTime))
+                _todoRemindTimes.Add(_currentConfig.TodoCustomRemindTime);
+            _todoRemindTimes = _todoRemindTimes
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .Distinct()
+                .OrderBy(t => TimeSpan.TryParse(t, out var ts) ? ts : TimeSpan.Zero)
+                .ToList();
+
+            toggleDutyRemind.IsChecked = _currentConfig.DutyRemindEnabled;
+            toggleTodoCustomRemind.IsChecked = _currentConfig.TodoCustomRemindEnabled;
+            RefreshDutyTimes();
+            RefreshTodoTimes();
+
             toggleRightEnabled.IsChecked = _currentConfig.FloatWindowEnabled;
             toggleRightAutoHide.IsChecked = _currentConfig.RightPanelAutoHideOnClassStart;
             toggleRightAutoShow.IsChecked = _currentConfig.RightPanelAutoShowOnClassEnd;
@@ -300,12 +466,11 @@ namespace CMW
 
             switch (_currentConfig.RightPanelContentMode)
             {
-                case "Schedule": cbRightContentMode.SelectedIndex = 0; break;
-                case "Homework": cbRightContentMode.SelectedIndex = 1; break;
-                case "Duty": cbRightContentMode.SelectedIndex = 2; break;
-                case "Todo": cbRightContentMode.SelectedIndex = 3; break;
+                case "Homework": cbRightContentMode.SelectedIndex = 0; break;
+                case "Duty": cbRightContentMode.SelectedIndex = 1; break;
+                case "Todo": cbRightContentMode.SelectedIndex = 2; break;
                 case "Auto":
-                default: cbRightContentMode.SelectedIndex = 4; break;
+                default: cbRightContentMode.SelectedIndex = 3; break;
             }
 
             int rsec = _currentConfig.RightPanelAutoSwitchSeconds;
@@ -320,31 +485,44 @@ namespace CMW
             sliderRightFontScale.Value = rfs;
             tbRightFontScale.Text = $"当前：{rfs:F1} 倍";
 
-            // ★ 28.0.0：教学辅助
             toggleBoardAutoSchedule.IsChecked = _currentConfig.BoardAutoScheduleEnabled;
             txtBoardStartTime.Text = _currentConfig.BoardAutoStartTime ?? "07:30";
             txtBoardEndTime.Text = _currentConfig.BoardAutoEndTime ?? "18:00";
 
-            toggleLeftSchedule.IsChecked = _currentConfig.LeftScheduleEnabled;
-
-            double lsw = _currentConfig.LeftScheduleWidth;
-            if (lsw < 60) lsw = 90;
-            if (lsw > 200) lsw = 200;
-            sliderLeftScheduleWidth.Value = lsw;
-            tbLeftScheduleWidth.Text = $"当前：{lsw:F0} px";
-
-            // ★ 28.0.0：启动设置
             toggleAutoStart.IsChecked = _currentConfig.AutoStart;
-
             togglePowerSchedule.IsChecked = _currentConfig.PowerScheduleEnabled;
             txtPowerOnTime.Text = _currentConfig.PowerOnTime ?? "07:00";
             txtPowerOffTime.Text = _currentConfig.PowerOffTime ?? "22:00";
 
-            // 密码框清空
             pwdCurrent.Password = "";
             pwdNew.Password = "";
             pwdConfirm.Password = "";
             tbPwdTip.Text = "";
+        }
+
+        private void UpdateBarWidthActual(double value)
+        {
+            try
+            {
+                var wa = SystemParameters.WorkArea;
+                double maxByScreen = wa.Width * 0.9;
+                double actual = value;
+                if (actual > maxByScreen) actual = maxByScreen;
+                if (actual < 50) actual = 50;
+
+                if (Math.Abs(actual - value) > 0.5)
+                {
+                    tbBarWidthActual.Text = $"（当前屏幕实际生效：{actual:F0} px，被屏幕宽度 90% 限制）";
+                }
+                else
+                {
+                    tbBarWidthActual.Text = "";
+                }
+            }
+            catch
+            {
+                tbBarWidthActual.Text = "";
+            }
         }
 
         private void UpdateBackgroundPathDisplay()
@@ -360,33 +538,334 @@ namespace CMW
             }
         }
 
+        // ═══════════════════════════════════════════════════════════
+        // C2：横条组显示顺序 · 面板重建 + 拖动排序
+        // ═══════════════════════════════════════════════════════════
+        private void RebuildBarGroupOrderPanel()
+        {
+            panelBarGroupOrder.Children.Clear();
+            for (int i = 0; i < _barGroupOrder.Count; i++)
+            {
+                var row = BuildBarGroupOrderRow(_barGroupOrder[i]);
+                panelBarGroupOrder.Children.Add(row);
+            }
+        }
+
+        private Border BuildBarGroupOrderRow(int groupId)
+        {
+            var border = new Border
+            {
+                Background = Brushes.Transparent,
+                BorderBrush = (Brush)FindResource("ThemeBorderLightBrush"),
+                BorderThickness = new Thickness(0, 0, 0, 1),
+                Padding = new Thickness(0),
+                MinHeight = BarGroupRowHeight,
+                Tag = groupId
+            };
+
+            var grid = new Grid();
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(44) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+            var handle = new Border
+            {
+                Width = 40,
+                Height = 40,
+                Background = Brushes.Transparent,
+                CornerRadius = new CornerRadius(6),
+                Cursor = Cursors.SizeNS,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+
+            var handleText = new TextBlock
+            {
+                Text = "≡",
+                FontFamily = new FontFamily("Segoe UI"),
+                FontSize = 20,
+                Foreground = (Brush)FindResource("ThemeTextHintBrush"),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            handle.Child = handleText;
+
+            handle.PreviewMouseLeftButtonDown += BarOrderHandle_PreviewMouseLeftButtonDown;
+            handle.PreviewMouseMove += BarOrderHandle_PreviewMouseMove;
+            handle.PreviewMouseLeftButtonUp += BarOrderHandle_PreviewMouseLeftButtonUp;
+            handle.PreviewTouchDown += BarOrderHandle_PreviewTouchDown;
+            handle.PreviewTouchMove += BarOrderHandle_PreviewTouchMove;
+            handle.PreviewTouchUp += BarOrderHandle_PreviewTouchUp;
+
+            Grid.SetColumn(handle, 0);
+            grid.Children.Add(handle);
+
+            var label = new TextBlock
+            {
+                Text = BarGroupNames.TryGetValue(groupId, out var name) ? name : $"组 {groupId}",
+                FontFamily = (FontFamily)FindResource("GlobalFontFamily"),
+                FontSize = 14,
+                Foreground = (Brush)FindResource("ThemeTextPrimaryBrush"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(4, 0, 0, 0)
+            };
+            Grid.SetColumn(label, 1);
+            grid.Children.Add(label);
+
+            border.Child = grid;
+
+            var tt = new TranslateTransform(0, 0);
+            border.RenderTransform = tt;
+
+            return border;
+        }
+
+        private Border? FindRowFromHandle(object sender)
+        {
+            if (sender is not DependencyObject d) return null;
+            DependencyObject? cur = d;
+            while (cur != null)
+            {
+                if (cur is Border b && b.Tag is int) return b;
+                cur = VisualTreeHelper.GetParent(cur);
+            }
+            return null;
+        }
+
+        private void BarOrderHandle_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var row = FindRowFromHandle(sender);
+            if (row == null) return;
+            BeginBarGroupDrag(row);
+            try { Mouse.Capture(row); } catch { }
+            e.Handled = true;
+        }
+
+        private void BarOrderHandle_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (_draggingBarRow == null) return;
+            if (e.LeftButton != MouseButtonState.Pressed)
+            {
+                EndBarGroupDrag();
+                return;
+            }
+            double curY = System.Windows.Forms.Cursor.Position.Y;
+            UpdateBarGroupDrag(curY);
+        }
+
+        private void BarOrderHandle_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_draggingBarRow == null) return;
+            EndBarGroupDrag();
+            try { Mouse.Capture(null); } catch { }
+            e.Handled = true;
+        }
+
+        private int _activeTouchId = -1;
+
+        // ★ 32.0.0：sender 改为 object?，修 CS8622
+        private void BarOrderHandle_PreviewTouchDown(object? sender, TouchEventArgs e)
+        {
+            var row = FindRowFromHandle(sender);
+            if (row == null) return;
+            BeginBarGroupDrag(row);
+            _activeTouchId = e.TouchDevice.Id;
+            try { row.CaptureTouch(e.TouchDevice); } catch { }
+            e.Handled = true;
+        }
+
+        private void BarOrderHandle_PreviewTouchMove(object? sender, TouchEventArgs e)
+        {
+            if (_draggingBarRow == null) return;
+            if (e.TouchDevice.Id != _activeTouchId) return;
+            double curY = System.Windows.Forms.Cursor.Position.Y;
+            UpdateBarGroupDrag(curY);
+            e.Handled = true;
+        }
+
+        private void BarOrderHandle_PreviewTouchUp(object? sender, TouchEventArgs e)
+        {
+            if (_draggingBarRow == null) return;
+            if (e.TouchDevice.Id != _activeTouchId) return;
+            EndBarGroupDrag();
+            try { _draggingBarRow.ReleaseTouchCapture(e.TouchDevice); } catch { }
+            _activeTouchId = -1;
+            e.Handled = true;
+        }
+
+        private void BeginBarGroupDrag(Border row)
+        {
+            _draggingBarRow = row;
+            _draggingOriginalIndex = panelBarGroupOrder.Children.IndexOf(row);
+            _dragStartScreenY = System.Windows.Forms.Cursor.Position.Y;
+            _isBarGroupDragging = false;
+
+            if (row.RenderTransform is TranslateTransform tt)
+            {
+                tt.BeginAnimation(TranslateTransform.YProperty, null);
+                tt.Y = 0;
+            }
+
+            row.Opacity = 0.75;
+            row.SetValue(Panel.ZIndexProperty, 100);
+        }
+
+        private void UpdateBarGroupDrag(double currentScreenY)
+        {
+            if (_draggingBarRow == null) return;
+
+            double delta = currentScreenY - _dragStartScreenY;
+
+            if (!_isBarGroupDragging)
+            {
+                if (Math.Abs(delta) < BarGroupDragThreshold) return;
+                _isBarGroupDragging = true;
+            }
+
+            if (_draggingBarRow.RenderTransform is TranslateTransform tt)
+            {
+                tt.Y = delta;
+            }
+        }
+
+        private void EndBarGroupDrag()
+        {
+            if (_draggingBarRow == null) return;
+
+            var row = _draggingBarRow;
+            int originalIndex = _draggingOriginalIndex;
+            bool moved = _isBarGroupDragging;
+
+            if (row.RenderTransform is TranslateTransform tt)
+            {
+                tt.BeginAnimation(TranslateTransform.YProperty, null);
+                tt.Y = 0;
+            }
+            row.Opacity = 1;
+            row.SetValue(Panel.ZIndexProperty, 0);
+
+            _draggingBarRow = null;
+            _draggingOriginalIndex = -1;
+            _isBarGroupDragging = false;
+
+            if (!moved) return;
+
+            double delta = System.Windows.Forms.Cursor.Position.Y - _dragStartScreenY;
+            int steps = (int)Math.Round(delta / BarGroupRowHeight);
+
+            int newIndex = originalIndex + steps;
+            if (newIndex < 0) newIndex = 0;
+            if (newIndex >= _barGroupOrder.Count) newIndex = _barGroupOrder.Count - 1;
+
+            if (newIndex == originalIndex) return;
+
+            int movedId = _barGroupOrder[originalIndex];
+            _barGroupOrder.RemoveAt(originalIndex);
+            _barGroupOrder.Insert(newIndex, movedId);
+
+            RebuildBarGroupOrderPanel();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // C3：多条考试倒计时 · 列表
+        // ═══════════════════════════════════════════════════════════
+        private void RefreshExamCountdownList()
+        {
+            icExamCountdowns.ItemsSource = null;
+            icExamCountdowns.ItemsSource = _examCountdowns;
+        }
+
+        private void BtnAddExamCountdown_Click(object sender, RoutedEventArgs e)
+        {
+            string name = (txtNewExamName.Text ?? "").Trim();
+            DateTime? date = dpNewExamDate.SelectedDate;
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                tbTip.Text = "⚠️ 请输入考试名称";
+                return;
+            }
+
+            if (!date.HasValue)
+            {
+                tbTip.Text = "⚠️ 请选择考试日期";
+                return;
+            }
+
+            _examCountdowns.Add(new ExamCountdownItem
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = name,
+                Date = date.Value.ToString("yyyy-MM-dd")
+            });
+
+            txtNewExamName.Text = "";
+            dpNewExamDate.SelectedDate = null;
+
+            RefreshExamCountdownList();
+            tbTip.Text = $"✅ 已添加「{name}」（记得保存设置）";
+        }
+
+        private void BtnDeleteExamCountdown_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button btn || btn.Tag is not ExamCountdownItem item) return;
+            _examCountdowns.RemoveAll(x => x.Id == item.Id);
+            RefreshExamCountdownList();
+            tbTip.Text = $"✅ 已删除「{item.Name}」（记得保存设置）";
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // 保存
+        // ═══════════════════════════════════════════════════════════
         private void ReadUiToConfig()
         {
             _currentConfig.ClassName = txtClassName.Text.Trim();
-            _currentConfig.BlurRadius = (int)sliderBlur.Value;
-            if (cbFontFamily.SelectedItem is ComboBoxItem fontItem)
+
+            if (cbTheme.SelectedItem is ComboBoxItem themeItem)
             {
-                _currentConfig.FontFamily = fontItem.Content?.ToString() ?? "Microsoft YaHei UI";
+                _currentConfig.ThemeName = themeItem.Tag?.ToString() ?? "PCL2";
             }
 
+            _currentConfig.BlurRadius = (int)sliderBlur.Value;
+
+            if (cbBackgroundPreset.SelectedItem is ComboBoxItem presetItem)
+            {
+                _currentConfig.BackgroundPreset = presetItem.Tag?.ToString() ?? "None";
+            }
+
+            if (cbFontFamily.SelectedItem is ComboBoxItem fontItem)
+            {
+                string fname = fontItem.Content?.ToString() ?? "";
+                if (string.IsNullOrWhiteSpace(fname))
+                    fname = "Microsoft YaHei UI";
+                _currentConfig.FontFamily = fname;
+            }
+
+            _currentConfig.FontAutoFitEnabled = toggleFontAutoFit.IsChecked == true;
             _currentConfig.BackgroundBlurEnabled = toggleBlurEnabled.IsChecked == true;
 
-            _currentConfig.ExamName = (txtExamName.Text ?? "").Trim();
-            _currentConfig.ExamDate = dpExamDate.SelectedDate.HasValue
-                ? dpExamDate.SelectedDate.Value.ToString("yyyy-MM-dd")
-                : "";
+            _currentConfig.ExamCountdownList = new List<ExamCountdownItem>(_examCountdowns);
+            if (_examCountdowns.Count > 0)
+            {
+                _currentConfig.ExamName = _examCountdowns[0].Name;
+                _currentConfig.ExamDate = _examCountdowns[0].Date;
+            }
+            else
+            {
+                _currentConfig.ExamName = "";
+                _currentConfig.ExamDate = "";
+            }
 
             _currentConfig.DutyAutoRotateEnabled = toggleDutyAutoRotate.IsChecked == true;
 
-            _currentConfig.IslandDraggable = toggleIslandDraggable.IsChecked == true;
+            _currentConfig.ClassChangeStyle =
+                (cbClassChangeStyle.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "ColorThenNotify";
 
-            // ★ 28.0.0：通知条宽度 / 高度
+            _currentConfig.IslandDraggable = toggleIslandDraggable.IsChecked == true;
             _currentConfig.NotifyBarWidthPercent = sliderNotifyWidth.Value;
             _currentConfig.NotifyBarHeightPercent = sliderNotifyHeight.Value;
 
-            string sizeTag = (cbIslandSize.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Medium";
-            _currentConfig.IslandCardSize = sizeTag;
-
+            _currentConfig.IslandCardSize =
+                (cbIslandSize.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Medium";
             _currentConfig.IslandCapsuleTextMode =
                 (cbCapsuleTextMode.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "CMW";
 
@@ -398,20 +877,41 @@ namespace CMW
             _currentConfig.SilentStart = (txtSilentStart.Text ?? "").Trim();
             _currentConfig.SilentEnd = (txtSilentEnd.Text ?? "").Trim();
 
-            // ★ 上下课提醒
+            _currentConfig.IslandBarEnabled = toggleBarEnabled.IsChecked == true;
+            _currentConfig.IslandBarAutoExtendOnClassChange = toggleBarAutoExtend.IsChecked == true;
+            _currentConfig.IslandBarManualExtendEnabled = toggleBarManualExtend.IsChecked == true;
+            _currentConfig.IslandBlueFlashSeconds = (int)sliderBlueFlash.Value;
+
+            double barWidth = sliderBarWidth.Value;
+            if (barWidth < 50) barWidth = 50;
+            _currentConfig.IslandBarWidth = barWidth;
+
+            _currentConfig.IslandCircleDiameter = sliderCircleDiameter.Value;
+            _currentConfig.IslandBarAutoRotateEnabled = toggleBarAutoRotate.IsChecked == true;
+            _currentConfig.IslandBarRotateSeconds = (int)sliderRotateSeconds.Value;
+            _currentConfig.IslandBarShowDateGroup = toggleGroupDate.IsChecked == true;
+            _currentConfig.IslandBarShowScheduleGroup = toggleGroupSchedule.IsChecked == true;
+            _currentConfig.IslandBarShowStatusGroup = toggleGroupStatus.IsChecked == true;
+            _currentConfig.IslandBarShowHomeworkGroup = toggleGroupHomework.IsChecked == true;
+            _currentConfig.IslandBarShowDutyGroup = toggleGroupDuty.IsChecked == true;
+            _currentConfig.IslandBarShowTodoGroup = toggleGroupTodo.IsChecked == true;
+
+            _currentConfig.IslandBarGroupOrder = new List<int>(_barGroupOrder);
+
             _currentConfig.ClassStartRemindEnabled = toggleClassStartRemind.IsChecked == true;
             _currentConfig.ClassEndRemindEnabled = toggleClassEndRemind.IsChecked == true;
             _currentConfig.ClassRemindStyle =
                 (cbClassRemindStyle.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Popup";
             _currentConfig.MiniRemindDurationSeconds = (int)sliderMiniRemindDuration.Value;
 
-            // ★ 值日 / 待办提醒
             _currentConfig.DutyRemindEnabled = toggleDutyRemind.IsChecked == true;
-            _currentConfig.DutyRemindTime = (txtDutyRemindTime.Text ?? "").Trim();
-            _currentConfig.TodoCustomRemindEnabled = toggleTodoCustomRemind.IsChecked == true;
-            _currentConfig.TodoCustomRemindTime = (txtTodoCustomRemindTime.Text ?? "").Trim();
+            _currentConfig.DutyRemindTimeList = new List<string>(_dutyRemindTimes);
+            _currentConfig.DutyRemindTime = _dutyRemindTimes.Count > 0 ? _dutyRemindTimes[0] : "07:00";
 
-            // 右侧窗口
+            _currentConfig.TodoCustomRemindEnabled = toggleTodoCustomRemind.IsChecked == true;
+            _currentConfig.TodoRemindTimeList = new List<string>(_todoRemindTimes);
+            _currentConfig.TodoCustomRemindTime = _todoRemindTimes.Count > 0 ? _todoRemindTimes[0] : "08:00";
+
             _currentConfig.FloatWindowEnabled = toggleRightEnabled.IsChecked == true;
             _currentConfig.RightPanelAutoHideOnClassStart = toggleRightAutoHide.IsChecked == true;
             _currentConfig.RightPanelAutoShowOnClassEnd = toggleRightAutoShow.IsChecked == true;
@@ -419,7 +919,6 @@ namespace CMW
             bool ownSlotsNow = toggleRightOwnTimeSlots.IsChecked == true;
             if (ownSlotsNow && !_currentConfig.RightPanelUseOwnTimeSlots)
             {
-                // 刚开启 → 复制当前时段作为初始
                 if (_currentConfig.RightPanelTimeSlots == null || _currentConfig.RightPanelTimeSlots.Count == 0)
                 {
                     _currentConfig.RightPanelTimeSlots = _currentConfig.TimeSlots
@@ -440,25 +939,17 @@ namespace CMW
 
             _currentConfig.RightPanelContentMode =
                 (cbRightContentMode.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Auto";
-
             _currentConfig.RightPanelAutoSwitchSeconds = (int)sliderRightAutoSec.Value;
-
             _currentConfig.RightPanelFontScale = sliderRightFontScale.Value;
 
             _currentConfig.FloatWindowContentMode = _currentConfig.RightPanelContentMode;
             _currentConfig.FloatWindowAutoSwitch = _currentConfig.RightPanelContentMode == "Auto";
 
-            // ★ 教学辅助
             _currentConfig.BoardAutoScheduleEnabled = toggleBoardAutoSchedule.IsChecked == true;
             _currentConfig.BoardAutoStartTime = (txtBoardStartTime.Text ?? "").Trim();
             _currentConfig.BoardAutoEndTime = (txtBoardEndTime.Text ?? "").Trim();
 
-            _currentConfig.LeftScheduleEnabled = toggleLeftSchedule.IsChecked == true;
-            _currentConfig.LeftScheduleWidth = sliderLeftScheduleWidth.Value;
-
-            // ★ 启动设置
             _currentConfig.AutoStart = toggleAutoStart.IsChecked == true;
-
             _currentConfig.PowerScheduleEnabled = togglePowerSchedule.IsChecked == true;
             _currentConfig.PowerOnTime = (txtPowerOnTime.Text ?? "").Trim();
             _currentConfig.PowerOffTime = (txtPowerOffTime.Text ?? "").Trim();
@@ -469,9 +960,17 @@ namespace CMW
             if (_isLoading) return;
 
             int oldRadius = _currentConfig.BlurRadius;
+            string oldTheme = _currentConfig.ThemeName;
 
             ReadUiToConfig();
             SaveConfigToFile();
+
+            App.ApplyFontToApp(_currentConfig.FontFamily);
+
+            if (oldTheme != _currentConfig.ThemeName)
+            {
+                App.ApplyTheme(_currentConfig.ThemeName);
+            }
 
             try
             {
@@ -480,7 +979,9 @@ namespace CMW
             catch { }
 
             bool needRegen = _blurNeedsRegen || (oldRadius != _currentConfig.BlurRadius);
-            if (needRegen && _currentConfig.BackgroundBlurEnabled)
+            if (needRegen
+                && _currentConfig.BackgroundBlurEnabled
+                && (_currentConfig.BackgroundPreset ?? "None") == "None")
             {
                 tbTip.Text = "⏳ 正在生成模糊背景...";
                 Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
@@ -490,16 +991,6 @@ namespace CMW
                 _blurNeedsRegen = false;
             }
 
-            // ★ 28.0.0：启动 / 关闭左侧课表
-            try
-            {
-                if (_currentConfig.LeftScheduleEnabled)
-                    App.EnsureLeftSchedule();
-                else
-                    App.CloseLeftSchedule();
-            }
-            catch { }
-
             App.NotifySettingsChanged();
 
             if (_currentConfig.AutoStart)
@@ -507,6 +998,100 @@ namespace CMW
             else
                 tbTip.Text = "✅ 设置已保存并立即生效";
         }
+
+        // ═══════ 值日 / 待办时间段 ═══════
+
+        private void TxtNewDutyTime_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key != Key.Enter) return;
+            e.Handled = true;
+            BtnAddDutyTime_Click(sender, e);
+        }
+
+        private void BtnAddDutyTime_Click(object sender, RoutedEventArgs e)
+        {
+            string t = (txtNewDutyTime.Text ?? "").Trim();
+            if (!TimeSpan.TryParse(t, out _))
+            {
+                tbTip.Text = "⚠️ 时间格式错误，应为 HH:mm";
+                return;
+            }
+            if (_dutyRemindTimes.Contains(t))
+            {
+                tbTip.Text = $"⚠️ {t} 已存在";
+                return;
+            }
+
+            _dutyRemindTimes.Add(t);
+            _dutyRemindTimes = _dutyRemindTimes
+                .OrderBy(x => TimeSpan.TryParse(x, out var ts) ? ts : TimeSpan.Zero)
+                .ToList();
+
+            txtNewDutyTime.Text = "";
+            RefreshDutyTimes();
+            tbTip.Text = $"✅ 已添加 {t}（记得保存）";
+        }
+
+        private void BtnDeleteDutyTime_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button btn || btn.Tag is not string t) return;
+            _dutyRemindTimes.Remove(t);
+            RefreshDutyTimes();
+            tbTip.Text = $"✅ 已删除 {t}（记得保存）";
+        }
+
+        private void RefreshDutyTimes()
+        {
+            icDutyTimes.ItemsSource = null;
+            icDutyTimes.ItemsSource = _dutyRemindTimes;
+        }
+
+        private void TxtNewTodoTime_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key != Key.Enter) return;
+            e.Handled = true;
+            BtnAddTodoTime_Click(sender, e);
+        }
+
+        private void BtnAddTodoTime_Click(object sender, RoutedEventArgs e)
+        {
+            string t = (txtNewTodoTime.Text ?? "").Trim();
+            if (!TimeSpan.TryParse(t, out _))
+            {
+                tbTip.Text = "⚠️ 时间格式错误，应为 HH:mm";
+                return;
+            }
+            if (_todoRemindTimes.Contains(t))
+            {
+                tbTip.Text = $"⚠️ {t} 已存在";
+                return;
+            }
+
+            _todoRemindTimes.Add(t);
+            _todoRemindTimes = _todoRemindTimes
+                .OrderBy(x => TimeSpan.TryParse(x, out var ts) ? ts : TimeSpan.Zero)
+                .ToList();
+
+            txtNewTodoTime.Text = "";
+            RefreshTodoTimes();
+            tbTip.Text = $"✅ 已添加 {t}（记得保存）";
+        }
+
+        private void BtnDeleteTodoTime_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button btn || btn.Tag is not string t) return;
+            _todoRemindTimes.Remove(t);
+            RefreshTodoTimes();
+            tbTip.Text = $"✅ 已删除 {t}（记得保存）";
+        }
+
+        private void RefreshTodoTimes()
+        {
+            icTodoTimes.ItemsSource = null;
+            icTodoTimes.ItemsSource = _todoRemindTimes;
+        }
+
+        // ═══════ 其他 ═══════
 
         private void BtnChooseBackground_Click(object sender, RoutedEventArgs e)
         {
@@ -624,12 +1209,16 @@ namespace CMW
                 }
                 catch { }
 
-                if (_currentConfig.BackgroundBlurEnabled)
+                if (_currentConfig.BackgroundBlurEnabled
+                    && (_currentConfig.BackgroundPreset ?? "None") == "None")
                 {
                     HomePage.GenerateBlurredBackground();
                 }
 
+                App.ApplyFontToApp(_currentConfig.FontFamily);
+                App.ApplyTheme(_currentConfig.ThemeName);
                 App.NotifySettingsChanged();
+
                 tbTip.Text = "✅ 导入完成并立即生效";
             }
         }
@@ -702,10 +1291,6 @@ namespace CMW
             tbTip.Text = "✅ 所有笔记已清空";
         }
 
-        // ═══════════════════════════════════════
-        // 修改密码
-        // ═══════════════════════════════════════
-
         private void BtnSaveClearPwd_Click(object sender, RoutedEventArgs e)
         {
             string cur = pwdCurrent.Password ?? "";
@@ -750,10 +1335,6 @@ namespace CMW
                 tbPwdTip.Text = "❌ 保存失败：" + ex.Message;
             }
         }
-
-        // ═══════════════════════════════════════
-        // 清空所有数据
-        // ═══════════════════════════════════════
 
         private void BtnClearAllData_Click(object sender, RoutedEventArgs e)
         {
@@ -841,10 +1422,6 @@ namespace CMW
             try { if (Directory.Exists(path)) Directory.Delete(path, true); } catch { }
         }
 
-        // ═══════════════════════════════════════
-        // ★ 28.0.0：编辑右侧独立时段表
-        // ═══════════════════════════════════════
-
         private void BtnEditRightTimeSlots_Click(object sender, RoutedEventArgs e)
         {
             var win = new TimeSlotEditorWindow(true)
@@ -853,10 +1430,6 @@ namespace CMW
             };
             win.ShowDialog();
         }
-
-        // ═══════════════════════════════════════
-        // ★ 28.0.0：编辑课程简称
-        // ═══════════════════════════════════════
 
         private void BtnEditSubjectMap_Click(object sender, RoutedEventArgs e)
         {
@@ -867,9 +1440,23 @@ namespace CMW
             win.ShowDialog();
         }
 
-        // ═══════════════════════════════════════
-        // ★ 28.0.0：生成开机 / 关机脚本
-        // ═══════════════════════════════════════
+        // ★ 32.0.0：自动开机 BIOS 引导
+        private void BtnOpenBiosGuide_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var win = new BiosWakeGuideWindow
+                {
+                    Owner = Window.GetWindow(this)
+                };
+                win.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("打开引导失败：" + ex.Message, "错误",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
 
         private void BtnGeneratePowerScripts_Click(object sender, RoutedEventArgs e)
         {
@@ -881,14 +1468,11 @@ namespace CMW
                 string onTime = (txtPowerOnTime.Text ?? "07:00").Trim();
                 string offTime = (txtPowerOffTime.Text ?? "22:00").Trim();
 
-                // 开机脚本（生成任务计划程序可用的 .bat）
                 string onBat =
                     "@echo off\r\n" +
                     "REM CMW 自动开机脚本（由 CMW 生成）\r\n" +
                     "REM 建议开机时间：" + onTime + "\r\n" +
                     "REM 用法：导入任务计划程序，触发时间设为 " + onTime + "，操作选本脚本\r\n" +
-                    "REM 如果支持 Wake-on-LAN，可在此处插入网络唤醒命令\r\n" +
-                    "REM 示例：wolcmd <MAC> <IP> <SUBNET> <PORT>\r\n" +
                     "echo CMW 开机脚本（触发时间 " + onTime + "）\r\n" +
                     "pause\r\n";
 
@@ -896,7 +1480,6 @@ namespace CMW
                     "@echo off\r\n" +
                     "REM CMW 自动关机脚本（由 CMW 生成）\r\n" +
                     "REM 建议关机时间：" + offTime + "\r\n" +
-                    "REM 用法：导入任务计划程序，触发时间设为 " + offTime + "，操作选本脚本\r\n" +
                     "shutdown /s /t 60 /c \"CMW 定时关机（60 秒后）\"\r\n" +
                     "echo 已计划 60 秒后关机\r\n";
 
@@ -911,7 +1494,7 @@ namespace CMW
                     "1. 打开「任务计划程序」\n" +
                     "2. 创建基本任务 → 触发时间设为 " + onTime + " / " + offTime + "\n" +
                     "3. 操作选「启动程序」→ 选对应的 .bat\n\n" +
-                    "注：Windows 默认不支持定时开机，开机脚本仅作为占位，实际开机需要主板 BIOS 支持 RTC Wake 或 Wake-on-LAN。",
+                    "注：Windows 默认不支持定时开机，开机脚本仅作为占位。",
                     "脚本已生成", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -940,10 +1523,6 @@ namespace CMW
                     "错误", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
-
-        // ═══════════════════════════════════════
-        // 密码输入弹窗
-        // ═══════════════════════════════════════
 
         private string? PromptPassword(string prompt, string title)
         {
