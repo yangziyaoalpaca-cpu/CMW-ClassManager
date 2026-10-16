@@ -6,79 +6,6 @@
 
     <UserControl.Resources>
 
-        <Style x:Key="SubTabButton" TargetType="RadioButton">
-            <Setter Property="Height" Value="40"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="RadioButton">
-                        <Border x:Name="Bg"
-                                Background="{TemplateBinding Background}"
-                                CornerRadius="{DynamicResource RadiusSmall}"
-                                Padding="12,0">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Path x:Name="Icon"
-                                      Data="{TemplateBinding Tag}"
-                                      Stroke="{TemplateBinding Foreground}"
-                                      StrokeThickness="1.5"
-                                      Fill="Transparent"
-                                      Width="18" Height="18"
-                                      Stretch="Uniform"
-                                      VerticalAlignment="Center"/>
-                                <TextBlock x:Name="Label"
-                                           Text="{TemplateBinding Content}"
-                                           Foreground="{TemplateBinding Foreground}"
-                                           Margin="10,0,0,0"
-                                           VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemePrimaryBgBrush}"/>
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemePrimaryBgBrush}"/>
-                                <Setter Property="Foreground" Value="{DynamicResource ThemePrimaryBrush}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="SectionCard" TargetType="Border">
-            <Setter Property="Background" Value="{DynamicResource ThemeCardBrush}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderBrush}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="{DynamicResource RadiusLarge}"/>
-            <Setter Property="Padding" Value="20"/>
-            <Setter Property="Margin" Value="0,0,0,16"/>
-        </Style>
-
-        <Style x:Key="TitleText" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="18"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
-            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
-            <Setter Property="Margin" Value="0,0,0,12"/>
-        </Style>
-
-        <Style x:Key="NormalText" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
-            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
-        </Style>
-
-        <Style x:Key="HintText" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Foreground" Value="{DynamicResource ThemeTextHintBrush}"/>
-            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
-        </Style>
-
         <Style x:Key="IosToggle" TargetType="CheckBox">
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
@@ -101,40 +28,6 @@
                                 <Setter TargetName="Thumb" Property="Margin" Value="0,0,3,0"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="TouchScrollBar" TargetType="ScrollBar">
-            <Setter Property="Width" Value="10"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ScrollBar">
-                        <Grid Background="{TemplateBinding Background}">
-                            <Track x:Name="PART_Track" IsDirectionReversed="True">
-                                <Track.Thumb>
-                                    <Thumb>
-                                        <Thumb.Template>
-                                            <ControlTemplate TargetType="Thumb">
-                                                <Border Background="#C0C0C0"
-                                                        CornerRadius="5"
-                                                        Margin="2,0"/>
-                                            </ControlTemplate>
-                                        </Thumb.Template>
-                                    </Thumb>
-                                </Track.Thumb>
-                                <Track.IncreaseRepeatButton>
-                                    <RepeatButton Command="ScrollBar.PageDownCommand"
-                                                  Opacity="0" Focusable="False"/>
-                                </Track.IncreaseRepeatButton>
-                                <Track.DecreaseRepeatButton>
-                                    <RepeatButton Command="ScrollBar.PageUpCommand"
-                                                  Opacity="0" Focusable="False"/>
-                                </Track.DecreaseRepeatButton>
-                            </Track>
-                        </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -216,8 +109,36 @@
                                     <TextBox x:Name="txtClassName" Margin="0,0,0,12"/>
 
                                     <TextBlock Text="主题" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
-                                    <ComboBox x:Name="cbTheme" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="cbTheme" Margin="0,0,0,4"
+                                              SelectionChanged="CbTheme_SelectionChanged"/>
                                     <TextBlock Text="切换后立即生效" Style="{StaticResource HintText}" Margin="0,0,0,16"/>
+
+                                    <!-- ★ 33.0.0：全局 R 角 -->
+                                    <TextBlock Text="全局 R 角（圆角半径）" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
+                                    <Grid Margin="0,0,0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Slider x:Name="sliderGlobalRadius"
+                                                Grid.Column="0"
+                                                Minimum="4" Maximum="24"
+                                                Value="8"
+                                                TickFrequency="1"
+                                                IsSnapToTickEnabled="True"
+                                                Margin="0,0,16,0"/>
+                                        <Border x:Name="RadiusPreview"
+                                                Grid.Column="1"
+                                                Width="40" Height="40"
+                                                Background="{DynamicResource ThemeCardBrush}"
+                                                BorderBrush="{DynamicResource ThemeShadowLineBrush}"
+                                                BorderThickness="0,0,1,1"
+                                                CornerRadius="8"
+                                                VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <TextBlock x:Name="tbGlobalRadius" Style="{StaticResource HintText}" Margin="0,0,0,2"/>
+                                    <TextBlock Text="影响所有卡片 / 按钮 / 输入框的圆角。灵动岛胶囊和圆形不受影响。保存后生效。"
+                                               Style="{StaticResource HintText}" Margin="0,0,0,16"/>
 
                                     <TextBlock Text="背景高斯模糊强度" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
                                     <Slider x:Name="sliderBlur" Minimum="0" Maximum="80" Value="40" Margin="0,0,0,6"/>
@@ -226,7 +147,8 @@
                                                Style="{StaticResource HintText}" Margin="0,0,0,12"/>
 
                                     <TextBlock Text="字体" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
-                                    <ComboBox x:Name="cbFontFamily" Margin="0,0,0,4"/>
+                                    <ComboBox x:Name="cbFontFamily" Margin="0,0,0,4"
+                                              SelectionChanged="CbFontFamily_SelectionChanged"/>
                                     <TextBlock Text="切换后立即生效" Style="{StaticResource HintText}" Margin="0,0,0,10"/>
 
                                     <Grid Margin="0,0,0,20">
@@ -243,7 +165,6 @@
                                                   Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
                                     </Grid>
 
-                                    <!-- 多条考试倒计时 -->
                                     <TextBlock Text="考试倒计时（可添加多条）" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
                                     <TextBlock Text="首页与电子班牌显示最近的前 3 条；留空则不显示"
                                                Style="{StaticResource HintText}" Margin="0,0,0,8"/>
@@ -252,9 +173,9 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Border Background="{DynamicResource ThemeRowAltBrush}"
-                                                        BorderBrush="{DynamicResource ThemeBorderBrush}"
-                                                        BorderThickness="1"
-                                                        CornerRadius="{DynamicResource RadiusSmall}"
+                                                        BorderBrush="{DynamicResource ThemeShadowLineBrush}"
+                                                        BorderThickness="0,0,1,1"
+                                                        CornerRadius="{DynamicResource GlobalCornerRadius}"
                                                         Padding="12,8"
                                                         Margin="0,0,0,4">
                                                     <Grid>
@@ -334,15 +255,15 @@
                                                   VerticalAlignment="Center"/>
                                     </Grid>
 
-                                    <!-- 上下课表现方式 -->
                                     <TextBlock Text="上下课表现方式" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
-                                    <ComboBox x:Name="cbClassChangeStyle" Margin="0,0,0,4">
+                                    <ComboBox x:Name="cbClassChangeStyle" Margin="0,0,0,4"
+                                              SelectionChanged="CbClassChangeStyle_SelectionChanged">
                                         <ComboBoxItem Content="变色 → 通知（推荐）" Tag="ColorThenNotify" IsSelected="True"/>
                                         <ComboBoxItem Content="仅通知" Tag="NotifyOnly"/>
                                         <ComboBoxItem Content="仅变色 + 横条" Tag="ColorAndBar"/>
                                         <ComboBoxItem Content="都不做" Tag="None"/>
                                     </ComboBox>
-                                    <TextBlock Text="变色时长请到「灵动岛」页调整；「仅变色 + 横条」不含通知"
+                                    <TextBlock Text="切换后立即生效；变色时长请到「灵动岛」页调整"
                                                Style="{StaticResource HintText}"
                                                Margin="0,0,0,0"/>
                                 </StackPanel>
@@ -356,14 +277,15 @@
                                     <TextBlock Text="主页背景" Style="{StaticResource TitleText}"/>
 
                                     <TextBlock Text="背景样式" Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
-                                    <ComboBox x:Name="cbBackgroundPreset" Margin="0,0,0,4">
+                                    <ComboBox x:Name="cbBackgroundPreset" Margin="0,0,0,4"
+                                              SelectionChanged="CbBackgroundPreset_SelectionChanged">
                                         <ComboBoxItem Content="图片（默认）" Tag="None" IsSelected="True"/>
                                         <ComboBoxItem Content="深蓝斜向" Tag="DeepBlue"/>
                                         <ComboBoxItem Content="晨雾浅蓝" Tag="MorningMist"/>
                                         <ComboBoxItem Content="暗夜紫灰" Tag="NightPurple"/>
                                         <ComboBoxItem Content="墨绿山水" Tag="InkGreen"/>
                                     </ComboBox>
-                                    <TextBlock Text="选渐变时不再使用图片；选图片时使用下方配置的图片"
+                                    <TextBlock Text="切换后立即生效；选渐变时不再使用图片"
                                                Style="{StaticResource HintText}" Margin="0,0,0,16"/>
 
                                     <Grid Margin="0,0,0,14">
@@ -402,22 +324,10 @@
                         <!-- 灵动岛 -->
                         <StackPanel x:Name="PanelIsland" Visibility="Collapsed">
 
-                            <!-- 胶囊基础 -->
+                            <!-- 胶囊设置 -->
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
                                     <TextBlock Text="胶囊设置" Style="{StaticResource TitleText}"/>
-
-                                    <Grid Margin="0,0,0,10">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel>
-                                            <TextBlock Text="允许拖动灵动岛" Style="{StaticResource NormalText}"/>
-                                            <TextBlock Text="关闭时固定在屏幕顶部中央" Style="{StaticResource HintText}" Margin="0,2,0,0"/>
-                                        </StackPanel>
-                                        <CheckBox x:Name="toggleIslandDraggable" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
-                                    </Grid>
 
                                     <TextBlock Text="通知条宽度（屏幕百分比）" Style="{StaticResource NormalText}" Margin="0,10,0,4"/>
                                     <Slider x:Name="sliderNotifyWidth"
@@ -438,7 +348,8 @@
                                     <TextBlock x:Name="tbNotifyHeight" Style="{StaticResource HintText}" Margin="0,0,0,16"/>
 
                                     <TextBlock Text="灵动岛展开大小" Style="{StaticResource NormalText}" Margin="0,6,0,4"/>
-                                    <ComboBox x:Name="cbIslandSize" Margin="0,0,0,10">
+                                    <ComboBox x:Name="cbIslandSize" Margin="0,0,0,10"
+                                              SelectionChanged="CbIslandSize_SelectionChanged">
                                         <ComboBoxItem Content="小（400 × 260）" Tag="Small"/>
                                         <ComboBoxItem Content="中（480 × 320）· 推荐" Tag="Medium"/>
                                         <ComboBoxItem Content="大（560 × 360）" Tag="Large"/>
@@ -446,7 +357,8 @@
                                     </ComboBox>
 
                                     <TextBlock Text="胶囊显示内容" Style="{StaticResource NormalText}" Margin="0,6,0,4"/>
-                                    <ComboBox x:Name="cbCapsuleTextMode" Margin="0,0,0,10">
+                                    <ComboBox x:Name="cbCapsuleTextMode" Margin="0,0,0,10"
+                                              SelectionChanged="CbCapsuleTextMode_SelectionChanged">
                                         <ComboBoxItem Content="CMW（默认）" Tag="CMW"/>
                                         <ComboBoxItem Content="距下课 / 上课倒计时" Tag="Countdown"/>
                                         <ComboBoxItem Content="下节课名" Tag="NextClass"/>
@@ -455,7 +367,8 @@
                                     </ComboBox>
 
                                     <TextBlock Text="通知收回方式" Style="{StaticResource NormalText}" Margin="0,6,0,4"/>
-                                    <ComboBox x:Name="cbNotifyMode" Margin="0,0,0,16">
+                                    <ComboBox x:Name="cbNotifyMode" Margin="0,0,0,16"
+                                              SelectionChanged="CbNotifyMode_SelectionChanged">
                                         <ComboBoxItem Content="3 秒后自动收回" Tag="Auto"/>
                                         <ComboBoxItem Content="单击弹窗外区域收回" Tag="Manual"/>
                                     </ComboBox>
@@ -544,6 +457,30 @@
                                         </StackPanel>
                                         <CheckBox x:Name="toggleBarManualExtend" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
                                     </Grid>
+
+                                    <!-- ★ 新增：横条常驻 -->
+                                    <Grid Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="横条常驻" Style="{StaticResource NormalText}"/>
+                                            <TextBlock Text="开启后上下课时横条不自动收回，一直显示；右键仍可手动收回"
+                                                       Style="{StaticResource HintText}" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <CheckBox x:Name="toggleBarPersistent" Grid.Column="1" Style="{StaticResource IosToggle}" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <!-- ★ 新增：主窗口缩回目标 -->
+                                    <TextBlock Text="主窗口缩回目标" Style="{StaticResource NormalText}" Margin="0,6,0,4"/>
+                                    <ComboBox x:Name="cbMinimizeTarget" Margin="0,0,0,4"
+                                              SelectionChanged="CbMinimizeTarget_SelectionChanged">
+                                        <ComboBoxItem Content="缩回为胶囊（默认）" Tag="Island"/>
+                                        <ComboBoxItem Content="缩回为横条" Tag="Bar"/>
+                                    </ComboBox>
+                                    <TextBlock Text="主窗口关闭或最小化时，缩回到哪种形态；选横条时会直接展开横条"
+                                               Style="{StaticResource HintText}" Margin="0,0,0,16"/>
 
                                     <TextBlock Text="上下课时变蓝时长（秒）" Style="{StaticResource NormalText}" Margin="0,10,0,4"/>
                                     <Slider x:Name="sliderBlueFlash"
@@ -656,9 +593,9 @@
                                                Style="{StaticResource HintText}" Margin="0,0,0,8"/>
 
                                     <Border Background="{DynamicResource ThemeRowAltBrush}"
-                                            BorderBrush="{DynamicResource ThemeBorderBrush}"
-                                            BorderThickness="1"
-                                            CornerRadius="{DynamicResource RadiusSmall}"
+                                            BorderBrush="{DynamicResource ThemeShadowLineBrush}"
+                                            BorderThickness="0,0,1,1"
+                                            CornerRadius="{DynamicResource GlobalCornerRadius}"
                                             Padding="4"
                                             Margin="0,0,0,16">
                                         <StackPanel x:Name="panelBarGroupOrder"/>
@@ -705,7 +642,8 @@
                                     </Grid>
 
                                     <TextBlock Text="提醒样式" Style="{StaticResource NormalText}" Margin="0,6,0,4"/>
-                                    <ComboBox x:Name="cbClassRemindStyle" Margin="0,0,0,10">
+                                    <ComboBox x:Name="cbClassRemindStyle" Margin="0,0,0,10"
+                                              SelectionChanged="CbClassRemindStyle_SelectionChanged">
                                         <ComboBoxItem Content="弹窗（原样式）" Tag="Popup"/>
                                         <ComboBoxItem Content="灵动岛内小字" Tag="Mini"/>
                                         <ComboBoxItem Content="弹窗 + 小字" Tag="Both"/>
@@ -757,7 +695,7 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Border Background="{DynamicResource ThemeRowAltBrush}"
-                                                        CornerRadius="{DynamicResource RadiusSmall}"
+                                                        CornerRadius="{DynamicResource GlobalCornerRadius}"
                                                         Padding="12,6" Margin="0,0,0,4">
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
@@ -805,7 +743,7 @@
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Border Background="{DynamicResource ThemeRowAltBrush}"
-                                                        CornerRadius="{DynamicResource RadiusSmall}"
+                                                        CornerRadius="{DynamicResource GlobalCornerRadius}"
                                                         Padding="12,6" Margin="0,0,0,4">
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
@@ -938,7 +876,8 @@
 
                                     <TextBlock Text="内容模式"
                                                Style="{StaticResource NormalText}" Margin="0,0,0,4"/>
-                                    <ComboBox x:Name="cbRightContentMode" Margin="0,0,0,14">
+                                    <ComboBox x:Name="cbRightContentMode" Margin="0,0,0,14"
+                                              SelectionChanged="CbRightContentMode_SelectionChanged">
                                         <ComboBoxItem Content="只显示作业" Tag="Homework"/>
                                         <ComboBoxItem Content="只显示值日" Tag="Duty"/>
                                         <ComboBoxItem Content="只显示待办" Tag="Todo"/>
@@ -1089,7 +1028,6 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- ★ 32.0.0 新增：自动开机 BIOS 引导 -->
                             <Border Style="{StaticResource SectionCard}">
                                 <StackPanel>
                                     <TextBlock Text="自动开机（BIOS 定时唤醒）" Style="{StaticResource TitleText}"/>
@@ -1146,7 +1084,7 @@
                                     <Border Background="#FFF8E1"
                                             BorderBrush="#FFD54F"
                                             BorderThickness="1"
-                                            CornerRadius="{DynamicResource RadiusSmall}"
+                                            CornerRadius="{DynamicResource GlobalCornerRadius}"
                                             Padding="14"
                                             Margin="0,0,0,10">
                                         <StackPanel>
@@ -1171,9 +1109,9 @@
                                                TextWrapping="Wrap"/>
 
                                     <Border Background="{DynamicResource ThemeCardBrush}"
-                                            BorderBrush="{DynamicResource ThemeBorderBrush}"
-                                            BorderThickness="1"
-                                            CornerRadius="{DynamicResource RadiusSmall}"
+                                            BorderBrush="{DynamicResource ThemeShadowLineBrush}"
+                                            BorderThickness="0,0,1,1"
+                                            CornerRadius="{DynamicResource GlobalCornerRadius}"
                                             Padding="14"
                                             Margin="0,0,0,16">
                                         <StackPanel>
@@ -1244,7 +1182,7 @@
                                 <StackPanel>
                                     <TextBlock Text="关于 CMW 班级管理工具" Style="{StaticResource TitleText}"/>
                                     <TextBlock Style="{StaticResource NormalText}" TextWrapping="Wrap">
-                                        版本：32.0.0
+                                        版本：33.0.0
                                         <LineBreak/>
                                         设计：alpaca
                                         <LineBreak/>
@@ -1253,6 +1191,48 @@
                                         框架：.NET 6.0
                                         <LineBreak/>
                                         适用：武汉外国语学校高中部
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- ★ 33.0.0：版本历程 -->
+                            <Border Style="{StaticResource SectionCard}">
+                                <StackPanel>
+                                    <TextBlock Text="版本历程" Style="{StaticResource TitleText}"/>
+
+                                    <TextBlock Style="{StaticResource NormalText}" TextWrapping="Wrap" LineHeight="22">
+                                        <Run FontWeight="SemiBold" Foreground="{DynamicResource ThemePrimaryBrush}">8.0-P</Run>
+                                        <Run>　灵动岛原型</Run>
+                                        <LineBreak/>
+                                        <Run FontWeight="SemiBold" Foreground="{DynamicResource ThemePrimaryBrush}">8.0</Run>
+                                        <Run>　　课表模块</Run>
+                                        <LineBreak/>
+                                        <Run FontWeight="SemiBold" Foreground="{DynamicResource ThemePrimaryBrush}">8.3.1</Run>
+                                        <Run>　适配 net6.0</Run>
+                                        <LineBreak/>
+                                        <Run FontWeight="SemiBold" Foreground="{DynamicResource ThemePrimaryBrush}">A1.x</Run>
+                                        <Run>　　Bug 修复 + 触屏兼容 + 开机自启动</Run>
+                                        <LineBreak/>
+                                        <Run FontWeight="SemiBold" Foreground="{DynamicResource ThemePrimaryBrush}">26.x</Run>
+                                        <Run>　　全功能优化 + PCL2 主题 + 数据安全</Run>
+                                        <LineBreak/>
+                                        <Run FontWeight="SemiBold" Foreground="{DynamicResource ThemePrimaryBrush}">27.x</Run>
+                                        <Run>　　座位表 / 日历 / 截图笔记 / 投票 / 班牌 / 倒计时</Run>
+                                        <LineBreak/>
+                                        <Run FontWeight="SemiBold" Foreground="{DynamicResource ThemePrimaryBrush}">28.0.0</Run>
+                                        <Run>　天级换课 + 通知条宽高 + 大量优化</Run>
+                                        <LineBreak/>
+                                        <Run FontWeight="SemiBold" Foreground="{DynamicResource ThemePrimaryBrush}">30.0.0</Run>
+                                        <Run>　正式冻结版本</Run>
+                                        <LineBreak/>
+                                        <Run FontWeight="SemiBold" Foreground="{DynamicResource ThemePrimaryBrush}">31.0.0</Run>
+                                        <Run>　字体修复 + 双主题 + 灵动岛横条重构</Run>
+                                        <LineBreak/>
+                                        <Run FontWeight="SemiBold" Foreground="{DynamicResource ThemePrimaryBrush}">32.0.0</Run>
+                                        <Run>　横条动画重构 + 组排序 + 多条倒计时 + 渐变背景 + BIOS 引导</Run>
+                                        <LineBreak/>
+                                        <Run FontWeight="SemiBold" Foreground="{DynamicResource ThemePrimaryBrush}">33.0.0</Run>
+                                        <Run>　PCL2 假阴影 + 全局 R 角 + 侧栏文字 + 切换即生效（当前版本）</Run>
                                     </TextBlock>
                                 </StackPanel>
                             </Border>

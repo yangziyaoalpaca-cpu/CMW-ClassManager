@@ -98,56 +98,100 @@
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0"
                     Background="{DynamicResource ThemeCardBrush}"
-                    BorderBrush="{DynamicResource ThemeBorderLightBrush}"
+                    BorderBrush="{DynamicResource ThemeShadowLineBrush}"
                     BorderThickness="0,0,1,0"
-                    Padding="0,10,0,0">
-                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center">
-                    <Button Style="{StaticResource CircleNavButton}" Click="NavHome" Margin="0,0,0,3">
-                        <Image Source="{StaticResource IconHome}" Width="22" Height="22"/>
-                    </Button>
-                    <Button Style="{StaticResource CircleNavButton}" Click="NavSchedule" Margin="0,0,0,3">
-                        <Image Source="{StaticResource IconSchedule}" Width="22" Height="22"/>
-                    </Button>
-                    <Button Style="{StaticResource CircleNavButton}" Click="NavTodo" Margin="0,0,0,3">
-                        <Image Source="{StaticResource IconTodo}" Width="22" Height="22"/>
-                    </Button>
-                    <Button Style="{StaticResource CircleNavButton}" Click="NavDuty" Margin="0,0,0,3">
-                        <Image Source="{StaticResource IconDuty}" Width="22" Height="22"/>
-                    </Button>
-                    <Button Style="{StaticResource CircleNavButton}" Click="NavHomework" Margin="0,0,0,3">
-                        <Image Source="{StaticResource IconHomework}" Width="22" Height="22"/>
-                    </Button>
-                    <Button Style="{StaticResource CircleNavButton}" Click="NavSummary" Margin="0,0,0,3">
-                        <Image Source="{StaticResource IconSummary}" Width="22" Height="22"/>
-                    </Button>
-                    <Button Style="{StaticResource CircleNavButton}" Click="NavStudents" Margin="0,0,0,3">
-                        <Image Source="{StaticResource IconStudents}" Width="22" Height="22"/>
-                    </Button>
-                    <Button Style="{StaticResource CircleNavButton}" Click="NavExam" Margin="0,0,0,3">
-                        <Image Source="{StaticResource IconExam}" Width="22" Height="22"/>
-                    </Button>
-                    <Button Style="{StaticResource CircleNavButton}" Click="NavLogs" Margin="0,0,0,3">
-                        <Image Source="{StaticResource IconLogs}" Width="22" Height="22"/>
-                    </Button>
-                    <Button Style="{StaticResource CircleNavButton}" Click="NavStatistics" Margin="0,0,0,3">
-                        <Image Source="{StaticResource IconStatistics}" Width="22" Height="22"/>
-                    </Button>
-                    <Button Style="{StaticResource CircleNavButton}" Click="NavSeat" Margin="0,0,0,3">
-                        <Image Source="{StaticResource IconSeat}" Width="22" Height="22"/>
-                    </Button>
-                    <Button Style="{StaticResource CircleNavButton}" Click="NavCalendar" Margin="0,0,0,3">
-                        <Image Source="{StaticResource IconCalendar}" Width="22" Height="22"/>
-                    </Button>
-                    <Button Style="{StaticResource CircleNavButton}" Click="NavSettings">
-                        <Image Source="{StaticResource IconSettings}" Width="22" Height="22"/>
-                    </Button>
-                </StackPanel>
+                    Padding="4,10,4,0">
+                <ScrollViewer VerticalScrollBarVisibility="Hidden"
+                              HorizontalScrollBarVisibility="Disabled"
+                              PanningMode="VerticalOnly"
+                              Focusable="False">
+                    <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center">
+                        <RadioButton x:Name="NavHome"
+                                     Style="{StaticResource NavButton}"
+                                     Content="首页"
+                                     Tag="{StaticResource IconHome}"
+                                     GroupName="NavGroup"
+                                     Checked="Nav_Checked"/>
+                        <RadioButton x:Name="NavSchedule"
+                                     Style="{StaticResource NavButton}"
+                                     Content="课表"
+                                     Tag="{StaticResource IconSchedule}"
+                                     GroupName="NavGroup"
+                                     Checked="Nav_Checked"/>
+                        <RadioButton x:Name="NavTodo"
+                                     Style="{StaticResource NavButton}"
+                                     Content="待办"
+                                     Tag="{StaticResource IconTodo}"
+                                     GroupName="NavGroup"
+                                     Checked="Nav_Checked"/>
+                        <RadioButton x:Name="NavDuty"
+                                     Style="{StaticResource NavButton}"
+                                     Content="值日"
+                                     Tag="{StaticResource IconDuty}"
+                                     GroupName="NavGroup"
+                                     Checked="Nav_Checked"/>
+                        <RadioButton x:Name="NavHomework"
+                                     Style="{StaticResource NavButton}"
+                                     Content="作业"
+                                     Tag="{StaticResource IconHomework}"
+                                     GroupName="NavGroup"
+                                     Checked="Nav_Checked"/>
+                        <RadioButton x:Name="NavSummary"
+                                     Style="{StaticResource NavButton}"
+                                     Content="汇总"
+                                     Tag="{StaticResource IconSummary}"
+                                     GroupName="NavGroup"
+                                     Checked="Nav_Checked"/>
+                        <RadioButton x:Name="NavStudents"
+                                     Style="{StaticResource NavButton}"
+                                     Content="名单"
+                                     Tag="{StaticResource IconStudents}"
+                                     GroupName="NavGroup"
+                                     Checked="Nav_Checked"/>
+                        <RadioButton x:Name="NavExam"
+                                     Style="{StaticResource NavButton}"
+                                     Content="考试"
+                                     Tag="{StaticResource IconExam}"
+                                     GroupName="NavGroup"
+                                     Checked="Nav_Checked"/>
+                        <RadioButton x:Name="NavLogs"
+                                     Style="{StaticResource NavButton}"
+                                     Content="周报"
+                                     Tag="{StaticResource IconLogs}"
+                                     GroupName="NavGroup"
+                                     Checked="Nav_Checked"/>
+                        <RadioButton x:Name="NavStatistics"
+                                     Style="{StaticResource NavButton}"
+                                     Content="统计"
+                                     Tag="{StaticResource IconStatistics}"
+                                     GroupName="NavGroup"
+                                     Checked="Nav_Checked"/>
+                        <RadioButton x:Name="NavSeat"
+                                     Style="{StaticResource NavButton}"
+                                     Content="座位"
+                                     Tag="{StaticResource IconSeat}"
+                                     GroupName="NavGroup"
+                                     Checked="Nav_Checked"/>
+                        <RadioButton x:Name="NavCalendar"
+                                     Style="{StaticResource NavButton}"
+                                     Content="日历"
+                                     Tag="{StaticResource IconCalendar}"
+                                     GroupName="NavGroup"
+                                     Checked="Nav_Checked"/>
+                        <RadioButton x:Name="NavSettings"
+                                     Style="{StaticResource NavButton}"
+                                     Content="设置"
+                                     Tag="{StaticResource IconSettings}"
+                                     GroupName="NavGroup"
+                                     Checked="Nav_Checked"/>
+                    </StackPanel>
+                </ScrollViewer>
             </Border>
 
             <Grid x:Name="FrameHost"

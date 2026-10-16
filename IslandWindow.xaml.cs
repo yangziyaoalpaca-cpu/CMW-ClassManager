@@ -14,9 +14,6 @@ namespace CMW
 {
     public partial class IslandWindow : Window
     {
-        // ═══════════════════════════════════════════════════════════
-        // ★ 32.0.0：状态机枚举（仅作语义文档，不保留字段）
-        // ═══════════════════════════════════════════════════════════
         private enum IslandState
         {
             Capsule,
@@ -57,29 +54,23 @@ namespace CMW
         private const string StyleNone = "None";
 
         // ═══════════════════════════════════════════════════════════
+        // 屏幕尺寸缓存
+        // ═══════════════════════════════════════════════════════════
+        private double _screenWidth = 800;
+        private double _screenLeft = 0;
+        private double _screenTop = 0;
+
+        // ═══════════════════════════════════════════════════════════
         // 字段
         // ═══════════════════════════════════════════════════════════
         private double _cardWidth = 480;
         private double _cardHeight = 320;
 
-        // ★ 32.0.0：令牌机制（唯一动画状态）
         private int _stateToken = 0;
 
         private bool _isExpanded;
         private bool _isBoundsAnimating;
         private bool _isAnyAnimationRunning;
-
-        private bool _mouseDownPending;
-        private bool _isDragMoved;
-        private bool _isUserMoved;
-        private Point _dragStartScreen;
-        private double _dragStartLeft;
-        private double _dragStartTop;
-        private double _dpiScaleX = 1.0;
-        private double _dpiScaleY = 1.0;
-
-        private bool _isTouchDragging;
-        private int _touchId = -1;
 
         private readonly DispatcherTimer _autoCollapseTimer;
         private readonly DispatcherTimer _mouseLeaveCollapseTimer;
@@ -178,11 +169,10 @@ namespace CMW
         }
 
         // ═══════════════════════════════════════════════════════════
-        // 状态机 · 唯一入口（只递增令牌）
+        // 状态机（只递增令牌）
         // ═══════════════════════════════════════════════════════════
         private void SetIslandState(IslandState newState)
         {
-            // 枚举仅作语义标记，不做存储
             _ = newState;
             _stateToken++;
         }
@@ -200,17 +190,6 @@ namespace CMW
         private static bool IsBoardActive()
         {
             return App.Board != null && App.Board.IsLoaded;
-        }
-
-        private void EnsureDpiCache()
-        {
-            try
-            {
-                var dpi = VisualTreeHelper.GetDpi(this);
-                _dpiScaleX = dpi.DpiScaleX > 0 ? dpi.DpiScaleX : 1.0;
-                _dpiScaleY = dpi.DpiScaleY > 0 ? dpi.DpiScaleY : 1.0;
-            }
-            catch { _dpiScaleX = 1.0; _dpiScaleY = 1.0; }
         }
 
         private void ApplyCardSizeFromConfig()
@@ -284,11 +263,30 @@ namespace CMW
             base.OnSourceInitialized(e);
             MinWidth = 0;
             MinHeight = 0;
-            EnsureDpiCache();
+
+            var wa = SystemParameters.WorkArea;
+            _screenWidth = wa.Width;
+            _screenLeft = wa.Left;
+            _screenTop = wa.Top;
+
             ApplyCapsuleState();
+            ApplyFullScreenWidthWindow();
             SyncWindowToContent();
         }
 
+        // ★ 33.0.0：设置窗口为全屏宽（Left 固定，只改 Height）
+        private void ApplyFullScreenWidthWindow()
+        {
+            try
+            {
+                SetCurrentValue(WidthProperty, _screenWidth);
+                SetCurrentValue(LeftProperty, _screenLeft);
+                SetCurrentValue(TopProperty, _screenTop + 4);
+            }
+            catch { }
+        }
+
+        // ★ 33.0.0：只改 Height，宽和 Left/Top 永不变
         private void SyncWindowToContent()
         {
             if (_isTransitioning) return;
@@ -297,17 +295,10 @@ namespace CMW
             try
             {
                 ContentRow.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                double w = Math.Max(1, ContentRow.DesiredSize.Width);
                 double h = Math.Max(1, ContentRow.DesiredSize.Height);
 
-                var wa = SystemParameters.WorkArea;
-                SetCurrentValue(WidthProperty, w);
+                ApplyFullScreenWidthWindow();
                 SetCurrentValue(HeightProperty, h);
-                if (!_isUserMoved)
-                {
-                    SetCurrentValue(LeftProperty, wa.Left + (wa.Width - w) / 2);
-                    SetCurrentValue(TopProperty, wa.Top + 4);
-                }
             }
             catch { }
         }
@@ -321,39 +312,21 @@ namespace CMW
             return d;
         }
 
-        // ★ 32.0.0 修正版：同时更新 W/H 和 Left/Top（居中）
+        // ★ 33.0.0：动画前设置窗口高度（宽/Left/Top 不动）
         private void SetWindowBoundsForFinal(double contentWidth, double contentHeight)
         {
-            double w = Math.Max(20, contentWidth + 8);
             double h = Math.Max(20, contentHeight + 8);
-            SetCurrentValue(WidthProperty, w);
+            ApplyFullScreenWidthWindow();
             SetCurrentValue(HeightProperty, h);
-
-            if (!_isUserMoved)
-            {
-                var wa = SystemParameters.WorkArea;
-                SetCurrentValue(LeftProperty, wa.Left + (wa.Width - w) / 2);
-                SetCurrentValue(TopProperty, wa.Top + 4);
-            }
         }
 
-        // 动画完成后的兜底居中（保留）
+        // ★ 33.0.0：空操作（窗口已全屏宽，无需居中计算）
         private void CenterHorizontally()
         {
-            if (_isUserMoved) return;
-            try
-            {
-                var wa = SystemParameters.WorkArea;
-                double w = ActualWidth > 0 ? ActualWidth : Width;
-                if (double.IsNaN(w) || w <= 0) return;
-                SetCurrentValue(LeftProperty, wa.Left + (wa.Width - w) / 2);
-                SetCurrentValue(TopProperty, wa.Top + 4);
-            }
-            catch { }
         }
 
         // ═══════════════════════════════════════════════════════════
-        // ★ B2：通知条图标辅助
+        // 通知条图标辅助
         // ═══════════════════════════════════════════════════════════
         private void SetCardIcon(DrawingImage? icon)
         {
@@ -610,7 +583,6 @@ namespace CMW
                 try
                 {
                     SyncWindowToContent();
-                    CenterHorizontally();
 
                     Dispatcher.BeginInvoke(new Action(() =>
                     {
@@ -628,6 +600,7 @@ namespace CMW
 
         // ═══════════════════════════════════════════════════════════
         // 横条伸展 / 收起
+        // BarBorder.CornerRadius 动态 = Height / 2
         // ═══════════════════════════════════════════════════════════
         private void ExtendBar()
         {
@@ -675,6 +648,7 @@ namespace CMW
             BarBorder.Height = d;
             BarBorder.Width = maxW;
             BarBorder.Opacity = 0;
+            BarBorder.CornerRadius = new CornerRadius(d / 2.0);
 
             RefreshBarContent();
             ApplyBarFonts();
@@ -713,7 +687,6 @@ namespace CMW
                     _isBoundsAnimating = false;
                     _isAnyAnimationRunning = false;
                     SyncWindowToContent();
-                    CenterHorizontally();
 
                     Dispatcher.BeginInvoke(new Action(() =>
                     {
@@ -807,7 +780,6 @@ namespace CMW
                     _isBoundsAnimating = false;
                     _isAnyAnimationRunning = false;
                     SyncWindowToContent();
-                    CenterHorizontally();
                 }
             };
 
@@ -889,6 +861,12 @@ namespace CMW
 
                 _barGroupIndex = nextIndex;
                 ShowBarGroup(_barGroupIndex);
+
+                // ★ 新增：切到状态组立即刷新倒计时
+                if (_barActiveGroups[_barGroupIndex] == 2)
+                {
+                    RefreshBarStatus();
+                }
 
                 var newEl = GetCurrentBarGroupElement();
 
@@ -1473,7 +1451,6 @@ namespace CMW
                 MainBorder.BeginAnimation(FrameworkElement.WidthProperty, null);
                 MainBorder.Width = tw;
                 SyncWindowToContent();
-                CenterHorizontally();
                 return;
             }
 
@@ -1485,7 +1462,6 @@ namespace CMW
             MainBorder.BeginAnimation(FrameworkElement.WidthProperty, null);
             MainBorder.Width = targetWidth;
             SyncWindowToContent();
-            CenterHorizontally();
         }
 
         private void ShowMiniRemindInCapsule(string text, int seconds)
@@ -1498,7 +1474,6 @@ namespace CMW
                 MainBorder.BeginAnimation(FrameworkElement.WidthProperty, null);
                 MainBorder.Width = w;
                 SyncWindowToContent();
-                CenterHorizontally();
 
                 _miniRemindTimer.Stop();
                 int s = Math.Max(2, Math.Min(30, seconds));
@@ -1731,7 +1706,6 @@ namespace CMW
             ApplyCardSizeFromConfig();
 
             SetIslandState(IslandState.Capsule);
-            _isUserMoved = false;
             _isBarExtended = false;
             _isExpanded = false;
             _isRollCallActive = false;
@@ -1753,6 +1727,7 @@ namespace CMW
             ApplyCapsuleState();
 
             Show();
+            ApplyFullScreenWidthWindow();
             SyncWindowToContent();
 
             RootGrid.RenderTransformOrigin = new Point(0.5, 0.5);
@@ -1769,7 +1744,19 @@ namespace CMW
 
             sx.Completed += (s, e) => { scale.ScaleX = 1; };
             sy.Completed += (s, e) => { scale.ScaleY = 1; };
-            op.Completed += (s, e) => { Opacity = 1; };
+            op.Completed += (s, e) =>
+            {
+                Opacity = 1;
+
+                // ★ 新增：如果缩回目标是横条，展开动画完成后直接延伸横条
+                if (_config.MinimizeTarget == "Bar" && _config.IslandBarEnabled)
+                {
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        try { ExtendBar(); } catch { }
+                    }), DispatcherPriority.Background);
+                }
+            };
 
             scale.BeginAnimation(ScaleTransform.ScaleXProperty, sx);
             scale.BeginAnimation(ScaleTransform.ScaleYProperty, sy);
@@ -1838,7 +1825,6 @@ namespace CMW
                     _isBoundsAnimating = false;
                     _isAnyAnimationRunning = false;
                     SyncWindowToContent();
-                    CenterHorizontally();
                 }
             };
 
@@ -1918,7 +1904,6 @@ namespace CMW
                     _isBoundsAnimating = false;
                     _isAnyAnimationRunning = false;
                     SyncWindowToContent();
-                    CenterHorizontally();
                 }
             };
 
@@ -2024,7 +2009,6 @@ namespace CMW
                     _isBoundsAnimating = false;
                     _isAnyAnimationRunning = false;
                     SyncWindowToContent();
-                    CenterHorizontally();
 
                     if (_barWasExtendedBeforeCard)
                     {
@@ -2069,101 +2053,11 @@ namespace CMW
         }
 
         // ═══════════════════════════════════════════════════════════
-        // 拖拽
+        // 鼠标事件（无拖拽）
         // ═══════════════════════════════════════════════════════════
-        private void MainBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (_isTransitioning || _isAnyAnimationRunning) return;
-            if (!_config.IslandDraggable || _isExpanded) return;
-            EnsureDpiCache();
-            _mouseDownPending = true;
-            _isDragMoved = false;
-            _dragStartScreen = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
-            _dragStartLeft = Left;
-            _dragStartTop = Top;
-            try { MainBorder.CaptureMouse(); } catch { }
-        }
-
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            base.OnMouseMove(e);
-            if (!_mouseDownPending) return;
-            var cur = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
-            double dx = (cur.X - _dragStartScreen.X) / _dpiScaleX;
-            double dy = (cur.Y - _dragStartScreen.Y) / _dpiScaleY;
-            if (!_isDragMoved && (Math.Abs(dx) > 5 || Math.Abs(dy) > 5))
-            {
-                _isDragMoved = true;
-                _isUserMoved = true;
-            }
-            if (_isDragMoved)
-            {
-                SetCurrentValue(LeftProperty, _dragStartLeft + dx);
-                SetCurrentValue(TopProperty, _dragStartTop + dy);
-            }
-        }
-
-        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
-        {
-            base.OnMouseLeftButtonUp(e);
-            if (_mouseDownPending)
-            {
-                _mouseDownPending = false;
-                try { MainBorder.ReleaseMouseCapture(); } catch { }
-            }
-        }
-
-        private void MainBorder_TouchDown(object? sender, TouchEventArgs e)
-        {
-            if (_isTransitioning || _isAnyAnimationRunning) return;
-            if (!_config.IslandDraggable || _isExpanded) return;
-            EnsureDpiCache();
-            _isTouchDragging = true;
-            _touchId = e.TouchDevice.Id;
-            _isDragMoved = false;
-            _dragStartScreen = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
-            _dragStartLeft = Left;
-            _dragStartTop = Top;
-            try { MainBorder.CaptureTouch(e.TouchDevice); } catch { }
-            e.Handled = true;
-        }
-
-        private void MainBorder_TouchMove(object? sender, TouchEventArgs e)
-        {
-            if (!_isTouchDragging) return;
-            if (e.TouchDevice.Id != _touchId) return;
-            var cur = new Point(System.Windows.Forms.Cursor.Position.X, System.Windows.Forms.Cursor.Position.Y);
-            double dx = (cur.X - _dragStartScreen.X) / _dpiScaleX;
-            double dy = (cur.Y - _dragStartScreen.Y) / _dpiScaleY;
-            if (!_isDragMoved && (Math.Abs(dx) > 6 || Math.Abs(dy) > 6))
-            {
-                _isDragMoved = true;
-                _isUserMoved = true;
-            }
-            if (_isDragMoved)
-            {
-                SetCurrentValue(LeftProperty, _dragStartLeft + dx);
-                SetCurrentValue(TopProperty, _dragStartTop + dy);
-            }
-            e.Handled = true;
-        }
-
-        private void MainBorder_TouchUp(object? sender, TouchEventArgs e)
-        {
-            if (!_isTouchDragging) return;
-            if (e.TouchDevice.Id != _touchId) return;
-            _isTouchDragging = false;
-            _touchId = -1;
-            try { MainBorder.ReleaseTouchCapture(e.TouchDevice); } catch { }
-            e.Handled = true;
-        }
-
         private void MainBorder_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (_isTransitioning || _isAnyAnimationRunning) return;
-            bool wasDrag = _isDragMoved;
-            _isDragMoved = false;
-            if (wasDrag) return;
 
             if (!_isExpanded)
             {
@@ -2423,7 +2317,6 @@ namespace CMW
                         {
                             _isAnyAnimationRunning = false;
                             SyncWindowToContent();
-                            CenterHorizontally();
                         }
                     };
 
@@ -2809,9 +2702,9 @@ namespace CMW
         }
 
         // ═══════════════════════════════════════════════════════════
-        // A9：上下课表现方式
+        // 上下课表现方式
         // ═══════════════════════════════════════════════════════════
-        private async void RunClassChangeVisualAsync(bool isStart, TimeSlot slot, bool doPopup, bool doMini)
+        private async void RunClassChangeVisualAsync(bool isStart, TimeSlot slot, bool doPopup, bool doMini, bool silent)
         {
             try
             {
@@ -2819,9 +2712,10 @@ namespace CMW
 
                 if (changeStyle == StyleNone) return;
 
-                bool doColor = (changeStyle == StyleColorThenNotify || changeStyle == StyleColorAndBar);
+                // ★ 静音时段：抑制变色与通知，但横条伸缩（doBar）不受影响
+                bool doColor = (changeStyle == StyleColorThenNotify || changeStyle == StyleColorAndBar) && !silent;
                 bool doBar = (changeStyle == StyleColorAndBar);
-                bool doNotify = (changeStyle == StyleColorThenNotify || changeStyle == StyleNotifyOnly);
+                bool doNotify = (changeStyle == StyleColorThenNotify || changeStyle == StyleNotifyOnly) && !silent;
 
                 if (doColor)
                 {
@@ -2841,7 +2735,11 @@ namespace CMW
                         {
                             await Dispatcher.InvokeAsync(() =>
                             {
-                                if (isStart) CollapseBar();
+                                // ★ 新增：横条常驻时，上课也不收回
+                                if (isStart)
+                                {
+                                    if (!_config.IslandBarPersistent) CollapseBar();
+                                }
                                 else ExtendBar();
                             });
                         }
@@ -3003,12 +2901,12 @@ namespace CMW
                     TryShowRightPanel();
                 }
 
-                if (silent) continue;
                 if (style == "None") continue;
 
                 if (isStart || (isEnd && !slot.IsLongBreak))
                 {
-                    RunClassChangeVisualAsync(isStart, slot, doPopup, doMini);
+                    // ★ 静音时段仍然让横条伸缩，只是不弹通知、不变蓝
+                    RunClassChangeVisualAsync(isStart, slot, doPopup, doMini, silent);
                 }
             }
         }
@@ -3223,7 +3121,6 @@ namespace CMW
                             _isBoundsAnimating = false;
                             _isAnyAnimationRunning = false;
                             SyncWindowToContent();
-                            CenterHorizontally();
                         }
                     };
 

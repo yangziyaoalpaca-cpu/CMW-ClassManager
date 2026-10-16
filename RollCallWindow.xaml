@@ -59,7 +59,7 @@
                                 Background="{DynamicResource ThemeCardBrush}"
                                 BorderBrush="{DynamicResource ThemeBorderBrush}"
                                 BorderThickness="1"
-                                CornerRadius="{DynamicResource RadiusSmall}"
+                                CornerRadius="{DynamicResource GlobalCornerRadius}"
                                 Padding="10,8">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                 <Border x:Name="Tick"
@@ -128,7 +128,7 @@
                 Background="{DynamicResource ThemeCardBrush}"
                 BorderBrush="{DynamicResource ThemeBorderLightBrush}"
                 BorderThickness="1"
-                CornerRadius="{DynamicResource RadiusMedium}"
+                CornerRadius="{DynamicResource GlobalCornerRadius}"
                 Padding="12"
                 Margin="0,0,0,12">
             <Grid>
@@ -156,7 +156,7 @@
                 Background="{DynamicResource ThemeCardBrush}"
                 BorderBrush="{DynamicResource ThemeBorderLightBrush}"
                 BorderThickness="1"
-                CornerRadius="{DynamicResource RadiusMedium}">
+                CornerRadius="{DynamicResource GlobalCornerRadius}">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
                 <ScrollViewer.Resources>

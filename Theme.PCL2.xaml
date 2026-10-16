@@ -28,10 +28,21 @@
     <SolidColorBrush x:Key="ThemeInputBgBrush" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="ThemeInputBorderBrush" Color="#B8C8D8"/>
 
-    <!-- ★ 32.0.0：图标前景色（PCL2 保持深蓝） -->
+    <!-- ★ 33.0.0：PCL2 假阴影描线色（浅色主题用黑 8%） -->
+    <SolidColorBrush x:Key="ThemeShadowLineBrush" Color="#14000000"/>
+    <SolidColorBrush x:Key="ThemeShadowLineLightBrush" Color="#0A000000"/>
+
+    <!-- ★ 33.0.0：侧栏选中高亮背景 -->
+    <SolidColorBrush x:Key="ThemeNavActiveBgBrush" Color="#E8F0FE"/>
+    <SolidColorBrush x:Key="ThemeNavHoverBgBrush" Color="#F0F4FA"/>
+
+    <!-- ★ 33.0.0：子选项卡选中竖条色 -->
+    <SolidColorBrush x:Key="ThemeTabAccentBrush" Color="#1E5FD0"/>
+
+    <!-- 图标前景色 -->
     <SolidColorBrush x:Key="ThemeIconForegroundBrush" Color="#1E5FD0"/>
 
-    <!-- 兼容旧 Key（老代码里引用过的名字） -->
+    <!-- 兼容旧 Key -->
     <SolidColorBrush x:Key="PclPrimaryBrush" Color="#1E5FD0"/>
     <SolidColorBrush x:Key="MainBackgroundBrush" Color="#E8EBF0"/>
 

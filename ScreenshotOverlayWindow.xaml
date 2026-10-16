@@ -29,7 +29,7 @@
 
         <Border x:Name="SizeHintBorder"
                 Background="#CC1E5FD0"
-                CornerRadius="{DynamicResource RadiusSmall}"
+                CornerRadius="{DynamicResource GlobalCornerRadius}"
                 Padding="6,3"
                 IsHitTestVisible="False"
                 Visibility="Collapsed">
@@ -68,7 +68,7 @@
 
         <Border x:Name="HintBorder"
                 Background="#CC000000"
-                CornerRadius="{DynamicResource RadiusSmall}"
+                CornerRadius="{DynamicResource GlobalCornerRadius}"
                 Padding="16,10"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"

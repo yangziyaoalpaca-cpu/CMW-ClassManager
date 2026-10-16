@@ -14,7 +14,7 @@
             <Setter Property="Background" Value="{DynamicResource ThemeCardBrush}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderLightBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="{DynamicResource RadiusMedium}"/>
+            <Setter Property="CornerRadius" Value="{DynamicResource GlobalCornerRadius}"/>
             <Setter Property="Padding" Value="20"/>
             <Setter Property="Margin" Value="0,0,0,14"/>
         </Style>
@@ -52,7 +52,7 @@
 
         <Style x:Key="BrandRow" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource ThemeRowAltBrush}"/>
-            <Setter Property="CornerRadius" Value="{DynamicResource RadiusSmall}"/>
+            <Setter Property="CornerRadius" Value="{DynamicResource GlobalCornerRadius}"/>
             <Setter Property="Padding" Value="12,8"/>
             <Setter Property="Margin" Value="0,0,0,4"/>
         </Style>
@@ -113,7 +113,7 @@
                 Background="{DynamicResource ThemeCardBrush}"
                 BorderBrush="{DynamicResource ThemeBorderLightBrush}"
                 BorderThickness="1"
-                CornerRadius="{DynamicResource RadiusMedium}">
+                CornerRadius="{DynamicResource GlobalCornerRadius}">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled"
                           Padding="16">

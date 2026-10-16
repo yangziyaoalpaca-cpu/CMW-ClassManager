@@ -12,17 +12,18 @@
 
             <BitmapImage x:Key="AppIcon" UriSource="Assets/app.ico"/>
 
-            <!-- 全局字体 -->
             <FontFamily x:Key="GlobalFontFamily">Microsoft YaHei UI</FontFamily>
             <FontFamily x:Key="AppleFont">Microsoft YaHei UI</FontFamily>
 
-            <!-- 全局 R 角体系 -->
+            <CornerRadius x:Key="GlobalCornerRadius">8</CornerRadius>
+
             <CornerRadius x:Key="RadiusSmall">6</CornerRadius>
             <CornerRadius x:Key="RadiusMedium">8</CornerRadius>
             <CornerRadius x:Key="RadiusLarge">16</CornerRadius>
             <CornerRadius x:Key="RadiusXLarge">24</CornerRadius>
 
-            <!-- 全局 TextBox -->
+            <!-- ═════════════ 全局隐式样式 ═════════════ -->
+
             <Style TargetType="TextBox">
                 <Setter Property="Height" Value="30"/>
                 <Setter Property="Background" Value="{DynamicResource ThemeInputBgBrush}"/>
@@ -42,7 +43,7 @@
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="{DynamicResource RadiusSmall}">
+                                    CornerRadius="{DynamicResource GlobalCornerRadius}">
                                 <ScrollViewer x:Name="PART_ContentHost"
                                               Margin="{TemplateBinding Padding}"
                                               VerticalAlignment="Center"/>
@@ -69,7 +70,6 @@
                 <Setter Property="VerticalContentAlignment" Value="Top"/>
             </Style>
 
-            <!-- 全局 ComboBox -->
             <Style TargetType="ComboBox">
                 <Setter Property="Height" Value="30"/>
                 <Setter Property="Background" Value="{DynamicResource ThemeInputBgBrush}"/>
@@ -89,7 +89,7 @@
                                         Background="{TemplateBinding Background}"
                                         BorderBrush="{TemplateBinding BorderBrush}"
                                         BorderThickness="{TemplateBinding BorderThickness}"
-                                        CornerRadius="{DynamicResource RadiusSmall}">
+                                        CornerRadius="{DynamicResource GlobalCornerRadius}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
@@ -127,9 +127,9 @@
                                        Focusable="False"
                                        PopupAnimation="Fade">
                                     <Border Background="{DynamicResource ThemeCardBrush}"
-                                            BorderBrush="{DynamicResource ThemeBorderBrush}"
-                                            BorderThickness="1"
-                                            CornerRadius="{DynamicResource RadiusSmall}"
+                                            BorderBrush="{DynamicResource ThemeShadowLineBrush}"
+                                            BorderThickness="0,0,1,1"
+                                            CornerRadius="{DynamicResource GlobalCornerRadius}"
                                             MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
                                             MaxHeight="{TemplateBinding MaxDropDownHeight}"
                                             Margin="0,2,0,0">
@@ -162,6 +162,7 @@
                         <ControlTemplate TargetType="ComboBoxItem">
                             <Border x:Name="Bd"
                                     Background="Transparent"
+                                    CornerRadius="{DynamicResource GlobalCornerRadius}"
                                     Padding="{TemplateBinding Padding}">
                                 <ContentPresenter/>
                             </Border>
@@ -178,7 +179,6 @@
                 </Setter>
             </Style>
 
-            <!-- 全局 Slider -->
             <Style TargetType="Slider">
                 <Setter Property="Height" Value="28"/>
                 <Setter Property="Background" Value="Transparent"/>
@@ -186,8 +186,7 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="Slider">
                             <Grid VerticalAlignment="Center">
-                                <Border Height="4"
-                                        CornerRadius="2"
+                                <Border Height="4" CornerRadius="2"
                                         Background="{DynamicResource ThemeBorderLightBrush}"
                                         VerticalAlignment="Center"/>
                                 <Track x:Name="PART_Track" VerticalAlignment="Center">
@@ -195,8 +194,7 @@
                                         <RepeatButton Command="Slider.DecreaseLarge" Focusable="False">
                                             <RepeatButton.Template>
                                                 <ControlTemplate TargetType="RepeatButton">
-                                                    <Border Height="4"
-                                                            CornerRadius="2"
+                                                    <Border Height="4" CornerRadius="2"
                                                             Background="{DynamicResource ThemePrimaryBrush}"
                                                             VerticalAlignment="Center"/>
                                                 </ControlTemplate>
@@ -207,9 +205,7 @@
                                         <RepeatButton Command="Slider.IncreaseLarge" Focusable="False">
                                             <RepeatButton.Template>
                                                 <ControlTemplate TargetType="RepeatButton">
-                                                    <Border Height="4"
-                                                            Background="Transparent"
-                                                            VerticalAlignment="Center"/>
+                                                    <Border Height="4" Background="Transparent" VerticalAlignment="Center"/>
                                                 </ControlTemplate>
                                             </RepeatButton.Template>
                                         </RepeatButton>
@@ -238,7 +234,6 @@
                 </Setter>
             </Style>
 
-            <!-- DatePicker -->
             <Style TargetType="DatePickerTextBox">
                 <Setter Property="Background" Value="Transparent"/>
                 <Setter Property="BorderThickness" Value="0"/>
@@ -276,7 +271,7 @@
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="{DynamicResource RadiusSmall}">
+                                    CornerRadius="{DynamicResource GlobalCornerRadius}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -313,9 +308,9 @@
                                            StaysOpen="False"
                                            PlacementTarget="{Binding ElementName=Bd}">
                                         <Border Background="{DynamicResource ThemeCardBrush}"
-                                                BorderBrush="{DynamicResource ThemeBorderBrush}"
-                                                BorderThickness="1"
-                                                CornerRadius="{DynamicResource RadiusSmall}"
+                                                BorderBrush="{DynamicResource ThemeShadowLineBrush}"
+                                                BorderThickness="0,0,1,1"
+                                                CornerRadius="{DynamicResource GlobalCornerRadius}"
                                                 Margin="0,4,0,0">
                                             <Calendar x:Name="PART_Calendar"
                                                       BorderThickness="0"
@@ -346,8 +341,96 @@
                 <Setter Property="FontSize" Value="12"/>
             </Style>
 
-            <!-- 二级选项卡 -->
-            <Style x:Key="SubTabButton" TargetType="RadioButton">
+            <!-- ═════════════ 卡片 ═════════════ -->
+
+            <Style x:Key="PclSectionCard" TargetType="Border">
+                <Setter Property="Background" Value="{DynamicResource ThemeCardBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ThemeShadowLineBrush}"/>
+                <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                <Setter Property="CornerRadius" Value="{DynamicResource GlobalCornerRadius}"/>
+                <Setter Property="Padding" Value="20"/>
+                <Setter Property="Margin" Value="0,0,0,16"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+            </Style>
+
+            <Style x:Key="SectionCard" TargetType="Border" BasedOn="{StaticResource PclSectionCard}"/>
+
+            <!-- ═════════════ ★ 33.0.0：全局文本样式（原 12 页面本地副本） ═════════════ -->
+
+            <Style x:Key="TitleText" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="18"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
+                <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
+                <Setter Property="Margin" Value="0,0,0,12"/>
+            </Style>
+
+            <Style x:Key="NormalText" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
+                <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
+            </Style>
+
+            <Style x:Key="HintText" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="Foreground" Value="{DynamicResource ThemeTextHintBrush}"/>
+                <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
+            </Style>
+
+            <!-- ═════════════ ★ 33.0.0：全局触摸滚动条（原 12 页面本地副本） ═════════════ -->
+
+            <Style x:Key="TouchScrollBar" TargetType="ScrollBar">
+                <Setter Property="Width" Value="10"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ScrollBar">
+                            <Grid Background="{TemplateBinding Background}">
+                                <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                    <Track.Thumb>
+                                        <Thumb>
+                                            <Thumb.Template>
+                                                <ControlTemplate TargetType="Thumb">
+                                                    <Border Background="#C0C0C0" CornerRadius="5" Margin="2,0"/>
+                                                </ControlTemplate>
+                                            </Thumb.Template>
+                                        </Thumb>
+                                    </Track.Thumb>
+                                    <Track.IncreaseRepeatButton>
+                                        <RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="False"/>
+                                    </Track.IncreaseRepeatButton>
+                                    <Track.DecreaseRepeatButton>
+                                        <RepeatButton Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="False"/>
+                                    </Track.DecreaseRepeatButton>
+                                </Track>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="GlassCard" TargetType="Border">
+                <Setter Property="CornerRadius" Value="{DynamicResource GlobalCornerRadius}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ThemeShadowLineBrush}"/>
+                <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                <Setter Property="Background" Value="{DynamicResource ThemeCardBrush}"/>
+                <Setter Property="Padding" Value="12"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
+            </Style>
+
+            <Style x:Key="GlassBackground" TargetType="Border">
+                <Setter Property="Background" Value="{DynamicResource ThemeCardBrush}"/>
+                <Setter Property="CornerRadius" Value="{DynamicResource GlobalCornerRadius}"/>
+            </Style>
+
+            <Style x:Key="IslandCapsule" TargetType="Border">
+                <Setter Property="Background" Value="#1A1A1A"/>
+                <Setter Property="CornerRadius" Value="10"/>
+                <Setter Property="BorderThickness" Value="0"/>
+            </Style>
+
+            <!-- ═════════════ ★ 33.0.0：二级选项卡（回弹动画 + 蓝竖条） ═════════════ -->
+            <Style x:Key="PclSubTabButton" TargetType="RadioButton">
                 <Setter Property="Height" Value="44"/>
                 <Setter Property="Margin" Value="0,0,0,6"/>
                 <Setter Property="Cursor" Value="Hand"/>
@@ -359,33 +442,59 @@
                         <ControlTemplate TargetType="RadioButton">
                             <Border x:Name="Bg"
                                     Background="{DynamicResource ThemeCardBrush}"
-                                    BorderBrush="{DynamicResource ThemeBorderLightBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="{DynamicResource RadiusMedium}"
-                                    Padding="14,0">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Path x:Name="Icon"
-                                          Data="{TemplateBinding Tag}"
-                                          Stroke="{TemplateBinding Foreground}"
-                                          StrokeThickness="1.5"
-                                          Fill="Transparent"
-                                          Width="18" Height="18"
-                                          Stretch="Uniform"
-                                          VerticalAlignment="Center"/>
-                                    <TextBlock x:Name="Label"
-                                               Text="{TemplateBinding Content}"
-                                               Foreground="{TemplateBinding Foreground}"
-                                               Margin="10,0,0,0"
-                                               VerticalAlignment="Center"/>
-                                </StackPanel>
+                                    BorderBrush="{DynamicResource ThemeShadowLineBrush}"
+                                    BorderThickness="0,0,1,1"
+                                    CornerRadius="{DynamicResource GlobalCornerRadius}"
+                                    ClipToBounds="True">
+                                <Border.RenderTransform>
+                                    <TranslateTransform X="0"/>
+                                </Border.RenderTransform>
+                                <Grid>
+                                    <Border x:Name="AccentBar"
+                                            Width="3"
+                                            HorizontalAlignment="Left"
+                                            Background="Transparent"
+                                            CornerRadius="0,2,2,0"/>
+                                    <StackPanel Orientation="Horizontal"
+                                                VerticalAlignment="Center"
+                                                Margin="14,0,14,0">
+                                        <Path x:Name="Icon"
+                                              Data="{TemplateBinding Tag}"
+                                              Stroke="{TemplateBinding Foreground}"
+                                              StrokeThickness="1.5"
+                                              Fill="Transparent"
+                                              Width="18" Height="18"
+                                              Stretch="Uniform"
+                                              VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="Label"
+                                                   Text="{TemplateBinding Content}"
+                                                   Foreground="{TemplateBinding Foreground}"
+                                                   Margin="10,0,0,0"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Bg" Property="BorderBrush" Value="{DynamicResource ThemePrimaryLightBrush}"/>
+                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemeNavHoverBgBrush}"/>
                                 </Trigger>
                                 <Trigger Property="IsChecked" Value="True">
+                                    <Trigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="Bg"
+                                                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                                                 From="14" To="0"
+                                                                 Duration="0:0:0.35">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <BackEase EasingMode="EaseOut" Amplitude="1.4"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.EnterActions>
                                     <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemePrimaryBgBrush}"/>
-                                    <Setter TargetName="Bg" Property="BorderBrush" Value="{DynamicResource ThemePrimaryBrush}"/>
+                                    <Setter TargetName="AccentBar" Property="Background" Value="{DynamicResource ThemeTabAccentBrush}"/>
                                     <Setter Property="Foreground" Value="{DynamicResource ThemePrimaryBrush}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
@@ -394,34 +503,16 @@
                 </Setter>
             </Style>
 
-            <!-- 通用卡片 -->
-            <Style x:Key="GlassCard" TargetType="Border">
-                <Setter Property="CornerRadius" Value="{DynamicResource RadiusMedium}"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderBrush}"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Background" Value="{DynamicResource ThemeCardBrush}"/>
-                <Setter Property="Padding" Value="12"/>
-            </Style>
+            <Style x:Key="SubTabButton" TargetType="RadioButton" BasedOn="{StaticResource PclSubTabButton}"/>
 
-            <Style x:Key="GlassBackground" TargetType="Border">
-                <Setter Property="Background" Value="{DynamicResource ThemeCardBrush}"/>
-                <Setter Property="CornerRadius" Value="{DynamicResource RadiusMedium}"/>
-            </Style>
+            <!-- ═════════════ 按钮 ═════════════ -->
 
-            <Style x:Key="IslandCapsule" TargetType="Border">
-                <Setter Property="Background" Value="#1A1A1A"/>
-                <Setter Property="CornerRadius" Value="10"/>
-                <Setter Property="BorderThickness" Value="0"/>
-            </Style>
-
-            <!-- 通用按钮 -->
             <Style x:Key="PclButton" TargetType="Button">
                 <Setter Property="Height" Value="32"/>
                 <Setter Property="MinWidth" Value="80"/>
                 <Setter Property="Background" Value="{DynamicResource ThemeCardBrush}"/>
                 <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderBrush}"/>
-                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Padding" Value="16,0"/>
                 <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
                 <Setter Property="FontSize" Value="13"/>
@@ -431,19 +522,19 @@
                         <ControlTemplate TargetType="Button">
                             <Border x:Name="Bg"
                                     Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="{DynamicResource RadiusSmall}">
+                                    BorderBrush="{DynamicResource ThemeShadowLineBrush}"
+                                    BorderThickness="0,0,1,1"
+                                    CornerRadius="{DynamicResource GlobalCornerRadius}">
                                 <ContentPresenter HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"
                                                   Margin="{TemplateBinding Padding}"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Bg" Property="BorderBrush" Value="{DynamicResource ThemePrimaryLightBrush}"/>
+                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemeNavHoverBgBrush}"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemeBorderLightBrush}"/>
+                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemePrimaryBgHoverBrush}"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
                                     <Setter Property="Foreground" Value="{DynamicResource ThemeTextHintBrush}"/>
@@ -454,19 +545,15 @@
                 </Setter>
             </Style>
 
-            <Style x:Key="PclButtonPrimary" TargetType="Button"
-                   BasedOn="{StaticResource PclButton}">
+            <Style x:Key="PclButtonPrimary" TargetType="Button" BasedOn="{StaticResource PclButton}">
                 <Setter Property="Background" Value="{DynamicResource ThemePrimaryBrush}"/>
                 <Setter Property="Foreground" Value="White"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource ThemePrimaryBrush}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
                             <Border x:Name="Bg"
                                     Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="{DynamicResource RadiusSmall}">
+                                    CornerRadius="{DynamicResource GlobalCornerRadius}">
                                 <ContentPresenter HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"
                                                   Margin="{TemplateBinding Padding}"/>
@@ -484,24 +571,24 @@
                 </Setter>
             </Style>
 
-            <Style x:Key="PclButtonDanger" TargetType="Button"
-                   BasedOn="{StaticResource PclButton}">
+            <Style x:Key="PclButtonDanger" TargetType="Button" BasedOn="{StaticResource PclButton}">
                 <Setter Property="Foreground" Value="{DynamicResource ThemeDangerBrush}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
                             <Border x:Name="Bg"
                                     Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="{DynamicResource RadiusSmall}">
+                                    BorderBrush="{DynamicResource ThemeShadowLineBrush}"
+                                    BorderThickness="0,0,1,1"
+                                    CornerRadius="{DynamicResource GlobalCornerRadius}">
                                 <ContentPresenter HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"
                                                   Margin="{TemplateBinding Padding}"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Bg" Property="BorderBrush" Value="{DynamicResource ThemeDangerHoverBrush}"/>
+                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemeDangerHoverBrush}"/>
+                                    <Setter Property="Foreground" Value="White"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -509,19 +596,16 @@
                 </Setter>
             </Style>
 
-            <!-- ★ B4：图标 + 文字的通用按钮（本期只加样式，不改用到页面）
-                 Tag 里放 Geometry 数据或路径字符串 -->
-            <Style x:Key="PclButtonWithIcon" TargetType="Button"
-                   BasedOn="{StaticResource PclButton}">
+            <Style x:Key="PclButtonWithIcon" TargetType="Button" BasedOn="{StaticResource PclButton}">
                 <Setter Property="Padding" Value="12,0"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
                             <Border x:Name="Bg"
                                     Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="{DynamicResource RadiusSmall}">
+                                    BorderBrush="{DynamicResource ThemeShadowLineBrush}"
+                                    BorderThickness="0,0,1,1"
+                                    CornerRadius="{DynamicResource GlobalCornerRadius}">
                                 <StackPanel Orientation="Horizontal"
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
@@ -534,16 +618,15 @@
                                           Width="16" Height="16"
                                           Stretch="Uniform"
                                           VerticalAlignment="Center"/>
-                                    <ContentPresenter VerticalAlignment="Center"
-                                                      Margin="8,0,0,0"/>
+                                    <ContentPresenter VerticalAlignment="Center" Margin="8,0,0,0"/>
                                 </StackPanel>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Bg" Property="BorderBrush" Value="{DynamicResource ThemePrimaryLightBrush}"/>
+                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemeNavHoverBgBrush}"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemeBorderLightBrush}"/>
+                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemePrimaryBgHoverBrush}"/>
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
                                     <Setter Property="Foreground" Value="{DynamicResource ThemeTextHintBrush}"/>
@@ -556,7 +639,7 @@
 
             <Style x:Key="PclListRow" TargetType="Border">
                 <Setter Property="Background" Value="{DynamicResource ThemeCardBrush}"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderLightBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ThemeShadowLineLightBrush}"/>
                 <Setter Property="BorderThickness" Value="0,0,0,1"/>
                 <Setter Property="Padding" Value="12,10"/>
                 <Style.Triggers>
@@ -567,7 +650,7 @@
             </Style>
 
             <Style x:Key="PclPriorityTag" TargetType="Border">
-                <Setter Property="CornerRadius" Value="{DynamicResource RadiusSmall}"/>
+                <Setter Property="CornerRadius" Value="{DynamicResource GlobalCornerRadius}"/>
                 <Setter Property="Padding" Value="8,2"/>
                 <Setter Property="Background" Value="{DynamicResource ThemeBorderLightBrush}"/>
             </Style>
@@ -602,7 +685,7 @@
                                     Width="{TemplateBinding Width}"
                                     Height="{TemplateBinding Height}"
                                     Background="{TemplateBinding Background}"
-                                    CornerRadius="{DynamicResource RadiusMedium}">
+                                    CornerRadius="{DynamicResource GlobalCornerRadius}">
                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <ControlTemplate.Triggers>
@@ -611,6 +694,60 @@
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
                                     <Setter TargetName="Circle" Property="Background" Value="{DynamicResource ThemePrimaryBgHoverBrush}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- ═════════════ ★ 33.0.0：侧栏导航按钮（紧凑版，适配 13 项） ═════════════ -->
+            <Style x:Key="NavButton" TargetType="RadioButton">
+                <Setter Property="Height" Value="38"/>
+                <Setter Property="Width" Value="92"/>
+                <Setter Property="Margin" Value="0,0,0,3"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
+                <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="RadioButton">
+                            <Border x:Name="Bg"
+                                    Background="Transparent"
+                                    CornerRadius="19"
+                                    Padding="4,0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image x:Name="Icon"
+                                           Grid.Column="0"
+                                           Source="{TemplateBinding Tag}"
+                                           Width="20" Height="20"
+                                           Stretch="Uniform"
+                                           VerticalAlignment="Center"
+                                           Margin="10,0,8,0"/>
+                                    <TextBlock x:Name="Label"
+                                               Grid.Column="1"
+                                               Text="{TemplateBinding Content}"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               Foreground="{TemplateBinding Foreground}"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Left"
+                                               TextTrimming="CharacterEllipsis"/>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemeNavHoverBgBrush}"/>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="Bg" Property="Background" Value="{DynamicResource ThemeNavActiveBgBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource ThemePrimaryBrush}"/>
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -650,8 +787,7 @@
                 </Setter>
             </Style>
 
-            <Style x:Key="WindowCloseButton" TargetType="Button"
-                   BasedOn="{StaticResource WindowControlButton}">
+            <Style x:Key="WindowCloseButton" TargetType="Button" BasedOn="{StaticResource WindowControlButton}">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
@@ -678,7 +814,8 @@
                 </Setter>
             </Style>
 
-            <!-- 图标（随主题变化） -->
+            <!-- ═════════════ 图标 ═════════════ -->
+
             <DrawingImage x:Key="IconHome">
                 <DrawingImage.Drawing>
                     <GeometryDrawing Brush="{DynamicResource ThemeIconForegroundBrush}" Geometry="M12 3 L2 11 L2 21 L10 21 L10 14 L14 14 L14 21 L22 21 L22 11 Z"/>
@@ -757,7 +894,6 @@
                 </DrawingImage.Drawing>
             </DrawingImage>
 
-            <!-- ★ B2：通知条图标（白色） -->
             <DrawingImage x:Key="IconNotifyInfo">
                 <DrawingImage.Drawing>
                     <GeometryDrawing Brush="#FFFFFF" Geometry="M11 7 L13 7 L13 9 L11 9 Z M11 11 L13 11 L13 17 L11 17 Z M12 2 A10 10 0 1 0 12 22 A10 10 0 1 0 12 2 Z M12 20 A8 8 0 1 1 12 4 A8 8 0 1 1 12 20 Z"/>

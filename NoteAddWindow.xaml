@@ -59,7 +59,7 @@
                     Background="{DynamicResource ThemeRowAltBrush}"
                     BorderBrush="{DynamicResource ThemeBorderLightBrush}"
                     BorderThickness="1"
-                    CornerRadius="{DynamicResource RadiusMedium}"
+                    CornerRadius="{DynamicResource GlobalCornerRadius}"
                     Padding="8"
                     MinHeight="240"
                     MaxHeight="320">

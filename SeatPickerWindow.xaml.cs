@@ -1,7 +1,9 @@
-﻿﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace CMW
 {
@@ -9,7 +11,6 @@ namespace CMW
     {
         private List<StudentPickVm> _vms = new List<StudentPickVm>();
         private List<StudentPickVm> _filtered = new List<StudentPickVm>();
-        private bool _isLoading = true;
 
         public string SelectedStudentId { get; private set; } = "";
 
@@ -17,7 +18,7 @@ namespace CMW
         {
             InitializeComponent();
 
-            tbSubtitle.Text = $"位置：第 {row + 1} 行 第 {col + 1} 列";
+            tbSubtitle.Text = $"位置：第 {row + 1} 行 第 {col + 1} 列 · 点击学生姓名即可安排";
 
             _vms = students.Select(s => new StudentPickVm
             {
@@ -26,13 +27,20 @@ namespace CMW
                 Name = s.Name,
                 StudentId = s.StudentId,
                 IsSelected = s.Id == currentStudentId,
+                SelectedCheckVisibility = s.Id == currentStudentId
+                    ? Visibility.Visible
+                    : Visibility.Collapsed,
                 Student = s
             }).ToList();
 
             _filtered = new List<StudentPickVm>(_vms);
             icStudents.ItemsSource = _filtered;
 
-            Loaded += (s, e) => _isLoading = false;
+            if (_vms.Count == 0)
+            {
+                tbEmpty.Visibility = Visibility.Visible;
+                tbTip.Text = "名单为空，请先在「名单」页添加学生";
+            }
         }
 
         // ═══════════════════════════════════════
@@ -53,51 +61,28 @@ namespace CMW
 
             icStudents.ItemsSource = null;
             icStudents.ItemsSource = _filtered;
+
+            tbEmpty.Visibility = _filtered.Count == 0 && _vms.Count > 0
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+            if (_filtered.Count == 0 && _vms.Count > 0)
+                tbEmpty.Text = "没有匹配的学生";
+            else if (_vms.Count == 0)
+                tbEmpty.Text = "名单为空，请先到「名单」页添加学生";
         }
 
         // ═══════════════════════════════════════
-        // 单选：选中一个取消其他
+        // ★ 33.0.0：单击学生卡片 → 立即安排并关闭
         // ═══════════════════════════════════════
 
-        private void Student_Checked(object sender, RoutedEventArgs e)
+        private void StudentCard_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (_isLoading) return;
-            if (sender is not CheckBox cb || cb.Tag is not StudentPickVm vm) return;
+            if (sender is not Border b || b.Tag is not StudentPickVm vm) return;
 
-            foreach (var s in _vms)
-            {
-                if (s == vm) continue;
-                if (s.IsSelected)
-                {
-                    s.IsSelected = false;
-                    // 需要刷新显示
-                }
-            }
-
-            RefreshList();
-        }
-
-        private void Student_Unchecked(object sender, RoutedEventArgs e)
-        {
-            if (_isLoading) return;
-            // 允许取消
-        }
-
-        private void RefreshList()
-        {
-            string key = (txtSearch.Text ?? "").Trim();
-            if (string.IsNullOrEmpty(key))
-                _filtered = new List<StudentPickVm>(_vms);
-            else
-                _filtered = _vms.Where(x =>
-                    x.Name.Contains(key) ||
-                    x.StudentId.Contains(key))
-                    .ToList();
-
-            _isLoading = true;
-            icStudents.ItemsSource = null;
-            icStudents.ItemsSource = _filtered;
-            _isLoading = false;
+            SelectedStudentId = vm.Id;
+            DialogResult = true;
+            Close();
+            e.Handled = true;
         }
 
         // ═══════════════════════════════════════
@@ -116,20 +101,6 @@ namespace CMW
             DialogResult = false;
             Close();
         }
-
-        private void BtnOk_Click(object sender, RoutedEventArgs e)
-        {
-            var selected = _vms.FirstOrDefault(x => x.IsSelected);
-            if (selected == null)
-            {
-                tbTip.Text = "⚠️ 未选择学生（点「清除此座位」清空）";
-                return;
-            }
-
-            SelectedStudentId = selected.Id;
-            DialogResult = true;
-            Close();
-        }
     }
 
     internal class StudentPickVm
@@ -139,6 +110,7 @@ namespace CMW
         public string Name { get; set; } = "";
         public string StudentId { get; set; } = "";
         public bool IsSelected { get; set; }
+        public Visibility SelectedCheckVisibility { get; set; } = Visibility.Collapsed;
         public Student Student { get; set; } = new Student();
     }
 }

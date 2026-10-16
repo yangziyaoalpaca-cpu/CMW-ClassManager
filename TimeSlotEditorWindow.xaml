@@ -41,7 +41,7 @@
             <Setter Property="Background" Value="{DynamicResource ThemeRowAltBrush}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="{DynamicResource RadiusSmall}"/>
+            <Setter Property="CornerRadius" Value="{DynamicResource GlobalCornerRadius}"/>
             <Setter Property="Padding" Value="10,6"/>
             <Setter Property="Margin" Value="0,0,0,6"/>
         </Style>

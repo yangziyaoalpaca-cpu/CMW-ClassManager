@@ -31,14 +31,29 @@ namespace CMW
         private const double HorizontalSwipeThreshold = 100;
         private const double HorizontalSwipeMinDelta = 30;
 
+        // ★ 33.0.0：侧栏按钮数组 + 防递归标志
+        private RadioButton[] _navButtons = Array.Empty<RadioButton>();
+        private bool _suppressNavChecked = false;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            // ★ 33.0.0：初始化侧栏按钮数组（顺序与 index 一致）
+            _navButtons = new[]
+            {
+                NavHome, NavSchedule, NavTodo, NavDuty, NavHomework,
+                NavSummary, NavStudents, NavExam, NavLogs, NavStatistics,
+                NavSeat, NavCalendar, NavSettings
+            };
 
             ResetToDefaultBounds();
 
             _currentNavIndex = 0;
             MainFrame.Navigate(CreatePageByIndex(0));
+
+            // ★ 33.0.0：初始高亮首页
+            UpdateNavHighlight(0);
 
             App.SettingsChanged += OnSettingsChanged;
             App.TimeSlotsChanged += OnTimeSlotsChanged;
@@ -110,6 +125,43 @@ namespace CMW
             try { Opacity = 1; } catch { }
         }
 
+        // ═══════════════════════════════════════════════════════════
+        // ★ 33.0.0：侧栏导航高亮同步
+        // ═══════════════════════════════════════════════════════════
+        private void UpdateNavHighlight(int index)
+        {
+            if (index < 0 || index >= _navButtons.Length) return;
+
+            _suppressNavChecked = true;
+            try
+            {
+                var btn = _navButtons[index];
+                if (btn != null && !btn.IsChecked.GetValueOrDefault())
+                    btn.IsChecked = true;
+            }
+            catch { }
+            finally
+            {
+                _suppressNavChecked = false;
+            }
+        }
+
+        private void Nav_Checked(object sender, RoutedEventArgs e)
+        {
+            if (_suppressNavChecked) return;
+            if (sender is not RadioButton rb) return;
+
+            int idx = Array.IndexOf(_navButtons, rb);
+            if (idx < 0) return;
+            if (idx == _currentNavIndex) return;
+            if (_isNavigating) return;
+
+            SafeNavigate(idx);
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // 触摸手势
+        // ═══════════════════════════════════════════════════════════
         private void MainWindow_PreviewTouchDown(object? sender, TouchEventArgs e)
         {
             _isHorizontalSwipe = false;
@@ -337,6 +389,9 @@ namespace CMW
             try { MainFrame.Navigate(CreatePageByIndex(0)); }
             catch { }
 
+            // ★ 33.0.0：同步侧栏高亮
+            UpdateNavHighlight(0);
+
             Show();
             Activate();
 
@@ -370,20 +425,6 @@ namespace CMW
             Opacity = 1;
         }
 
-        private void NavHome(object sender, RoutedEventArgs e) => SafeNavigate(0);
-        private void NavSchedule(object sender, RoutedEventArgs e) => SafeNavigate(1);
-        private void NavTodo(object sender, RoutedEventArgs e) => SafeNavigate(2);
-        private void NavDuty(object sender, RoutedEventArgs e) => SafeNavigate(3);
-        private void NavHomework(object sender, RoutedEventArgs e) => SafeNavigate(4);
-        private void NavSummary(object sender, RoutedEventArgs e) => SafeNavigate(5);
-        private void NavStudents(object sender, RoutedEventArgs e) => SafeNavigate(6);
-        private void NavExam(object sender, RoutedEventArgs e) => SafeNavigate(7);
-        private void NavLogs(object sender, RoutedEventArgs e) => SafeNavigate(8);
-        private void NavStatistics(object sender, RoutedEventArgs e) => SafeNavigate(9);
-        private void NavSeat(object sender, RoutedEventArgs e) => SafeNavigate(10);
-        private void NavCalendar(object sender, RoutedEventArgs e) => SafeNavigate(11);
-        private void NavSettings(object sender, RoutedEventArgs e) => SafeNavigate(12);
-
         private void SafeNavigate(int index)
         {
             try
@@ -395,9 +436,9 @@ namespace CMW
             {
                 _isNavigating = false;
 
+                // ★ 显示完整堆栈，方便定位 NRE
                 MessageBox.Show(
-                    "打开页面失败（index=" + index + "）：\n\n" +
-                    ex.GetType().Name + "\n" + ex.Message,
+                    "打开页面失败（index=" + index + "）：\n\n" + ex.ToString(),
                     "导航错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -405,13 +446,23 @@ namespace CMW
         public void NavigateByIndex(int index)
         {
             if (index < 0 || index > MaxNavIndex) return;
-            if (index == _currentNavIndex) return;
+            if (index == _currentNavIndex)
+            {
+                // ★ 33.0.0：即使同页，也确保高亮
+                UpdateNavHighlight(index);
+                return;
+            }
             SafeNavigate(index);
         }
 
         private void NavigateWithTransition(object newPage, int newIndex)
         {
-            if (newIndex == _currentNavIndex && !_isNavigating) return;
+            if (newIndex == _currentNavIndex && !_isNavigating)
+            {
+                // ★ 33.0.0：确保高亮
+                UpdateNavHighlight(newIndex);
+                return;
+            }
 
             if (_isNavigating)
             {
@@ -425,6 +476,9 @@ namespace CMW
             _isNavigating = true;
             int direction = newIndex > _currentNavIndex ? -1 : 1;
             _currentNavIndex = newIndex;
+
+            // ★ 33.0.0：导航瞬间高亮
+            UpdateNavHighlight(newIndex);
 
             StartNavTimeout();
 

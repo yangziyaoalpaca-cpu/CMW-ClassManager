@@ -65,7 +65,7 @@
                 Background="{DynamicResource ThemeCardBrush}"
                 BorderBrush="{DynamicResource ThemeBorderLightBrush}"
                 BorderThickness="1"
-                CornerRadius="{DynamicResource RadiusMedium}"
+                CornerRadius="{DynamicResource GlobalCornerRadius}"
                 Padding="14"
                 Margin="0,0,0,12">
             <StackPanel>
@@ -110,7 +110,7 @@
                 Background="{DynamicResource ThemeCardBrush}"
                 BorderBrush="{DynamicResource ThemeBorderLightBrush}"
                 BorderThickness="1"
-                CornerRadius="{DynamicResource RadiusMedium}">
+                CornerRadius="{DynamicResource GlobalCornerRadius}">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
                 <ScrollViewer.Resources>

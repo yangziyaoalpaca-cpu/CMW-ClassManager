@@ -4,7 +4,7 @@
         Title="Island"
         WindowStyle="None"
         AllowsTransparency="True"
-        Background="Transparent"
+        Background="{x:Null}"
         Topmost="True"
         ShowInTaskbar="False"
         ResizeMode="NoResize"
@@ -91,11 +91,7 @@
                     MouseLeftButtonUp="MainBorder_MouseLeftButtonUp"
                     MouseRightButtonUp="MainBorder_MouseRightButtonUp"
                     MouseEnter="MainBorder_MouseEnter"
-                    MouseLeave="MainBorder_MouseLeave"
-                    MouseLeftButtonDown="MainBorder_MouseLeftButtonDown"
-                    TouchDown="MainBorder_TouchDown"
-                    TouchMove="MainBorder_TouchMove"
-                    TouchUp="MainBorder_TouchUp">
+                    MouseLeave="MainBorder_MouseLeave">
                 <Grid>
                     <TextBlock x:Name="CapsuleLabel"
                                Text="CMW"
@@ -113,7 +109,7 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <!-- ★ B2：图标 + 标题 -->
+                        <!-- 图标 + 标题 -->
                         <StackPanel x:Name="CardTitleBar"
                                     Grid.Row="0"
                                     Orientation="Horizontal"
@@ -265,7 +261,7 @@
                     Opacity="0"
                     Margin="6,0,0,0"
                     VerticalAlignment="Top"
-                    CornerRadius="20"
+                    CornerRadius="0"
                     Background="#E61A1A1A"
                     ClipToBounds="True"
                     MouseLeftButtonUp="BarBorder_MouseLeftButtonUp"
@@ -304,7 +300,7 @@
                         <TextBlock x:Name="BarTxtNext" Foreground="#CCEEEEEE" FontFamily="{DynamicResource GlobalFontFamily}" FontSize="14" VerticalAlignment="Center"/>
                     </StackPanel>
 
-                    <!-- ★ 组 4 · 作业 -->
+                    <!-- 组 4 · 作业 -->
                     <ItemsControl x:Name="BarIcHomework" Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -328,7 +324,7 @@
                                VerticalAlignment="Center"
                                Visibility="Collapsed"/>
 
-                    <!-- ★ 组 5 · 值日 -->
+                    <!-- 组 5 · 值日 -->
                     <TextBlock x:Name="BarTxtDuty"
                                Visibility="Collapsed"
                                Foreground="White"
@@ -339,7 +335,7 @@
                                VerticalAlignment="Center"
                                TextAlignment="Center"/>
 
-                    <!-- ★ 组 6 · 待办 -->
+                    <!-- 组 6 · 待办 -->
                     <ItemsControl x:Name="BarIcTodo" Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>

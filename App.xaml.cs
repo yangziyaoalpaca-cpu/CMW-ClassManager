@@ -38,6 +38,7 @@ namespace CMW
 
         public static string CurrentFontFamily { get; private set; } = "Microsoft YaHei UI";
         public static string CurrentThemeName { get; private set; } = "PCL2";
+        public static int CurrentGlobalRadius { get; private set; } = 8;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -51,6 +52,7 @@ namespace CMW
                 bootConfig = JsonHelper.Load<AppConfig>(AppPaths.Config) ?? new AppConfig();
                 ApplyTheme(bootConfig.ThemeName);
                 ApplyFontToApp(bootConfig.FontFamily);
+                ApplyGlobalRadius(bootConfig.GlobalRadius);
             }
             catch { }
 
@@ -159,6 +161,25 @@ namespace CMW
 
                 Current.Resources["GlobalFontFamily"] = newFont;
                 Current.Resources["AppleFont"] = newFont;
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// ★ 33.0.0：应用全局 R 角
+        /// 所有样式引用 DynamicResource GlobalCornerRadius，
+        /// 替换此资源即全局生效。
+        /// </summary>
+        public static void ApplyGlobalRadius(int radius)
+        {
+            try
+            {
+                if (radius < 4) radius = 4;
+                if (radius > 24) radius = 24;
+
+                CurrentGlobalRadius = radius;
+
+                Current.Resources["GlobalCornerRadius"] = new CornerRadius(radius);
             }
             catch { }
         }

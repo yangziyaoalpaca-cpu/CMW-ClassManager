@@ -36,7 +36,7 @@
 
         <Style x:Key="TypeTag" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource ThemePrimaryBgBrush}"/>
-            <Setter Property="CornerRadius" Value="{DynamicResource RadiusSmall}"/>
+            <Setter Property="CornerRadius" Value="{DynamicResource GlobalCornerRadius}"/>
             <Setter Property="Padding" Value="8,2"/>
         </Style>
 

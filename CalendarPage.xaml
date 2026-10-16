@@ -5,31 +5,6 @@
              Background="Transparent"
              FontFamily="{DynamicResource GlobalFontFamily}">
 
-    <UserControl.Resources>
-
-        <Style x:Key="SectionCard" TargetType="Border">
-            <Setter Property="Background" Value="{DynamicResource ThemeCardBrush}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderLightBrush}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="{DynamicResource RadiusMedium}"/>
-            <Setter Property="Padding" Value="20"/>
-            <Setter Property="Margin" Value="0,0,0,16"/>
-        </Style>
-
-        <Style x:Key="NormalText" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Foreground" Value="{DynamicResource ThemeTextPrimaryBrush}"/>
-            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
-        </Style>
-
-        <Style x:Key="HintText" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Foreground" Value="{DynamicResource ThemeTextHintBrush}"/>
-            <Setter Property="FontFamily" Value="{DynamicResource GlobalFontFamily}"/>
-        </Style>
-
-    </UserControl.Resources>
-
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

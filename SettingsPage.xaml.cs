@@ -15,7 +15,8 @@ namespace CMW
 {
     public partial class SettingsPage : UserControl
     {
-        private AppConfig _currentConfig;
+        // ★ 33.0.0 修复：字段直接初始化，避免 InitializeComponent 期间为 null
+        private AppConfig _currentConfig = new AppConfig();
         private bool _isLoading;
         private StackPanel? _currentPanel;
 
@@ -49,9 +50,19 @@ namespace CMW
 
         public SettingsPage()
         {
+            // ★ 33.0.0 修复：InitializeComponent 期间阻止 SelectionChanged/ValueChanged 访问
+            _isLoading = true;
+
             InitializeComponent();
             _currentConfig = new AppConfig();
             Loaded += SettingsPage_Loaded;
+
+            sliderGlobalRadius.ValueChanged += (s, e) =>
+            {
+                int r = (int)sliderGlobalRadius.Value;
+                tbGlobalRadius.Text = $"当前：{r} px";
+                RadiusPreview.CornerRadius = new CornerRadius(r);
+            };
 
             sliderBlur.ValueChanged += (s, e) =>
             {
@@ -220,6 +231,15 @@ namespace CMW
         private void BindUiFromConfig()
         {
             txtClassName.Text = _currentConfig.ClassName;
+
+            // ★ 33.0.0：全局 R 角
+            int globalRadius = _currentConfig.GlobalRadius;
+            if (globalRadius < 4) globalRadius = 4;
+            if (globalRadius > 24) globalRadius = 24;
+            sliderGlobalRadius.Value = globalRadius;
+            tbGlobalRadius.Text = $"当前：{globalRadius} px";
+            RadiusPreview.CornerRadius = new CornerRadius(globalRadius);
+
             sliderBlur.Value = _currentConfig.BlurRadius;
             tbBlurValue.Text = $"当前值：{_currentConfig.BlurRadius:F0}";
 
@@ -304,8 +324,6 @@ namespace CMW
                     break;
             }
 
-            toggleIslandDraggable.IsChecked = _currentConfig.IslandDraggable;
-
             double nw = _currentConfig.NotifyBarWidthPercent;
             if (nw < 50) nw = 96;
             if (nw > 100) nw = 100;
@@ -358,6 +376,16 @@ namespace CMW
             toggleBarEnabled.IsChecked = _currentConfig.IslandBarEnabled;
             toggleBarAutoExtend.IsChecked = _currentConfig.IslandBarAutoExtendOnClassChange;
             toggleBarManualExtend.IsChecked = _currentConfig.IslandBarManualExtendEnabled;
+
+            // ★ 新增：横条常驻 + 缩回目标
+            toggleBarPersistent.IsChecked = _currentConfig.IslandBarPersistent;
+
+            switch (_currentConfig.MinimizeTarget)
+            {
+                case "Bar": cbMinimizeTarget.SelectedIndex = 1; break;
+                case "Island":
+                default: cbMinimizeTarget.SelectedIndex = 0; break;
+            }
 
             int blueSec = _currentConfig.IslandBlueFlashSeconds;
             if (blueSec < 0) blueSec = 2;
@@ -498,6 +526,222 @@ namespace CMW
             pwdNew.Password = "";
             pwdConfirm.Password = "";
             tbPwdTip.Text = "";
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // ★ 33.0.0：切换即生效的事件处理器
+        // ═══════════════════════════════════════════════════════════
+
+        private void CbTheme_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isLoading) return;
+            if (cbTheme.SelectedItem is not ComboBoxItem item) return;
+
+            string themeName = item.Tag?.ToString() ?? "PCL2";
+            if (themeName == _currentConfig.ThemeName) return;
+
+            try
+            {
+                _currentConfig.ThemeName = themeName;
+                JsonHelper.Save(AppPaths.Config, _currentConfig);
+                App.ApplyTheme(themeName);
+                tbTip.Text = $"✅ 已切换到「{item.Content}」主题";
+            }
+            catch (Exception ex)
+            {
+                tbTip.Text = "❌ 主题切换失败：" + ex.Message;
+            }
+        }
+
+        private void CbFontFamily_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isLoading) return;
+            if (cbFontFamily.SelectedItem is not ComboBoxItem item) return;
+
+            string fontName = item.Content?.ToString() ?? "Microsoft YaHei UI";
+            if (fontName == _currentConfig.FontFamily) return;
+
+            try
+            {
+                _currentConfig.FontFamily = fontName;
+                JsonHelper.Save(AppPaths.Config, _currentConfig);
+                App.ApplyFontToApp(fontName);
+                tbTip.Text = $"✅ 已切换到「{fontName}」字体";
+            }
+            catch (Exception ex)
+            {
+                tbTip.Text = "❌ 字体切换失败：" + ex.Message;
+            }
+        }
+
+        private void CbClassChangeStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isLoading) return;
+            if (cbClassChangeStyle.SelectedItem is not ComboBoxItem item) return;
+
+            string style = item.Tag?.ToString() ?? "ColorThenNotify";
+            if (style == _currentConfig.ClassChangeStyle) return;
+
+            try
+            {
+                _currentConfig.ClassChangeStyle = style;
+                JsonHelper.Save(AppPaths.Config, _currentConfig);
+                App.NotifyRemindConfigChanged();
+                tbTip.Text = "✅ 上下课表现方式已切换";
+            }
+            catch (Exception ex)
+            {
+                tbTip.Text = "❌ 切换失败：" + ex.Message;
+            }
+        }
+
+        private void CbBackgroundPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isLoading) return;
+            if (cbBackgroundPreset.SelectedItem is not ComboBoxItem item) return;
+
+            string preset = item.Tag?.ToString() ?? "None";
+            if (preset == _currentConfig.BackgroundPreset) return;
+
+            try
+            {
+                _currentConfig.BackgroundPreset = preset;
+                JsonHelper.Save(AppPaths.Config, _currentConfig);
+                App.NotifySettingsChanged();
+                tbTip.Text = $"✅ 背景样式已切换到「{item.Content}」";
+            }
+            catch (Exception ex)
+            {
+                tbTip.Text = "❌ 切换失败：" + ex.Message;
+            }
+        }
+
+        private void CbIslandSize_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isLoading) return;
+            if (cbIslandSize.SelectedItem is not ComboBoxItem item) return;
+
+            string size = item.Tag?.ToString() ?? "Medium";
+            if (size == _currentConfig.IslandCardSize) return;
+
+            try
+            {
+                _currentConfig.IslandCardSize = size;
+                JsonHelper.Save(AppPaths.Config, _currentConfig);
+                App.NotifySettingsChanged();
+                tbTip.Text = "✅ 灵动岛展开大小已切换";
+            }
+            catch (Exception ex)
+            {
+                tbTip.Text = "❌ 切换失败：" + ex.Message;
+            }
+        }
+
+        private void CbCapsuleTextMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isLoading) return;
+            if (cbCapsuleTextMode.SelectedItem is not ComboBoxItem item) return;
+
+            string mode = item.Tag?.ToString() ?? "CMW";
+            if (mode == _currentConfig.IslandCapsuleTextMode) return;
+
+            try
+            {
+                _currentConfig.IslandCapsuleTextMode = mode;
+                JsonHelper.Save(AppPaths.Config, _currentConfig);
+                App.NotifySettingsChanged();
+                tbTip.Text = "✅ 胶囊显示内容已切换";
+            }
+            catch (Exception ex)
+            {
+                tbTip.Text = "❌ 切换失败：" + ex.Message;
+            }
+        }
+
+        private void CbNotifyMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isLoading) return;
+
+            bool manual = cbNotifyMode.SelectedIndex == 1;
+            if (manual == _currentConfig.NotifyClickOutsideToClose) return;
+
+            try
+            {
+                _currentConfig.NotifyClickOutsideToClose = manual;
+                JsonHelper.Save(AppPaths.Config, _currentConfig);
+                App.NotifySettingsChanged();
+                tbTip.Text = "✅ 通知收回方式已切换";
+            }
+            catch (Exception ex)
+            {
+                tbTip.Text = "❌ 切换失败：" + ex.Message;
+            }
+        }
+
+        private void CbClassRemindStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isLoading) return;
+            if (cbClassRemindStyle.SelectedItem is not ComboBoxItem item) return;
+
+            string style = item.Tag?.ToString() ?? "Popup";
+            if (style == _currentConfig.ClassRemindStyle) return;
+
+            try
+            {
+                _currentConfig.ClassRemindStyle = style;
+                JsonHelper.Save(AppPaths.Config, _currentConfig);
+                App.NotifyRemindConfigChanged();
+                tbTip.Text = "✅ 提醒样式已切换";
+            }
+            catch (Exception ex)
+            {
+                tbTip.Text = "❌ 切换失败：" + ex.Message;
+            }
+        }
+
+        private void CbRightContentMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isLoading) return;
+            if (cbRightContentMode.SelectedItem is not ComboBoxItem item) return;
+
+            string mode = item.Tag?.ToString() ?? "Auto";
+            if (mode == _currentConfig.RightPanelContentMode) return;
+
+            try
+            {
+                _currentConfig.RightPanelContentMode = mode;
+                _currentConfig.FloatWindowContentMode = mode;
+                _currentConfig.FloatWindowAutoSwitch = mode == "Auto";
+                JsonHelper.Save(AppPaths.Config, _currentConfig);
+                App.NotifySettingsChanged();
+                tbTip.Text = "✅ 右侧窗口内容模式已切换";
+            }
+            catch (Exception ex)
+            {
+                tbTip.Text = "❌ 切换失败：" + ex.Message;
+            }
+        }
+
+        // ★ 新增：主窗口缩回目标切换即生效
+        private void CbMinimizeTarget_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isLoading) return;
+            if (cbMinimizeTarget.SelectedItem is not ComboBoxItem item) return;
+
+            string target = item.Tag?.ToString() ?? "Island";
+            if (target == _currentConfig.MinimizeTarget) return;
+
+            try
+            {
+                _currentConfig.MinimizeTarget = target;
+                JsonHelper.Save(AppPaths.Config, _currentConfig);
+                App.NotifySettingsChanged();
+                tbTip.Text = "✅ 主窗口缩回目标已切换";
+            }
+            catch (Exception ex)
+            {
+                tbTip.Text = "❌ 切换失败：" + ex.Message;
+            }
         }
 
         private void UpdateBarWidthActual(double value)
@@ -662,10 +906,9 @@ namespace CMW
 
         private int _activeTouchId = -1;
 
-        // ★ 32.0.0：sender 改为 object?，修 CS8622
         private void BarOrderHandle_PreviewTouchDown(object? sender, TouchEventArgs e)
         {
-            var row = FindRowFromHandle(sender);
+            var row = FindRowFromHandle(sender!);
             if (row == null) return;
             BeginBarGroupDrag(row);
             _activeTouchId = e.TouchDevice.Id;
@@ -820,6 +1063,9 @@ namespace CMW
         {
             _currentConfig.ClassName = txtClassName.Text.Trim();
 
+            // ★ 33.0.0：全局 R 角
+            _currentConfig.GlobalRadius = (int)sliderGlobalRadius.Value;
+
             if (cbTheme.SelectedItem is ComboBoxItem themeItem)
             {
                 _currentConfig.ThemeName = themeItem.Tag?.ToString() ?? "PCL2";
@@ -860,7 +1106,6 @@ namespace CMW
             _currentConfig.ClassChangeStyle =
                 (cbClassChangeStyle.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "ColorThenNotify";
 
-            _currentConfig.IslandDraggable = toggleIslandDraggable.IsChecked == true;
             _currentConfig.NotifyBarWidthPercent = sliderNotifyWidth.Value;
             _currentConfig.NotifyBarHeightPercent = sliderNotifyHeight.Value;
 
@@ -880,6 +1125,12 @@ namespace CMW
             _currentConfig.IslandBarEnabled = toggleBarEnabled.IsChecked == true;
             _currentConfig.IslandBarAutoExtendOnClassChange = toggleBarAutoExtend.IsChecked == true;
             _currentConfig.IslandBarManualExtendEnabled = toggleBarManualExtend.IsChecked == true;
+
+            // ★ 新增：横条常驻 + 缩回目标
+            _currentConfig.IslandBarPersistent = toggleBarPersistent.IsChecked == true;
+            _currentConfig.MinimizeTarget =
+                (cbMinimizeTarget.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Island";
+
             _currentConfig.IslandBlueFlashSeconds = (int)sliderBlueFlash.Value;
 
             double barWidth = sliderBarWidth.Value;
@@ -961,6 +1212,7 @@ namespace CMW
 
             int oldRadius = _currentConfig.BlurRadius;
             string oldTheme = _currentConfig.ThemeName;
+            int oldGlobalRadius = _currentConfig.GlobalRadius;
 
             ReadUiToConfig();
             SaveConfigToFile();
@@ -970,6 +1222,12 @@ namespace CMW
             if (oldTheme != _currentConfig.ThemeName)
             {
                 App.ApplyTheme(_currentConfig.ThemeName);
+            }
+
+            // ★ 33.0.0：全局 R 角变化时应用
+            if (oldGlobalRadius != _currentConfig.GlobalRadius)
+            {
+                App.ApplyGlobalRadius(_currentConfig.GlobalRadius);
             }
 
             try
@@ -1217,6 +1475,7 @@ namespace CMW
 
                 App.ApplyFontToApp(_currentConfig.FontFamily);
                 App.ApplyTheme(_currentConfig.ThemeName);
+                App.ApplyGlobalRadius(_currentConfig.GlobalRadius);
                 App.NotifySettingsChanged();
 
                 tbTip.Text = "✅ 导入完成并立即生效";
@@ -1440,7 +1699,6 @@ namespace CMW
             win.ShowDialog();
         }
 
-        // ★ 32.0.0：自动开机 BIOS 引导
         private void BtnOpenBiosGuide_Click(object sender, RoutedEventArgs e)
         {
             try

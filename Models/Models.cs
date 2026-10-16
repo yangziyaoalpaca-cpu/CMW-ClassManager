@@ -12,8 +12,11 @@ namespace CMW
         public int BlurRadius { get; set; } = 40;
         public string FontFamily { get; set; } = "Microsoft YaHei UI";
 
-        // ★ 31.0.0：主题（"PCL2" / "ClassIsland"）
+        // 主题（"PCL2" / "ClassIsland"）
         public string ThemeName { get; set; } = "PCL2";
+
+        // ★ 33.0.0：全局统一 R 角（4~24）
+        public int GlobalRadius { get; set; } = 8;
 
         public string TodoRemindTime1 { get; set; } = "12:00";
         public string TodoRemindTime2 { get; set; } = "18:00";
@@ -34,12 +37,8 @@ namespace CMW
         public string BackgroundImagePath { get; set; } = "";
         public bool BackgroundBlurEnabled { get; set; } = true;
 
-        // ★ 32.0.0：主页背景渐变预设
-        // "None"        → 使用图片
-        // "DeepBlue"    → 深蓝斜向
-        // "MorningMist" → 晨雾浅蓝
-        // "NightPurple" → 暗夜紫灰
-        // "InkGreen"    → 墨绿山水
+        // 主页背景渐变预设
+        // "None" / "DeepBlue" / "MorningMist" / "NightPurple" / "InkGreen"
         public string BackgroundPreset { get; set; } = "None";
 
         public bool NotifyClickOutsideToClose { get; set; } = false;
@@ -77,8 +76,6 @@ namespace CMW
         public string ExamName { get; set; } = "";
         public string ExamDate { get; set; } = "";
 
-        // ★ 32.0.0：多条考试倒计时（列表）
-        // 若列表为空且老字段 ExamName / ExamDate 非空 → 加载时自动迁移一条
         public List<ExamCountdownItem> ExamCountdownList { get; set; } = new List<ExamCountdownItem>();
 
         public double RightPanelHeightPercent { get; set; } = 70;
@@ -100,11 +97,8 @@ namespace CMW
         public string ClassRemindStyle { get; set; } = "Both";
         public int MiniRemindDurationSeconds { get; set; } = 5;
 
-        // ★ 32.0.0：上下课表现方式
-        // "ColorThenNotify"（默认）：先变色，再通知
-        // "NotifyOnly"            ：只通知
-        // "ColorAndBar"           ：只变色 + 横条联动（不做通知）
-        // "None"                  ：都不做
+        // 上下课表现方式
+        // "ColorThenNotify"（默认）/ "NotifyOnly" / "ColorAndBar" / "None"
         public string ClassChangeStyle { get; set; } = "ColorThenNotify";
 
         public bool DutyRemindEnabled { get; set; } = false;
@@ -127,15 +121,18 @@ namespace CMW
         public double NotifyBarWidthPercent { get; set; } = 96;
         public double NotifyBarHeightPercent { get; set; } = 10;
 
-        // ═══════ ★ 31.0.0 新增 ═══════
+        // ═══════ 31.0.0 新增 ═══════
 
-        // 灵动岛横条
         public bool IslandBarEnabled { get; set; } = true;
         public bool IslandBarAutoExtendOnClassChange { get; set; } = true;
         public bool IslandBarManualExtendEnabled { get; set; } = true;
+        // ★ 33.0.0：横条常驻（勾选后上下课时横条不自动收回，右键仍可手动收回）
+        public bool IslandBarPersistent { get; set; } = false;
+        // ★ 33.0.0：主窗口最小化（缩回）目标："Island" 胶囊 / "Bar" 横条
+        public string MinimizeTarget { get; set; } = "Island";
         public int IslandBlueFlashSeconds { get; set; } = 2;
-        public double IslandBarWidth { get; set; } = 0;         // 0 = 自适应
-        public double IslandCircleDiameter { get; set; } = 0;   // 0 = 用胶囊高度
+        public double IslandBarWidth { get; set; } = 0;
+        public double IslandCircleDiameter { get; set; } = 0;
         public int IslandBarRotateSeconds { get; set; } = 8;
         public bool IslandBarAutoRotateEnabled { get; set; } = true;
         public bool IslandBarShowDateGroup { get; set; } = true;
@@ -145,28 +142,19 @@ namespace CMW
         public bool IslandBarShowDutyGroup { get; set; } = true;
         public bool IslandBarShowTodoGroup { get; set; } = true;
 
-        // ★ 32.0.0：横条内容顺序（组 ID 列表）
-        // 0=日期 1=课表 2=状态 4=作业 5=值日 6=待办
-        // 显示开关（IslandBarShow*Group）与顺序独立：
-        // 关闭的组会被跳过，未启用的组不会显示
         public List<int> IslandBarGroupOrder { get; set; } = new List<int> { 0, 1, 2, 4, 5, 6 };
 
-        // 字体全局自适应
         public bool FontAutoFitEnabled { get; set; } = true;
 
-        // 待办 / 值日多时间段
         public List<string> TodoRemindTimeList { get; set; } = new List<string>();
         public List<string> DutyRemindTimeList { get; set; } = new List<string>();
     }
 
-    /// <summary>
-    /// ★ 32.0.0：单条考试倒计时
-    /// </summary>
     public class ExamCountdownItem
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Name { get; set; } = "";
-        public string Date { get; set; } = "";   // yyyy-MM-dd
+        public string Date { get; set; } = "";
 
         [JsonIgnore]
         public int DaysLeft

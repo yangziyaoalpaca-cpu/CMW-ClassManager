@@ -23,7 +23,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ScrollBar">
                         <Grid Background="{TemplateBinding Background}">
-                            <Track x:Name="PART_Part" IsDirectionReversed="True">
+                            <Track x:Name="PART_Track" IsDirectionReversed="True">
                                 <Track.Thumb>
                                     <Thumb>
                                         <Thumb.Template>
@@ -46,56 +46,20 @@
             </Setter>
         </Style>
 
-        <Style x:Key="StudentToggle" TargetType="CheckBox">
+        <!-- ★ 33.0.0：单击即选中的学生卡片 -->
+        <Style x:Key="StudentPickCard" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource ThemeCardBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeShadowLineBrush}"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="CornerRadius" Value="{DynamicResource GlobalCornerRadius}"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="Margin" Value="4"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Margin" Value="0"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="CheckBox">
-                        <Border x:Name="Bd"
-                                Background="{DynamicResource ThemeCardBrush}"
-                                BorderBrush="{DynamicResource ThemeBorderBrush}"
-                                BorderThickness="1"
-                                CornerRadius="{DynamicResource RadiusSmall}"
-                                Padding="10,8">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Border x:Name="Tick"
-                                        Width="20" Height="20"
-                                        CornerRadius="10"
-                                        Background="#E0E0E0"
-                                        VerticalAlignment="Center">
-                                    <TextBlock x:Name="TickText"
-                                               Text=""
-                                               FontSize="12"
-                                               Foreground="White"
-                                               FontWeight="Bold"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"/>
-                                </Border>
-                                <TextBlock x:Name="Lbl"
-                                           Text="{TemplateBinding Content}"
-                                           Margin="10,0,0,0"
-                                           FontSize="13"
-                                           FontFamily="{DynamicResource GlobalFontFamily}"
-                                           Foreground="{DynamicResource ThemeTextPrimaryBrush}"
-                                           VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource ThemePrimaryLightBrush}"/>
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ThemePrimaryBgBrush}"/>
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource ThemePrimaryBrush}"/>
-                                <Setter TargetName="Tick" Property="Background" Value="{DynamicResource ThemePrimaryBrush}"/>
-                                <Setter TargetName="TickText" Property="Text" Value="✓"/>
-                                <Setter TargetName="Lbl" Property="Foreground" Value="{DynamicResource ThemePrimaryBrush}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource ThemeNavHoverBgBrush}"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </Window.Resources>
 
@@ -113,7 +77,7 @@
                        Foreground="{DynamicResource ThemeTextPrimaryBrush}"
                        FontFamily="{DynamicResource GlobalFontFamily}"/>
             <TextBlock x:Name="tbSubtitle"
-                       Text="点击选择一个学生放入该座位"
+                       Text="点击学生姓名即可安排到该座位"
                        FontSize="12" Foreground="{DynamicResource ThemeTextHintBrush}"
                        FontFamily="{DynamicResource GlobalFontFamily}"
                        Margin="0,4,0,0"/>
@@ -121,9 +85,9 @@
 
         <Border Grid.Row="1"
                 Background="{DynamicResource ThemeCardBrush}"
-                BorderBrush="{DynamicResource ThemeBorderLightBrush}"
-                BorderThickness="1"
-                CornerRadius="{DynamicResource RadiusMedium}"
+                BorderBrush="{DynamicResource ThemeShadowLineBrush}"
+                BorderThickness="0,0,1,1"
+                CornerRadius="{DynamicResource GlobalCornerRadius}"
                 Padding="12"
                 Margin="0,0,0,12">
             <Grid>
@@ -145,39 +109,67 @@
 
         <Border Grid.Row="2"
                 Background="{DynamicResource ThemeCardBrush}"
-                BorderBrush="{DynamicResource ThemeBorderLightBrush}"
-                BorderThickness="1"
-                CornerRadius="{DynamicResource RadiusMedium}">
-            <ScrollViewer VerticalScrollBarVisibility="Auto"
-                          HorizontalScrollBarVisibility="Disabled">
-                <ScrollViewer.Resources>
-                    <Style TargetType="ScrollBar" BasedOn="{StaticResource TouchScrollBar}"/>
-                </ScrollViewer.Resources>
-                <ItemsControl x:Name="icStudents" Margin="12">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Columns="2"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <CheckBox Style="{StaticResource StudentToggle}"
-                                      Content="{Binding DisplayText}"
-                                      Margin="4"
-                                      IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                      Checked="Student_Checked"
-                                      Unchecked="Student_Unchecked"
-                                      Tag="{Binding}"/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+                BorderBrush="{DynamicResource ThemeShadowLineBrush}"
+                BorderThickness="0,0,1,1"
+                CornerRadius="{DynamicResource GlobalCornerRadius}">
+            <Grid>
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <ScrollViewer.Resources>
+                        <Style TargetType="ScrollBar" BasedOn="{StaticResource TouchScrollBar}"/>
+                    </ScrollViewer.Resources>
+                    <ItemsControl x:Name="icStudents" Margin="8">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource StudentPickCard}"
+                                        MouseLeftButtonUp="StudentCard_MouseLeftButtonUp"
+                                        Tag="{Binding}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{Binding DisplayText}"
+                                                   FontFamily="{DynamicResource GlobalFontFamily}"
+                                                   FontSize="13"
+                                                   Foreground="{DynamicResource ThemeTextPrimaryBrush}"
+                                                   VerticalAlignment="Center"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Grid.Column="1"
+                                                   Text="✓"
+                                                   FontSize="14"
+                                                   FontWeight="Bold"
+                                                   Foreground="{DynamicResource ThemePrimaryBrush}"
+                                                   VerticalAlignment="Center"
+                                                   Visibility="{Binding SelectedCheckVisibility}"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <TextBlock x:Name="tbEmpty"
+                           Text="名单为空，请先到「名单」页添加学生"
+                           FontSize="13"
+                           Foreground="{DynamicResource ThemeTextHintBrush}"
+                           FontFamily="{DynamicResource GlobalFontFamily}"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Visibility="Collapsed"/>
+            </Grid>
         </Border>
 
         <Grid Grid.Row="3" Margin="0,12,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
@@ -189,13 +181,7 @@
             <Button Grid.Column="1"
                     Content="取消"
                     Style="{StaticResource PclButton}"
-                    Margin="0,0,8,0"
                     Click="BtnCancel_Click"/>
-
-            <Button Grid.Column="2"
-                    Content="确定"
-                    Style="{StaticResource PclButtonPrimary}"
-                    Click="BtnOk_Click"/>
         </Grid>
     </Grid>
 </Window>

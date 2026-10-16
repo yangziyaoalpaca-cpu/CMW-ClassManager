@@ -28,10 +28,17 @@
     <SolidColorBrush x:Key="ThemeInputBgBrush" Color="#1E1E1E"/>
     <SolidColorBrush x:Key="ThemeInputBorderBrush" Color="#3A3A3A"/>
 
-    <!-- ★ 32.0.0：图标前景色（ClassIsland 用亮蓝，与主题色一致） -->
+    <!-- ★ 33.0.0：深色主题阴影线用亮色高光 -->
+    <SolidColorBrush x:Key="ThemeShadowLineBrush" Color="#1AFFFFFF"/>
+    <SolidColorBrush x:Key="ThemeShadowLineLightBrush" Color="#0FFFFFFF"/>
+
+    <SolidColorBrush x:Key="ThemeNavActiveBgBrush" Color="#2A2F42"/>
+    <SolidColorBrush x:Key="ThemeNavHoverBgBrush" Color="#252A3A"/>
+
+    <SolidColorBrush x:Key="ThemeTabAccentBrush" Color="#5B7CFF"/>
+
     <SolidColorBrush x:Key="ThemeIconForegroundBrush" Color="#7A96FF"/>
 
-    <!-- 兼容旧 Key -->
     <SolidColorBrush x:Key="PclPrimaryBrush" Color="#5B7CFF"/>
     <SolidColorBrush x:Key="MainBackgroundBrush" Color="#1A1A1A"/>
 
